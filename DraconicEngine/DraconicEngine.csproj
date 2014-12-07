@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A1D0D8F8-4665-4F45-96C0-9F2E1D618D58}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DraconicEngine</RootNamespace>
+    <AssemblyName>DraconicEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ConcurrentHashtable">
+      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\ConcurrentHashtable.dll</HintPath>
+    </Reference>
+    <Reference Include="LanguageExt.Core">
+      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\LanguageExt.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism.PubSubEvents">
+      <HintPath>..\packages\Prism.PubSubEvents.1.1.2\lib\portable-sl5+windowsphone8+windows8+net40+wpa81\Microsoft.Practices.Prism.PubSubEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI">
+      <HintPath>..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Interactive">
+      <HintPath>..\packages\Ix-Main.1.2.2\lib\net45\System.Interactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Windows.Threading">
+      <HintPath>..\packages\Rx-XAML.2.2.5\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CharacterEventArgs.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\ActionRequirement.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\AndMaybeRequirement.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\AndRequirement.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\ConfirmRequirement.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\DirectionRequirement.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\EntityRequirement.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\ItemRequirement.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\LocationRequirement.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\OrRequirement.cs" />
+    <Compile Include="GameWorld\Alligences\AlligenceManager.cs" />
+    <Compile Include="GameWorld\Alligences\Relationship.cs" />
+    <Compile Include="GameWorld\EntitySystem\IEntityFactory.cs" />
+    <Compile Include="GameWorld\EntitySystem\Nodes\TimerNode.cs" />
+    <Compile Include="GameWorld\EntitySystem\Systems\TimerSystem.cs" />
+    <Compile Include="Terminals\Input\Commands\ActionCommand.cs" />
+    <Compile Include="Terminals\Input\Commands\AttackEntityCommand.cs" />
+    <Compile Include="Terminals\Input\Commands\DropItemCommand.cs" />
+    <Compile Include="Terminals\Input\Commands\InteractWithCreatureCommand.cs" />
+    <Compile Include="Terminals\Input\Commands\ManipulateEntityCommand.cs" />
+    <Compile Include="Terminals\Input\Commands\MovementCommand.cs" />
+    <Compile Include="Terminals\Input\Commands\PickUpItemCommand.cs" />
+    <Compile Include="Terminals\Input\Commands\RogueCommand.cs" />
+    <Compile Include="Terminals\Input\Commands\TeleportCommand.cs" />
+    <Compile Include="Terminals\Input\Commands\UseItemCommand.cs" />
+    <Compile Include="Utilities\ColorPair.cs" />
+    <Compile Include="Utilities\Direction.cs" />
+    <Compile Include="GameWorld\EntitySystem\ComponentMatchingFamily.cs" />
+    <Compile Include="GameWorld\Alligences\Alligence.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\DecisionComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\ItemComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\ManipulatableComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\TimerComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\Nodes\AiCreatureNode.cs" />
+    <Compile Include="GameWorld\EntitySystem\Nodes\CombatNode.cs" />
+    <Compile Include="GameWorld\EntitySystem\Nodes\CreatureActionNode.cs" />
+    <Compile Include="GameWorld\Actions\AttackEntityAction.cs" />
+    <Compile Include="GameWorld\Actions\DropItemAction.cs" />
+    <Compile Include="GameWorld\Actions\InteractWithCreatureAction.cs" />
+    <Compile Include="GameWorld\Actions\ManipulateEntityAction.cs" />
+    <Compile Include="GameWorld\Actions\MovementAction.cs" />
+    <Compile Include="GameWorld\Actions\PickUpItemAction.cs" />
+    <Compile Include="GameWorld\Actions\TeleportAction.cs" />
+    <Compile Include="GameWorld\Actions\UseItemAction.cs" />
+    <Compile Include="GameWorld\EntitySystem\Systems\AIDecisionSystem.cs" />
+    <Compile Include="GameWorld\Behaviors\BasicMonsterBehavior.cs" />
+    <Compile Include="GameWorld\Behaviors\Trees\BehaviorTree.cs" />
+    <Compile Include="GameWorld\Behaviors\Trees\BehaviorTreeEvent.cs" />
+    <Compile Include="GameWorld\Behaviors\Trees\BehaviorTreeOptimized.cs" />
+    <Compile Include="GameWorld\Behaviors\Trees\BehaviorTreeShared.cs" />
+    <Compile Include="GameWorld\Behaviors\Behavior.cs" />
+    <Compile Include="GameWorld\Behaviors\ConfusedBehavior.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\BehaviorComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\CombatantComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\CreatureComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\InventoryComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\Engine.cs" />
+    <Compile Include="GameWorld\Behaviors\JustPassBehavior.cs" />
+    <Compile Include="GameWorld\EntitySystem\Systems\CombatSystem.cs" />
+    <Compile Include="GameWorld\EntitySystem\Systems\CreatureActionSystem.cs" />
+    <Compile Include="GameWorld\EntitySystem\Entity.cs" />
+    <Compile Include="GameWorld\EntitySystem\EntityTemplate.cs" />
+    <Compile Include="GameWorld\EntitySystem\Systems\GameSystem.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\IComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\IFamily.cs" />
+    <Compile Include="GameWorld\Items\IItemUsage.cs" />
+    <Compile Include="GameWorld\Items\IItemUsageTemplate.cs" />
+    <Compile Include="GameWorld\EntitySystem\IResultSelector.cs" />
+    <Compile Include="GameWorld\Items\Item.cs" />
+    <Compile Include="GameWorld\Items\ItemTemplate.cs" />
+    <Compile Include="GameWorld\Items\PowerItemUsageTemplate.cs" />
+    <Compile Include="GameWorld\EntityStore.cs" />
+    <Compile Include="GameWorld\EntitySystem\Nodes\CreatureNode.cs" />
+    <Compile Include="GameWorld\EntitySystem\Nodes\Node.cs" />
+    <Compile Include="GameWorld\EntitySystem\Nodes\NodePool.cs" />
+    <Compile Include="GameWorld\EntitySystem\Systems\ListIteratingSystem.cs" />
+    <Compile Include="GameWorld\Actions\RogueAction.cs" />
+    <Compile Include="GameWorld\Events\CreatureKilledEvent.cs" />
+    <Compile Include="GameStates\ConfirmDialog.cs" />
+    <Compile Include="GameStates\GameSate.cs" />
+    <Compile Include="GameStates\PlayingState.cs" />
+    <Compile Include="GameWorld\Generators\IItemGenerator.cs" />
+    <Compile Include="GameWorld\Generators\IMapGenerator.cs" />
+    <Compile Include="GameWorld\Generators\IPopulationGenerator.cs" />
+    <Compile Include="GameWorld\Generators\MapBuilder.cs" />
+    <Compile Include="Terminals\Glyphs\Character.cs" />
+    <Compile Include="Terminals\Glyphs\CharacterString.cs" />
+    <Compile Include="Terminals\Glyphs\Glyph.cs" />
+    <Compile Include="Terminals\Input\CommandGesture.cs" />
+    <Compile Include="Terminals\Input\GestureSet.cs" />
+    <Compile Include="Terminals\Input\IInputSystem.cs" />
+    <Compile Include="Terminals\Input\IPlayerController.cs" />
+    <Compile Include="Terminals\Input\PackageMaker.cs" />
+    <Compile Include="Terminals\Input\RogueKeyEvent.cs" />
+    <Compile Include="Terminals\Input\RogueKeys.cs" />
+    <Compile Include="Utilities\Loc.cs" />
+    <Compile Include="Terminals\Media\ArcSegment.cs" />
+    <Compile Include="Terminals\Media\BezierSegment.cs" />
+    <Compile Include="Terminals\Media\CombinedGeometry.cs" />
+    <Compile Include="Terminals\Media\EllipseGeometry.cs" />
+    <Compile Include="Terminals\Media\Geometry.cs" />
+    <Compile Include="Terminals\Media\GeometryGroup.cs" />
+    <Compile Include="Terminals\Media\LineGeometry.cs" />
+    <Compile Include="Terminals\Media\LineSegment.cs" />
+    <Compile Include="Terminals\Media\PathFigure.cs" />
+    <Compile Include="Terminals\Media\PathGeometry.cs" />
+    <Compile Include="Terminals\Media\PathSegment.cs" />
+    <Compile Include="Terminals\Media\Point.cs" />
+    <Compile Include="Terminals\Media\PolyBezierSegment.cs" />
+    <Compile Include="Terminals\Media\PolyLineSegment.cs" />
+    <Compile Include="Terminals\Media\PolyQuadraticBezierSegment.cs" />
+    <Compile Include="Terminals\Media\QuadraticBezierSegment.cs" />
+    <Compile Include="Terminals\Media\Rect.cs" />
+    <Compile Include="Terminals\Media\RectangleGeometry.cs" />
+    <Compile Include="Terminals\Media\Size.cs" />
+    <Compile Include="Terminals\Media\Transform.cs" />
+    <Compile Include="Services\MessageService.cs" />
+    <Compile Include="Utilities\Obj.cs" />
+    <Compile Include="GameWorld\Powers\Effects\BehaviorReplacementEffect.cs" />
+    <Compile Include="GameWorld\Powers\Effects\DamageEffect.cs" />
+    <Compile Include="GameWorld\Powers\Effects\Effect.cs" />
+    <Compile Include="GameWorld\Powers\Fulfilment.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\ChooseTarget.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\ConstantNodes.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\GetEntitiesWithinNode.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\LocationOfNode.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\NodeConnection.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\NodeInput.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\NodeOutput.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\PowerNode.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\TargetSelf.cs" />
+    <Compile Include="GameWorld\Powers\Power.cs" />
+    <Compile Include="GameWorld\Powers\PowerException.cs" />
+    <Compile Include="GameWorld\Powers\Requirement.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\RogueColor.cs" />
+    <Compile Include="Utilities\RogueColors.cs" />
+    <Compile Include="RogueGame.cs" />
+    <Compile Include="RogueMessage.cs" />
+    <Compile Include="GameWorld\Scene.cs" />
+    <Compile Include="Services\ShadowCaster.cs" />
+    <Compile Include="Storage\ItemLibrary.cs" />
+    <Compile Include="Storage\Library.cs" />
+    <Compile Include="Storage\SaveManager.cs" />
+    <Compile Include="Utilities\TerminalRect.cs" />
+    <Compile Include="Terminals\IReadableTerminal.cs" />
+    <Compile Include="Terminals\ITerminal.cs" />
+    <Compile Include="Terminals\Terminal.cs" />
+    <Compile Include="Terminals\TerminalBase.cs" />
+    <Compile Include="Terminals\TerminalExtensions.cs" />
+    <Compile Include="Terminals\WindowTerminal.cs" />
+    <Compile Include="GameWorld\Tile.cs" />
+    <Compile Include="GameWorld\Timers\MessageTimer.cs" />
+    <Compile Include="GameWorld\Timers\SetBehaviorTimer.cs" />
+    <Compile Include="GameWorld\Timers\TurnTimer.cs" />
+    <Compile Include="Utilities\Extensions.cs" />
+    <Compile Include="Utilities\Vector.cs" />
+    <Compile Include="Visitors\BaseVisitor.cs" />
+    <Compile Include="Visitors\Visitor.cs" />
+    <Compile Include="Terminals\Widgets\BarWidget.cs" />
+    <Compile Include="Terminals\Widgets\HighlightWidget.cs" />
+    <Compile Include="Terminals\Widgets\InfoWidget.cs" />
+    <Compile Include="Terminals\Widgets\MessagesWidget.cs" />
+    <Compile Include="Terminals\Widgets\SceneView.cs" />
+    <Compile Include="Terminals\Widgets\SceneWidget.cs" />
+    <Compile Include="Terminals\Widgets\Widget.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
