@@ -11,6 +11,7 @@ using DraconicEngine.GameWorld.Actions.Requirements;
 
 namespace DraconicEngine.GameWorld.Behaviors
 {
+   [Serializable]
    public class ConfusedBehavior : IBehavior
    {
       public RogueAction PlanTurn(Entity owner)

@@ -9,6 +9,9 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
    public class DecisionComponent : Component
    {
-      public RogueAction ActionToDo { get; set; } = null;
+      [NonSerialized]
+      RogueAction actionToDo = null;
+
+      public RogueAction ActionToDo { get { return actionToDo; } set { actionToDo = value; } }
    }
 }

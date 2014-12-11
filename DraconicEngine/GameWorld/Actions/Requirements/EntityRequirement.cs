@@ -34,6 +34,11 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
       {
          return !this.ComponentTypes.Any(c => !entity.HasComponent(c));
       }
+
+      public override bool MeetsRequirement(RequirementFulfillment fulfillment)
+      {
+         return fulfillment is EntityFulfillment;
+      }
    }
 
    public class EntityFulfillment : RequirementFulfillment

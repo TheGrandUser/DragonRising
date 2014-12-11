@@ -17,6 +17,16 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
          this.Second = second;
          this.Message = message;
       }
+
+      public override bool MeetsRequirement(RequirementFulfillment fulfillment)
+      {
+         var andFulfillment = fulfillment as AndFulfillment;
+         if(andFulfillment != null)
+         {
+            return this.First.MeetsRequirement(andFulfillment.First) && this.Second.MeetsRequirement(andFulfillment.Second);
+         }
+         return false;
+      }
    }
 
    public class AndFulfillment : RequirementFulfillment

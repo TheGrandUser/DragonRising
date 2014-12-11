@@ -13,21 +13,19 @@ namespace DraconicEngine.GameWorld.Actions
 {
    public class UseItemAction : RogueAction
    {
-      Entity executer;
-      Item item;
-      bool removeItemOnUse;
+      Some<Item> item;
+      Some<RequirementFulfillment> itemReqFulfillment;
 
-      public UseItemAction(Entity executer, Item item, bool removeItemOnUse = false)
+      public UseItemAction(Some<Item> item, Some<RequirementFulfillment> itemReqFulfillment)
       {
-         this.removeItemOnUse = removeItemOnUse;
-         this.executer = executer;
+         this.itemReqFulfillment = itemReqFulfillment;
          this.item = item;
       }
 
       public override void Do(Entity executer)
       {
-         item.Use(executer);
-         if (this.removeItemOnUse)
+         var result = item.Value.Use(executer, itemReqFulfillment);
+         if (result == ItemUseResult.Destroyed)
          {
             executer.As<InventoryComponent>(inventory => inventory.Items.Remove(item));
          }

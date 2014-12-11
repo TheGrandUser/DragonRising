@@ -18,13 +18,30 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
       }
 
       public bool NeedsItemsFulfillment { get; }
+
+      public override bool MeetsRequirement(RequirementFulfillment fulfillment)
+      {
+         var itemFulfillment = fulfillment as ItemFulfillment;
+         if(itemFulfillment != null)
+         {
+            if (this.NeedsItemsFulfillment)
+            {
+               return itemFulfillment.Item.Value.Template.Usage.Requirements.MeetsRequirement(itemFulfillment.ItemsFulfillments);
+            }
+            else
+            {
+               return true;
+            }
+         }
+         return false;
+      }
    }
 
    public class ItemFulfillment : RequirementFulfillment
    {
-      public Item Item { get; }
+      public Some<Item> Item { get; }
       public Some<RequirementFulfillment> ItemsFulfillments { get; }
-      public ItemFulfillment(Item item, Some<RequirementFulfillment> itemsRequirements)
+      public ItemFulfillment(Some<Item> item, Some<RequirementFulfillment> itemsRequirements)
       {
          this.Item = item;
          this.ItemsFulfillments = itemsRequirements;

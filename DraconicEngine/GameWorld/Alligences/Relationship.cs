@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.Alligences
 {
+   [Serializable]
    public enum Relationship
    {
       Neutral,

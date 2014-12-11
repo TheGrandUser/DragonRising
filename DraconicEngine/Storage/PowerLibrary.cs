@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DraconicEngine.GameWorld.Alligences
+namespace DraconicEngine.Storage
 {
-   [Serializable]
-   public class Alligence
+   public class PowerLibrary
    {
-
-      public string Name { get; set; }
    }
 }

@@ -12,37 +12,24 @@ using LanguageExt.Prelude;
 
 namespace DragonRising.Entities.Items
 {
-   public class HealingItem : Component, IItemUsage
+   public class HealingItem : IItemUsage
    {
-      public int HealAmount { get; set; }
+      public int HealAmount { get; set; } = 4;
 
-      public HealingItem()
-      {
-         this.HealAmount = 4;
-      }
+      public HealingItem() { }
 
-      public void Use(Entity user)
-      {
-         user.GetComponent<CombatantComponent>().Heal(this.HealAmount);
-      }
-
-      public ItemUseResult PrepUse(Entity user, Some<RequirementFulfillment> fulfillment)
+      public bool Use(Entity user, Some<RequirementFulfillment> fulfillment)
       {
          var combatantComponent = user.GetComponentOrDefault<CombatantComponent>();
          if (combatantComponent != null)
          {
             if (combatantComponent.HP < combatantComponent.MaxHP)
             {
-               return ItemUseResult.Destroyed;
+               combatantComponent.Heal(this.HealAmount);
+               return true;
             }
          }
-
-         return ItemUseResult.NotUsed;
-      }
-
-      public IItemUsageTemplate Template
-      {
-         get { throw new NotImplementedException(); }
+         return false;
       }
 
       public ActionRequirement Requirements => NoRequirement.None;

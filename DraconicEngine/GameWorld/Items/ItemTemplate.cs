@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.Items
 {
+   [Serializable]
    public class ItemTemplate
    {
       public Glyph Glyph { get; set; }

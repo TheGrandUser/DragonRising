@@ -53,11 +53,11 @@ namespace DraconicEngine.Visitors
       protected abstract void OnEntity(Entity entity);
 
 
-      public void VisitEntityComponent(IComponent component)
+      public void VisitEntityComponent(Component component)
       {
          OnEntityComponent(component);
       }
 
-      protected abstract void OnEntityComponent(IComponent component);
+      protected abstract void OnEntityComponent(Component component);
    }
 }

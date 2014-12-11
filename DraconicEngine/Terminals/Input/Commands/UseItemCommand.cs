@@ -22,25 +22,12 @@ namespace DraconicEngine.Terminals.Input.Commands
 
       public override Either<RogueAction, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment)
       {
-         var itemFulfillment = (ItemFulfillment)fulfillment;
-         var item = itemFulfillment.Item;
-         var inventory = executer.GetComponent<InventoryComponent>();
-
-
-
-         if (item != null)
+         if (this.Requirement.MeetsRequirement(fulfillment))
          {
-            var usageResult = item.PrepUse(executer, itemFulfillment.ItemsFulfillments);
+            var itemFulfillment = (ItemFulfillment)fulfillment;
+            var item = itemFulfillment.Item;
 
-            switch (usageResult)
-            {
-               case ItemUseResult.NotUsed:
-                  return RogueAction.Abort;
-               case ItemUseResult.Used:
-                  return new UseItemAction(executer, item);
-               case ItemUseResult.Destroyed:
-                  return new UseItemAction(executer, item, removeItemOnUse: true);
-            }
+            return new UseItemAction(item, itemFulfillment.ItemsFulfillments);
          }
 
          return RogueAction.Abort;

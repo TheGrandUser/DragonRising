@@ -12,83 +12,33 @@ using LanguageExt.Prelude;
 
 namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
-   public class PowerItemUsageTemplate : IItemUsageTemplate
+   public class PowerItemUsageComponent : IItemUsage
    {
       Power power;
       public Power Power { get { return power; } }
-      public string Name { get; set; }
 
-      IResultSelector resultSelector;
-      public IResultSelector ResultSelector { get { return resultSelector; } }
-
-      public PowerItemUsageTemplate(Power power, IResultSelector resultSelector)
+      public PowerItemUsageComponent(Power power)
       {
          this.power = power;
-         this.resultSelector = resultSelector;
       }
 
-      public Type UsageType { get { return typeof(PowerItemUsageComponent); } }
-
-      public IItemUsage CreateUsage()
+      public bool Use(Entity user, Some<RequirementFulfillment> fulfillment)
       {
-         return new PowerItemUsageComponent(this);
-      }
-   }
-
-   public class PowerItemUsageComponent : IItemUsage
-   {
-      List<Fulfilment> fulfilments;
-      PowerItemUsageTemplate template;
-
-
-      public PowerItemUsageComponent(PowerItemUsageTemplate template)
-      {
-         this.template = template;
-      }
-
-      public async Task<ItemUseResult> PrepUseAsync(Entity user)
-      {
-         if (this.template.Power.Requirements.Count > 0)
+         if (DoFulfillmentsMatch(fulfillment))
          {
-            this.fulfilments = new List<Fulfilment>();
-            foreach (var requirement in this.template.Power.Requirements)
-            {
-               Fulfilment fulfilment = await Fulfil(requirement);
-
-               if (fulfilment == null)
-               {
-                  this.fulfilments.Clear();
-                  this.fulfilments = null;
-                  return ItemUseResult.NotUsed;
-               }
-
-               this.fulfilments.Add(fulfilment);
-            }
+            List<Fulfilment> fulfilments = null;
+            this.Power.Do(user, ImmutableList.CreateRange(fulfilments));
+            return true;
          }
-         return this.template.ResultSelector.Select(user, this.fulfilments);
+         return false;
       }
 
-      private Task<Fulfilment> Fulfil(Requirement requirement)
-      {
-         throw new NotImplementedException();
-      }
-
-      public void Use(Entity user)
-      {
-         this.template.Power.Do(user, ImmutableList.CreateRange(this.fulfilments));
-
-         this.fulfilments.Clear();
-         this.fulfilments = null;
-      }
-
-      public ItemUseResult PrepUse(Entity user, Some<RequirementFulfillment> fulfillment)
+      bool DoFulfillmentsMatch(Some<RequirementFulfillment> fulfillment)
       {
          throw new NotImplementedException();
       }
 
       public Entity Owner { get; set; }
-
-      public IItemUsageTemplate Template { get { return this.template; } }
 
       public ActionRequirement Requirements
       {

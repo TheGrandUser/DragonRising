@@ -8,7 +8,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
 {
    public abstract class Node
    {
-      Dictionary<string, IComponent> components = new Dictionary<string, IComponent>();
+      Dictionary<string, Component> components = new Dictionary<string, Component>();
 
       public Entity Entity { get; set; }
 

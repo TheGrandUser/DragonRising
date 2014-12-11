@@ -12,6 +12,7 @@ using DraconicEngine.GameWorld.Alligences;
 
 namespace DraconicEngine.GameWorld.Behaviors
 {
+   [Serializable]
    public class BasicMonsterBehavior : IBehavior
    {
       public RogueAction PlanTurn(Entity owner)
@@ -39,7 +40,7 @@ namespace DraconicEngine.GameWorld.Behaviors
 
       private RogueAction Attack(Entity player)
       {
-         return new AttackEntityAction(player.GetComponent<CombatantComponent>());
+         return new AttackEntityAction(player);
       }
 
       RogueAction MoveTowards(Entity owner, Loc targetLocation)
@@ -70,7 +71,7 @@ namespace DraconicEngine.GameWorld.Behaviors
                   {
                      dir = moveVec.ToDirection();
 
-                     return new AttackEntityAction(creature.GetComponent<CombatantComponent>());
+                     return new AttackEntityAction(creature);
                   }
                }
             }

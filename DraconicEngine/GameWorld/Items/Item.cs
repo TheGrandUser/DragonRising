@@ -17,7 +17,7 @@ namespace DraconicEngine.Items
       Destroyed,
       NotUsed,
    }
-
+   [Serializable]
    public class Item
    {
       public ItemTemplate Template { get; private set; }
@@ -28,24 +28,28 @@ namespace DraconicEngine.Items
          this.Template = template;
       }
 
-      public ItemUseResult PrepUse(Entity executer, Some<RequirementFulfillment> itemsRequirements)
+      public ItemUseResult Use(Entity user, Some<RequirementFulfillment> itemsRequirements)
       {
          var usage = this.Template.Usage;
          if (usage != null)
          {
-            return usage.PrepUse(executer, itemsRequirements);
+            if(usage.Use(user, itemsRequirements))
+            {
+               if (this.Template.IsCharged)
+               {
+                  this.Charges--;
+
+                  if(this.Charges <= 0)
+                  {
+                     return ItemUseResult.Destroyed;
+                  }
+               }
+
+               return ItemUseResult.Used;
+            }
          }
 
          return ItemUseResult.NotUsed;
-      }
-
-      public void Use(Entity user)
-      {
-         var usage = this.Template.Usage;
-         if (usage != null)
-         {
-            usage.Use(user);
-         }
       }
    }
 }

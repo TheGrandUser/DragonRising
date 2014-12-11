@@ -12,12 +12,20 @@ using DraconicEngine.GameWorld.Actions.Requirements;
 
 namespace DraconicEngine.Terminals.Input.Commands
 {
+   public class RequiresItemCheck : MaybeCheck<EntityFulfillment>
+   {
+      public override bool Check(EntityFulfillment fulfillment)
+      {
+         return fulfillment.Entity.GetComponent<ManipulatableComponent>().RequiresItem;
+      }
+   }
+
    public class ManipulateEntityCommand : ActionCommand
    {
       ActionRequirement requirement = new AndMaybeRequirement<EntityFulfillment>(
          new EntityRequirement(1, typeof(ManipulatableComponent)),
          new ItemRequirement("Select an item to use on the object", needsItemsFulfillment: false),
-         f => f.Entity.GetComponent<ManipulatableComponent>().RequiresItem);
+         new RequiresItemCheck());
       public override string Name => "Manipulate Entity";
       public override ActionRequirement Requirement => requirement;
 

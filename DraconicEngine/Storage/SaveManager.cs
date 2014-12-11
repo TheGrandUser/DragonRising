@@ -14,17 +14,6 @@ namespace DraconicEngine.Storage
       //System.Xml.
    }
 
-   public class JsonSaveManger : ISaveManager
-   {
-      void SaveEntity(Entity entity)
-      {
-         //var serializer = new DataContractJsonSerializer(typeof(Entity),
-         //   new Type[] { typeof(Creature), typeof(Item) });
-
-         //System.Xml.Serialization.
-      }
-   }
-
    public static class SaveManager
    {
       static ISaveManager current;

@@ -9,6 +9,11 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
    public class DirectionRequirement : ActionRequirement
    {
       public bool CardinalOnly { get; set; }
+
+      public override bool MeetsRequirement(RequirementFulfillment fulfillment)
+      {
+         return fulfillment is DirectionFulfillment;
+      }
    }
 
    public class DirectionFulfillment : RequirementFulfillment

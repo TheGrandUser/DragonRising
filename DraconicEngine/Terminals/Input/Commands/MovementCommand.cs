@@ -27,14 +27,15 @@ namespace DraconicEngine.Terminals.Input.Commands
       {
          var dirFulfillment = fulfillment as DirectionFulfillment;
          var direction = this.direction ?? dirFulfillment?.Direction ?? Direction.None;
+         if(direction == Direction.None)
+         {
+            return RogueAction.Abort;
+         }
+
          var scene = Scene.CurrentScene;
 
          var delta = Vector.FromDirection(direction);
 
-         if (delta == Vector.Zero)
-         {
-            return RogueAction.Abort;
-         }
          var newLocation = executer.Location + delta;
 
          var blockage = scene.IsBlocked(newLocation, ignoreWhere: entity => entity == executer);

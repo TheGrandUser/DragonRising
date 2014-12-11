@@ -19,22 +19,48 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
       }
 
       public abstract bool IsSecondRequired(RequirementFulfillment fulfillment);
+      public override bool MeetsRequirement(RequirementFulfillment fulfillment)
+      {
+         if (fulfillment is AndMaybeFulfillment)
+         {
+            var andMaybe = (AndMaybeFulfillment)fulfillment;
+
+            if (this.First.MeetsRequirement(andMaybe.First))
+            {
+               if (this.IsSecondRequired(andMaybe.First))
+               {
+                  return andMaybe.Second.Match(
+                     Some: second => this.Second.MeetsRequirement(second),
+                     None: () => false);
+               }
+               return true;
+            }
+         }
+         return false;
+      }
+   }
+
+   [Serializable]
+   public abstract class MaybeCheck<TFirstFulfillment>
+      where TFirstFulfillment : RequirementFulfillment
+   {
+      public abstract bool Check(TFirstFulfillment fulfillment);
    }
 
    public class AndMaybeRequirement<TFirstFulfillment> : AndMaybeRequirement
       where TFirstFulfillment : RequirementFulfillment
    {
-      Func<TFirstFulfillment, bool> predicate;
+      MaybeCheck<TFirstFulfillment> checker;
 
-      public AndMaybeRequirement(ActionRequirement first, ActionRequirement second, Func<TFirstFulfillment, bool> predicate, string message = "")
+      public AndMaybeRequirement(ActionRequirement first, ActionRequirement second, MaybeCheck<TFirstFulfillment> checker, string message = "")
          : base(first, second, message)
       {
-         this.predicate = predicate;
+         this.checker = checker;
       }
 
       public override bool IsSecondRequired(RequirementFulfillment fulfillment)
       {
-         return predicate((TFirstFulfillment)fulfillment);
+         return checker.Check((TFirstFulfillment)fulfillment);
       }
    }
 

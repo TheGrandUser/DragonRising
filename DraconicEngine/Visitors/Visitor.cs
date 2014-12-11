@@ -12,7 +12,7 @@ namespace DraconicEngine.Visitors
       void VisitScene(Scene scene);
       void VisitTile(Tile tile, int column, int row);
       void VisitEntity(Entity entity);
-      void VisitEntityComponent(IComponent component);
+      void VisitEntityComponent(Component component);
    }
 
    public interface IEntityHandler
@@ -24,6 +24,6 @@ namespace DraconicEngine.Visitors
    public interface IComponentHandler
    {
       Type ComponentType { get; }
-      void Handler(IComponent component);
+      void Handler(Component component);
    }
 }

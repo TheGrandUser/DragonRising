@@ -12,9 +12,7 @@ namespace DraconicEngine.Items
 {
    public interface IItemUsage
    {
-      IItemUsageTemplate Template { get; }
       ActionRequirement Requirements { get; }
-      ItemUseResult PrepUse(Entity user, Some<RequirementFulfillment> fulfillment);
-      void Use(Entity user);
+      bool Use(Entity user, Some<RequirementFulfillment> fulfillment);
    }
 }

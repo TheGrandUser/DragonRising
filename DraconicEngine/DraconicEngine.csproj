@@ -42,6 +42,10 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="ReactiveUI">
       <HintPath>..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
     </Reference>
@@ -96,6 +100,10 @@
     <Compile Include="GameWorld\EntitySystem\IEntityFactory.cs" />
     <Compile Include="GameWorld\EntitySystem\Nodes\TimerNode.cs" />
     <Compile Include="GameWorld\EntitySystem\Systems\TimerSystem.cs" />
+    <Compile Include="GameWorld\GameState.cs" />
+    <Compile Include="Storage\EntityLibrary.cs" />
+    <Compile Include="Storage\PowerLibrary.cs" />
+    <Compile Include="Storage\TileLibrary.cs" />
     <Compile Include="Terminals\Input\Commands\ActionCommand.cs" />
     <Compile Include="Terminals\Input\Commands\AttackEntityCommand.cs" />
     <Compile Include="Terminals\Input\Commands\DropItemCommand.cs" />

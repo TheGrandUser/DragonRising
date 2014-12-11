@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace DraconicEngine
 {
@@ -39,17 +40,25 @@ namespace DraconicEngine
       void KillEntity(Entity owner);
    }
 
+   [Serializable]
    public class EntityStore : IEntityStore
    {
+      [NonSerialized]
+      [JsonIgnore]
       Subject<Entity> added = new Subject<Entity>();
+      [NonSerialized]
+      [JsonIgnore]
       Subject<Entity> removed = new Subject<Entity>();
 
+      [NonSerialized]
+      [JsonIgnore]
       Subject<Entity> killed = new Subject<Entity>();
 
       HashSet<Entity> entities = new HashSet<Entity>();
       HashSet<Entity> specialCreatures = new HashSet<Entity>();
-
+      
       public IObservable<Entity> Added => added.AsObservable();
+      
       public IObservable<Entity> Removed => removed.AsObservable();
       public IObservable<Entity> Killed => killed.AsObservable();
 

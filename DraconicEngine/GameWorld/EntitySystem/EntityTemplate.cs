@@ -10,9 +10,9 @@ namespace DraconicEngine.GameWorld.EntitySystem
    {
       public string Name { get; set; }
 
-      List<IComponentTemplate> componentTemplatess = new List<IComponentTemplate>();
+      List<ComponentTemplate> componentTemplatess = new List<ComponentTemplate>();
 
-      public void AddComponent(IComponentTemplate component)
+      public void AddComponent(ComponentTemplate component)
       {
          this.componentTemplatess.Add(component);
       }
@@ -27,7 +27,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          {
             var type = template.ComponentType;
 
-            IComponent component = template.CreateComponent();
+            Component component = template.CreateComponent();
 
             entity.AddComponent(type, component);
          }

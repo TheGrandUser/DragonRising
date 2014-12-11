@@ -11,11 +11,11 @@ namespace DraconicEngine.GameWorld.EntitySystem
 {
    public class Entity
    {
-      Dictionary<Type, IComponent> components = new Dictionary<Type, IComponent>();
-      public IEnumerable<IComponent> Components => this.components.Values;
+      Dictionary<Type, Component> components = new Dictionary<Type, Component>();
+      public IEnumerable<Component> Components => this.components.Values;
 
-      Subject<IComponent> componentAdded = new Subject<IComponent>();
-      Subject<IComponent> componentRemoved = new Subject<IComponent>();
+      Subject<Component> componentAdded = new Subject<Component>();
+      Subject<Component> componentRemoved = new Subject<Component>();
 
       readonly Dictionary<Type, Type> aliases = new Dictionary<Type, Type>();
 
@@ -35,8 +35,8 @@ namespace DraconicEngine.GameWorld.EntitySystem
          this.Character = new Character(glyph, color);
          this.Blocks = blocks;
       }
-      public IObservable<IComponent> ComponentAdded => componentAdded;
-      public IObservable<IComponent> ComponentRemoved => componentRemoved;
+      public IObservable<Component> ComponentAdded => componentAdded;
+      public IObservable<Component> ComponentRemoved => componentRemoved;
       public void Draw(ITerminal terminal, Vector viewOffset)
       {
          var displayX = X - viewOffset.X;
@@ -71,7 +71,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          }
       }
 
-      public void AddComponent(Type type, IComponent component)
+      public void AddComponent(Type type, Component component)
       {
          components.Add(type, component);
 
@@ -87,7 +87,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          OnComponentAdded(component);
       }
 
-      protected virtual void OnComponentAdded(IComponent component) { }
+      protected virtual void OnComponentAdded(Component component) { }
 
       public void AddComponentAlias(Type registeredType, Type alias)
       {
@@ -107,7 +107,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       }
 
       protected void SetComponent<TComp>(ref TComp component, TComp value)
-         where TComp : IComponent
+         where TComp : Component
       {
          if (!object.Equals(component, value))
          {
@@ -120,13 +120,13 @@ namespace DraconicEngine.GameWorld.EntitySystem
          }
       }
 
-      public IComponent GetComponent(Type type)
+      public Component GetComponent(Type type)
       {
          if (this.IsDisposed)
          {
             throw new ObjectDisposedException("CompositeObject");
          }
-         IComponent component;
+         Component component;
          if (components.TryGetValue(type, out component))
          {
             return component;
@@ -143,7 +143,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          throw new ArgumentException(string.Format("object {0} does not have a component of type {1}", this, type.Name));
       }
 
-      public bool TryGetComponent(Type type, out IComponent component)
+      public bool TryGetComponent(Type type, out Component component)
       {
          if (this.IsDisposed)
          {
@@ -182,7 +182,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          }
       }
 
-      protected virtual void OnComponentRemoved(IComponent component)
+      protected virtual void OnComponentRemoved(Component component)
       {
       }
    }
@@ -195,38 +195,38 @@ namespace DraconicEngine.GameWorld.EntitySystem
       }
 
       public static void AddComponent<TComponent>(this Entity self, TComponent component)
-          where TComponent : IComponent
+          where TComponent : Component
       {
          self.AddComponent(typeof(TComponent), component);
       }
 
       public static void AddComponent<TInterface, TComponent>(this Entity self, TComponent component)
-         where TInterface : IComponent
+         where TInterface : Component
          where TComponent : TInterface
       {
          self.AddComponent(typeof(TInterface), component);
       }
 
       public static void AddComponentAlias<TComponent>(this Entity self, TComponent component)
-          where TComponent : IComponent
+          where TComponent : Component
       {
          self.AddComponent(typeof(TComponent), component);
       }
 
       public static bool HasComponent<T>(this Entity self)
-         where T : IComponent
+         where T : Component
       {
          return self.HasComponent(typeof(T));
       }
 
       public static T GetComponent<T>(this Entity self)
-         where T : IComponent
+         where T : Component
       {
          return (T)self.GetComponent(typeof(T));
       }
 
       public static T GetComponentOrDefault<T>(this Entity self)
-         where T : IComponent
+         where T : Component
       {
          if (self.HasComponent(typeof(T)))
          {
@@ -236,16 +236,16 @@ namespace DraconicEngine.GameWorld.EntitySystem
       }
 
       public static bool TryGetComponent<T>(this Entity self, out T component)
-         where T : IComponent
+         where T : Component
       {
-         IComponent comp;
+         Component comp;
          var result = self.TryGetComponent(typeof(T), out comp);
          component = (T)comp;
          return result;
       }
 
       public static void RemoveComponent<T>(this Entity self)
-         where T : IComponent
+         where T : Component
       {
          self.RemoveComponent(typeof(T));
       }

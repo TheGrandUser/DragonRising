@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine
 {
+   [Serializable]
    public sealed class Scene
    {
       Entity focusEntity = null;
@@ -33,7 +34,6 @@ namespace DraconicEngine
 
       public int MapWidth => Map.GetUpperBound(0) + 1;
       public int MapHeight => Map.GetUpperBound(1) + 1;
-
 
       private void ResetFoV()
       {

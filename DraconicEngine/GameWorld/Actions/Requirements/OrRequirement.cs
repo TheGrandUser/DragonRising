@@ -16,5 +16,10 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
          this.Alternate = alternate;
          this.Message = message;
       }
+
+      public override bool MeetsRequirement(RequirementFulfillment fulfillment)
+      {
+         return Prefered.MeetsRequirement(fulfillment) || Alternate.MeetsRequirement(fulfillment);
+      }
    }
 }

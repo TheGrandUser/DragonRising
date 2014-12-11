@@ -14,9 +14,9 @@ namespace DraconicEngine.GameWorld.Actions
 {
    public class AttackEntityAction : RogueAction
    {
-      CombatantComponent target;
+      Entity target;
 
-      public AttackEntityAction(CombatantComponent target)
+      public AttackEntityAction(Entity target)
       {
          Contract.Requires(target != null);
          this.target = target;
@@ -25,17 +25,18 @@ namespace DraconicEngine.GameWorld.Actions
       public override void Do(Entity executer)
       {
          var me = executer.GetComponent<CombatantComponent>();
+         var them = target.GetComponent<CombatantComponent>();
 
-         var damage = me.Power - target.Defense;
+         var damage = me.Power - them.Defense;
 
          if (damage > 0)
          {
-            MessageService.Current.PostMessage(executer.Name + " attacks " + target.Owner.Name + " for " + damage + " hit points.");
-            target.TakeDamage(damage, executer);
+            MessageService.Current.PostMessage(executer.Name + " attacks " + target.Name + " for " + damage + " hit points.");
+            them.TakeDamage(damage, executer);
          }
          else
          {
-            MessageService.Current.PostMessage(executer.Name + " attacks " + target.Owner.Name + " but it has no effect");
+            MessageService.Current.PostMessage(executer.Name + " attacks " + target.Name + " but it has no effect");
          }
       }
    }

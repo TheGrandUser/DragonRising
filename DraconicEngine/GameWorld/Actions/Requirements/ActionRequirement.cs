@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.Actions.Requirements
 {
+   [Serializable]
    public abstract class ActionRequirement
    {
       public string Message { get; protected set; }
+
+      public abstract bool MeetsRequirement(RequirementFulfillment fulfillment);
    }
 
    public abstract class RequirementFulfillment
@@ -24,13 +27,13 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
       }
 
       public static readonly NoRequirement None = new NoRequirement();
+
+      public override bool MeetsRequirement(RequirementFulfillment fulfillment) => true;
    }
 
    public class NoFulfillment : RequirementFulfillment
    {
-      private NoFulfillment()
-      {
-      }
+      private NoFulfillment() { }
 
       public static readonly NoFulfillment None = new NoFulfillment();
    }

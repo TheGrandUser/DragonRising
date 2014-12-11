@@ -30,7 +30,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          var nodeType = typeof(TNode);
 
          var nodeVariables = nodeType.GetProperties()
-            .Where(pi => pi.PropertyType.GetInterface(nameof(IComponent)) != null);
+            .Where(pi => pi.PropertyType.GetInterface(nameof(Component)) != null);
 
          foreach (var variable in nodeVariables)
          {

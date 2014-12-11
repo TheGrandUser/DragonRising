@@ -16,6 +16,11 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
          this.IsLimitedToFoV = isLimitedToFoV;
          this.MaxRange = maxRange;
       }
+
+      public override bool MeetsRequirement(RequirementFulfillment fulfillment)
+      {
+         return fulfillment is LocationFulfillment;
+      }
    }
 
    public class LocationFulfillment : RequirementFulfillment

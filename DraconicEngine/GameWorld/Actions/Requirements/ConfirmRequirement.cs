@@ -12,6 +12,11 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
       {
          this.Message = message;
       }
+
+      public override bool MeetsRequirement(RequirementFulfillment fulfillment)
+      {
+         return fulfillment is ConfirmFulfillment;
+      }
    }
 
    public class ConfirmFulfillment : RequirementFulfillment

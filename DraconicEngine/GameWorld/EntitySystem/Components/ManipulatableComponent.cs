@@ -7,14 +7,13 @@ using DraconicEngine.Items;
 
 namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
-   class ManipulatableComponent : IComponent
+   class ManipulatableComponent : Component
    {
-      public Entity Owner { get; set; }
       public bool RequiresItem { get; set; }
 
       public bool Use(Item itemToUse)
       {
-         throw new NotImplementedException();
+         return false;
       }
    }
 }

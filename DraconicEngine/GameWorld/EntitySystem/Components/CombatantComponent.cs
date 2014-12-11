@@ -9,19 +9,7 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
-   public interface ICombatantComponent : IComponent
-   {
-      int MaxHP { get; set; }
-      int HP { get; set; }
-      int Defense { get; set; }
-      int Power { get; set; }
-      
-      void TakeDamage(int damage, Entity from);
-
-      void Heal(int amount);
-   }
-
-   public class CombatantComponent : Component, ICombatantComponent
+   public class CombatantComponent : Component
    {
       public int MaxHP { get; set; }
       public int HP { get; set; }

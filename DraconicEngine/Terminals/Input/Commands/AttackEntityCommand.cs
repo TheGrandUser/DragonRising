@@ -45,8 +45,14 @@ namespace DraconicEngine.Terminals.Input.Commands
             targetEntity = ((EntityFulfillment)fulfillment).Entity;
          }
 
-         var target = targetEntity?.GetComponentOrDefault<CombatantComponent>();
-         return new AttackEntityAction(target);
+         if (targetEntity != null)
+         {
+            return new AttackEntityAction(targetEntity);
+         }
+         else
+         {
+            return RogueAction.Abort;
+         }
       }
    }
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.Behaviors
 {
+   [Serializable]
    public class JustPassBehavior : IBehavior
    {
       public RogueAction PlanTurn(Entity owner) => RogueAction.Idle;

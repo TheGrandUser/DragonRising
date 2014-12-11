@@ -15,9 +15,9 @@ using LanguageExt.Prelude;
 
 namespace DragonRising.Entities.Items
 {
-   public class BehaviorReplacementItem : Component, IItemUsage
+   public class BehaviorReplacementItem : IItemUsage
    {
-      Func<IBehavior> controllerFactory;
+      Func<IBehavior> behaviorFactory;
       int duration;
       int range;
 
@@ -25,15 +25,13 @@ namespace DragonRising.Entities.Items
       Func<Entity, string> beginMessage;
       Func<Entity, string> endMessage;
 
-      Entity target = null;
-
-      public BehaviorReplacementItem(Func<IBehavior> controllerFactory,
+      public BehaviorReplacementItem(Func<IBehavior> behaviorFactory,
          string verb,
          Func<Entity, string> beginMessage,
          Func<Entity, string> endMessage,
          int duration = 10, int range = 8)
       {
-         this.controllerFactory = controllerFactory;
+         this.behaviorFactory = behaviorFactory;
          this.duration = duration;
          this.verb = verb;
          this.beginMessage = beginMessage;
@@ -49,43 +47,27 @@ namespace DragonRising.Entities.Items
             c => "The " + c.Name + " is no longer confused.");
       }
 
-      public void Use(Entity user)
+      public bool Use(Entity user, Some<RequirementFulfillment> fulfillment)
       {
-         var behavior = controllerFactory();
-         var controller = this.target.GetComponent<BehaviorComponent>();
-         controller.PushBehavior(behavior);
-         MessageService.Current.PostMessage(beginMessage(this.target), RogueColors.LightGreen);
-
-         var setTimer = new PopBehaviorTimer(this.duration, this.target);
-         var messageTimer = new MessageTimer(this.duration, endMessage(this.target), RogueColors.Red);
-
-         this.target.AttachTimer(setTimer);
-         this.target.AttachTimer(messageTimer);
-
-         this.target = null;
-      }
-
-      public ItemUseResult PrepUse(Entity user, Some<RequirementFulfillment> fulfillment)
-      {
-         //Entity creature = await (user.GetComponentOrDefault<SelectorComponent>()?.Selector.SelectTargetCreature(user, range: this.range) ?? Task.FromResult<Entity>(null));
          var closestMonster = Scene.CurrentScene.ClosestEnemy(user, range);
 
          return closestMonster.Match(
-            Some: monster =>
+            Some: target =>
             {
-               this.target = monster;
-               return ItemUseResult.Used;
-            },
-            None: () =>
-            {
-               MessageService.Current.PostMessage("No creature close enough to " + verb + ".");
-               return ItemUseResult.NotUsed;
-            });
-      }
+               var behavior = behaviorFactory();
+               var controller = target.GetComponent<BehaviorComponent>();
+               controller.PushBehavior(behavior);
+               MessageService.Current.PostMessage(beginMessage(target), RogueColors.LightGreen);
 
-      public IItemUsageTemplate Template
-      {
-         get { throw new NotImplementedException(); }
+               var setTimer = new PopBehaviorTimer(this.duration, target);
+               var messageTimer = new MessageTimer(this.duration, endMessage(target), RogueColors.Red);
+
+               target.AttachTimer(setTimer);
+               target.AttachTimer(messageTimer);
+
+               return true;
+            },
+            None: () => false);
       }
 
       public ActionRequirement Requirements => NoRequirement.None;

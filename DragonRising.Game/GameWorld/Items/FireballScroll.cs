@@ -13,12 +13,10 @@ using LanguageExt.Prelude;
 
 namespace DragonRising.Items
 {
-   class FireballScroll : Component, IItemUsage
+   class FireballScroll : IItemUsage
    {
       int damage;
       int range;
-
-      Loc target = Loc.Zero;
 
       public FireballScroll(int damage = 12, int radius = 3)
       {
@@ -26,38 +24,29 @@ namespace DragonRising.Items
          this.range = radius;
       }
 
-      public void Use(Entity user)
+      public bool Use(Entity user, Some<RequirementFulfillment> fulfillment)
       {
-         var rangeSquared = range * range;
-
-         var entitiesToDamage = Scene.CurrentScene.EntityStore.AllCreaturesSpecialFirst
-            .Where(entity => entity.HasComponent<CombatantComponent>() && (entity.Location - target).LengthSquared <= rangeSquared)
-            .ToList();
-
-         foreach (var entity in entitiesToDamage)
-         {
-            MessageService.Current.PostMessage(string.Format("The {0} gets burned for {1} hit points", entity.Name, damage), RogueColors.Orange);
-            entity.GetComponent<CombatantComponent>().TakeDamage(damage, user);
-         }
-      }
-
-      public ItemUseResult PrepUse(Entity user, Some<RequirementFulfillment> fulfillment)
-      {
-         if(fulfillment.Value is LocationFulfillment)
+         if (fulfillment.Value is LocationFulfillment)
          {
             var locationFulfillment = (LocationFulfillment)fulfillment;
-            this.target = locationFulfillment.Location;
-            return ItemUseResult.Destroyed;
+            var target = locationFulfillment.Location;
+            var rangeSquared = range * range;
+
+            var entitiesToDamage = Scene.CurrentScene.EntityStore.AllCreaturesSpecialFirst
+               .Where(entity => entity.HasComponent<CombatantComponent>() && (entity.Location - target).LengthSquared <= rangeSquared)
+               .ToList();
+
+            foreach (var entity in entitiesToDamage)
+            {
+               MessageService.Current.PostMessage(string.Format("The {0} gets burned for {1} hit points", entity.Name, damage), RogueColors.Orange);
+               entity.GetComponent<CombatantComponent>().TakeDamage(damage, user);
+            }
+            return true;
          }
          else
          {
-            return ItemUseResult.NotUsed;
+            return false;
          }
-      }
-
-      public IItemUsageTemplate Template
-      {
-         get { throw new NotImplementedException(); }
       }
 
       public ActionRequirement Requirements => new LocationRequirement(isLimitedToFoV: true);

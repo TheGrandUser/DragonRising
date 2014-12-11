@@ -32,6 +32,7 @@ namespace DraconicEngine.GameWorld.Alligences
       }
    }
 
+   [Serializable]
    public class SimpleAlligenceManager : IAlligenceManager
    {
       Dictionary<string, Alligence> alligences = new Dictionary<string, Alligence>();
