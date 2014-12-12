@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.GameWorld.Behaviors;
+using System.Diagnostics;
 
 namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
@@ -56,6 +57,25 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
       public void RemoveBehavior(IBehavior behavior)
       {
          this.behaviors.Remove(behavior);
+      }
+   }
+
+   public class BehaviorComponentTemplate : ComponentTemplate
+   {
+      Type behaviorType;
+
+      public BehaviorComponentTemplate(Type behaviorType)
+      {
+         this.behaviorType = behaviorType;
+      }
+
+      public override Type ComponentType => typeof(BehaviorComponent);
+
+      public override Component CreateComponent()
+      {
+         var behavior = (IBehavior)behaviorType.Assembly.CreateInstance(behaviorType.FullName);
+         Debug.Assert(behavior != null, "No behavior!");
+         return new BehaviorComponent(behavior);
       }
    }
 }

@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GameWorld\Systems\" />
+    <Folder Include="Generators\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -79,7 +79,7 @@ namespace DraconicEngine.GameWorld.Behaviors
          return RogueAction.Idle;
       }
 
-      public Item SelectInventoryItem(Entity owner) => null;
+      public Entity SelectInventoryItem(Entity owner) => null;
 
       public Loc? SelectTargetLocation(Entity owner, bool isLimitedToFoV = true) => null;
 

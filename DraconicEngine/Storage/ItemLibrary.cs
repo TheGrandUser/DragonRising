@@ -1,4 +1,5 @@
-﻿using DraconicEngine.Items;
+﻿using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,20 +8,10 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.Storage
 {
-   public class ItemLibrary
+   public interface IItemLibrary
    {
-      Dictionary<string, ItemTemplate> templates = new Dictionary<string, ItemTemplate>(StringComparer.InvariantCultureIgnoreCase);
-
-      public bool Contains(string name)
-      {
-         return templates.ContainsKey(name);
-      }
-
-      public ItemTemplate this[string name] => this.templates[name];
-
-      public void Add(ItemTemplate itemTemplate)
-      {
-         this.templates.Add(itemTemplate.Name, itemTemplate);
-      }
+      void Add(EntityTemplate itemTemplate);
+      EntityTemplate Get(string name);
+      bool Contains(string name);
    }
 }

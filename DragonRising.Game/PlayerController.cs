@@ -172,8 +172,8 @@ namespace DragonRising
             if (itemRequirement.NeedsItemsFulfillment)
             {
                RequirementFulfillment itemFulfillment =
-                  item.Template.Usage.Requirements is NoRequirement ? NoFulfillment.None :
-                  await GetFulfillmentAsync(item.Template.Usage.Requirements);
+                  item.GetComponent<ItemComponent>().Template.Usage.Requirements is NoRequirement ? NoFulfillment.None :
+                  await GetFulfillmentAsync(item.GetComponent<ItemComponent>().Template.Usage.Requirements);
 
                return new ItemFulfillment(item, itemFulfillment);
             }
@@ -318,7 +318,7 @@ namespace DragonRising
          }
       }
 
-      public async Task<Item> SelectInventoryItem(ItemRequirement requirement)
+      public async Task<Entity> SelectInventoryItem(ItemRequirement requirement)
       {
          var inventory = this.PlayerCreature.GetComponent<InventoryComponent>();
          var inventoryScreen = new InventoryScreen(inventory, requirement.Message);

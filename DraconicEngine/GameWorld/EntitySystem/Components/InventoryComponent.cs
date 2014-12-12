@@ -1,6 +1,7 @@
 ﻿using DraconicEngine.Items;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,14 +10,15 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
    public class InventoryComponent : Component
    {
-      public InventoryComponent(int capacity)
+      public InventoryComponent(InventoryComponentTemplate template)
       {
-         this.Capacity = capacity;
+         this.Template = template;
       }
 
-      public bool TryPickUp(Item item)
+      public bool TryPickUp(Entity item)
       {
-         if (this.Items.Count >= this.Capacity)
+         if (!item.HasComponent<ItemComponent>()) { return false; } // throw?
+         if (this.Items.Count >= this.Template.Capacity)
          {
             return false;
          }
@@ -26,8 +28,25 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
          return true;
       }
 
-      public List<Item> Items { get; } = new List<Item>();
+      public List<Entity> Items { get; } = new List<Entity>();
 
+      public InventoryComponentTemplate Template { get; set; }
+   }
+
+   public class InventoryComponentTemplate : ComponentTemplate
+   {
       public int Capacity { get; set; }
+
+      public override Type ComponentType => typeof(InventoryComponent);
+
+      public InventoryComponentTemplate(int capacity)
+      {
+         this.Capacity = capacity;
+      }
+
+      public override Component CreateComponent()
+      {
+         return new InventoryComponent(this);
+      }
    }
 }

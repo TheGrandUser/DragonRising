@@ -30,7 +30,7 @@ namespace DraconicEngine.Terminals.Input.Commands
          if (itemToPick != null)
          {
             var inventory = executer.GetComponentOrDefault<InventoryComponent>();
-            if (inventory != null && inventory.Capacity > inventory.Items.Count)
+            if (inventory != null && inventory.Template.Capacity > inventory.Items.Count)
             {
                MessageService.Current.PostMessage("You picked up a " + itemToPick.Name + ".", RogueColors.Green);
                return new PickUpItemAction(itemToPick);

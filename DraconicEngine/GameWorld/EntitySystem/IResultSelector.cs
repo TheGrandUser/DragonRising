@@ -1,4 +1,5 @@
-﻿using DraconicEngine.Items;
+﻿using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.Items;
 using DraconicEngine.Powers;
 using System;
 using System.Collections.Generic;

@@ -15,9 +15,9 @@ namespace DraconicEngine.GameWorld.Actions
    public class ManipulateEntityAction : RogueAction
    {
       Entity target;
-      Item itemToUse;
+      Entity itemToUse;
 
-      public ManipulateEntityAction(Entity target, Item item = null)
+      public ManipulateEntityAction(Entity target, Entity item = null)
       {
          Contract.Requires(target != null);
          this.target = target;

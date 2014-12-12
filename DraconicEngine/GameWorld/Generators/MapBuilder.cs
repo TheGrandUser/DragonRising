@@ -4,15 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
+using DraconicEngine.Storage;
 
 namespace DraconicEngine.Generators
 {
    public class MapBuilder
    {
+      static int clearId = 1;
+
       private Tile[,] map;
       public MapBuilder(Scene scene)
       {
          this.map = scene.Map;
+
+
       }
 
       public void CreateRoom(TerminalRect room)
@@ -21,8 +26,7 @@ namespace DraconicEngine.Generators
          {
             foreach (var x in Enumerable.Range(room.X + 1, room.Width - 1))
             {
-               map[x, y].BlocksMovement = false;
-               map[x, y].BlocksSight = false;
+               map[x, y].TileTypeId = clearId;
             }
          }
       }
@@ -31,8 +35,7 @@ namespace DraconicEngine.Generators
       {
          foreach (var x in Enumerable.Range(Math.Min(x1, x2), Math.Abs(x2 - x1) + 1))
          {
-            map[x, y].BlocksMovement = false;
-            map[x, y].BlocksSight = false;
+            map[x, y].TileTypeId = clearId;
          }
       }
 
@@ -40,8 +43,7 @@ namespace DraconicEngine.Generators
       {
          foreach (var y in Enumerable.Range(Math.Min(y1, y2), Math.Abs(y2 - y1) + 1))
          {
-            map[x, y].BlocksMovement = false;
-            map[x, y].BlocksSight = false;
+            map[x, y].TileTypeId = clearId;
          }
       }
    }

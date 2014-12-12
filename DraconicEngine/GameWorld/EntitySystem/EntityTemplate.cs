@@ -6,24 +6,45 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.EntitySystem
 {
-   public abstract class EntityTemplate
+   [Serializable]
+   public class EntityTemplate
    {
+      public int Id { get; set; }
       public string Name { get; set; }
+      public Character Character { get; set; }
 
-      List<ComponentTemplate> componentTemplatess = new List<ComponentTemplate>();
+      public bool Blocks { get; set; }
+
+      public EntityTemplate()
+      {
+      }
+
+      public EntityTemplate(string name, Character character, params ComponentTemplate[] componentTemplates)
+      {
+         this.Name = name;
+         this.Character = character;
+         this.componentTemplates = componentTemplates.ToList();
+      }
+
+      public EntityTemplate(string name, Glyph glyph, RogueColor color, params ComponentTemplate[] componentTemplates)
+      {
+         this.Name = name;
+         this.Character = new Character(glyph, color);
+         this.componentTemplates = componentTemplates.ToList();
+      }
+
+      List<ComponentTemplate> componentTemplates = new List<ComponentTemplate>();
 
       public void AddComponent(ComponentTemplate component)
       {
-         this.componentTemplatess.Add(component);
+         this.componentTemplates.Add(component);
       }
-
-      protected abstract Entity CreateEntityCore();
 
       public Entity Create()
       {
-         var entity = CreateEntityCore();
+         var entity = new Entity(this.Name, this);
 
-         foreach (var template in this.componentTemplatess)
+         foreach (var template in this.componentTemplates)
          {
             var type = template.ComponentType;
 

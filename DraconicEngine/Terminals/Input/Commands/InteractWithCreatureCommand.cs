@@ -25,7 +25,7 @@ namespace DraconicEngine.Terminals.Input.Commands
       {
          var other = (EntityFulfillment)fulfillment;
 
-         if (executer.IsEnemy(other.Entity))
+         if (executer.IsEnemy(other.Entity) && other.Entity.HasComponent<CombatantComponent>())
          {
             return new AlternateCommmand(new AttackEntityCommand(), new EntityFulfillment(other.Entity));
          }

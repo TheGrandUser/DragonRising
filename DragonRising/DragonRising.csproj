@@ -118,6 +118,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Libraries\SimpleEntityLibrary.cs" />
+    <Compile Include="Libraries\SimpleItemLibrary.cs" />
+    <Compile Include="Libraries\SimplePowerLibrary.cs" />
+    <Compile Include="Libraries\SimpleTileLibrary.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -167,6 +171,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ConcurrentHashtable.License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Repositories\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

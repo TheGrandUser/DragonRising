@@ -49,7 +49,8 @@ namespace DragonRising.Services
          MessageService.Current.PostMessage(npc.Name + " is dead!", RogueColors.Orange);
          npc.Character = new Character(Glyph.Percent, RogueColors.DarkRed);
          npc.Blocks = false;
-         npc.RemoveComponent<CombatantComponent>();
+         //npc.RemoveComponent<CombatantComponent>();
+         //npc.RemoveComponent<CreatureComponent>();
          npc.GetComponent<BehaviorComponent>().ClearBehaviors();
          npc.Name = "remains of " + npc.Name;
 

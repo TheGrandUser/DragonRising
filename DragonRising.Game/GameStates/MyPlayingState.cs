@@ -55,26 +55,25 @@ namespace DragonRising.GameStates
 
          var generator = new DungeonGenerator(new GreenskinsGenerator(), new StandardItemGenerator());
          var startPoint = generator.MakeMap(scene);
+         var playerAlligence = new Alligence() { Name = "Player" };
 
-         Entity player = new Entity("Player", Glyph.At, RogueColors.White)
+         var playerTemplate = new EntityTemplate("Player", Glyph.At, RogueColors.White,
+            new CombatantComponentTemplate(hp: 30, defense: 2, power: 5),
+            new CreatureComponentTemplate(playerAlligence) { VisionRadius = 6 },
+            new DecisionComponentTemplate(),
+            new InventoryComponentTemplate(26))
          {
-            Location = startPoint,
-            Blocks = true,
+            Blocks = true
          };
-         player.AddComponent(new CreatureComponent()
-            {
-               Alligence = new Alligence() { Name = "Player" },
-               VisionRadius = 6,
-            });
 
-         player.AddComponent(new CombatantComponent(hp: 30, defense: 2, power: 5));
-         player.AddComponent(new DecisionComponent());
-         var inventory = new InventoryComponent(26);
-         player.AddComponent(inventory);
+         Entity player = playerTemplate.Create();
+         player.Location = startPoint;
 
-         inventory.Items.Add(Library.Items[TempConstants.ScrollOfLightningBolt].Create());
-         inventory.Items.Add(Library.Items[TempConstants.ScrollOfFireball].Create());
-         inventory.Items.Add(Library.Items[TempConstants.ScrollOfConfusion].Create());
+         var inventory = player.GetComponent<InventoryComponent>();
+
+         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfLightningBolt).Create());
+         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfFireball).Create());
+         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfConfusion).Create());
 
          var playingState = new MyPlayingState(scene, player);
 

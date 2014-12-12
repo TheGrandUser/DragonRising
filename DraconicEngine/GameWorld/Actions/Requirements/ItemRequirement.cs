@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageExt;
 using LanguageExt.Prelude;
+using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.GameWorld.EntitySystem.Components;
 
 namespace DraconicEngine.GameWorld.Actions.Requirements
 {
@@ -26,7 +28,7 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
          {
             if (this.NeedsItemsFulfillment)
             {
-               return itemFulfillment.Item.Value.Template.Usage.Requirements.MeetsRequirement(itemFulfillment.ItemsFulfillments);
+               return itemFulfillment.Item.Value.GetComponentOrDefault<ItemComponent>()?.Template.Usage.Requirements.MeetsRequirement(itemFulfillment.ItemsFulfillments) ?? false;
             }
             else
             {
@@ -39,9 +41,9 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
 
    public class ItemFulfillment : RequirementFulfillment
    {
-      public Some<Item> Item { get; }
+      public Some<Entity> Item { get; }
       public Some<RequirementFulfillment> ItemsFulfillments { get; }
-      public ItemFulfillment(Some<Item> item, Some<RequirementFulfillment> itemsRequirements)
+      public ItemFulfillment(Some<Entity> item, Some<RequirementFulfillment> itemsRequirements)
       {
          this.Item = item;
          this.ItemsFulfillments = itemsRequirements;

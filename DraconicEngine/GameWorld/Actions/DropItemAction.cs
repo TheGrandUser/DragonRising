@@ -14,8 +14,8 @@ namespace DraconicEngine.GameWorld.Actions
 {
    public class DropItemAction : RogueAction
    {
-      Item item;
-      public DropItemAction(Item item)
+      Entity item;
+      public DropItemAction(Entity item)
       {
          Contract.Requires(item != null);
          this.item = item;
@@ -26,9 +26,9 @@ namespace DraconicEngine.GameWorld.Actions
          var scene = Scene.CurrentScene;
 
          executer.As<InventoryComponent>(inventory => inventory.Items.Remove(this.item));
-         var itemEntity = new Entity(this.item.Template.Name, this.item.Template.Glyph, this.item.Template.Color);
-         itemEntity.Location = executer.Location;
-         scene.EntityStore.Add(itemEntity);
+         
+         this.item.Location = executer.Location;
+         scene.EntityStore.Add(this.item);
       }
    }
 }

@@ -79,7 +79,7 @@ namespace DragonRising.Generators
       {
          DoGeneration(scene, room, this.populationGenerator.GenerarateMonster, MaxRoomMonsters);
 
-         DoGeneration(scene, room, this.itemGenerator.GenerateEntityItem, MaxRoomItems);
+         DoGeneration(scene, room, this.itemGenerator.GenerateItem, MaxRoomItems);
       }
 
       private void DoGeneration<TEntity>(Scene scene, TerminalRect room, Func<TEntity> generator, int maxCount)

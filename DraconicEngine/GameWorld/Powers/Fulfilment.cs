@@ -32,7 +32,7 @@ namespace DraconicEngine.Powers
    {
       public new RequirementItem Requirement { get { return (RequirementItem)base.Requirement; } set { base.Requirement = value; } }
       // Value
-      public Item Value { get; private set; }
+      public Entity Value { get; private set; }
    }
 
    public class FulfilmentLocation : Fulfilment

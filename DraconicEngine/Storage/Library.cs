@@ -8,8 +8,8 @@ namespace DraconicEngine.Storage
 {
    public static class Library
    {
-      static ItemLibrary currentItemLibrary;
-      public static ItemLibrary Items => currentItemLibrary;
-      public static void SetItemLibrary(ItemLibrary library) => currentItemLibrary = library;
+      static IItemLibrary currentItemLibrary;
+      public static IItemLibrary Items => currentItemLibrary;
+      public static void SetItemLibrary(IItemLibrary library) => currentItemLibrary = library;
    }
 }

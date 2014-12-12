@@ -40,6 +40,10 @@ namespace DraconicEngine.GameWorld.Alligences
       static readonly Alligence neutral = new Alligence() { Name = "Neutral" };
 
       public Alligence Neutral => neutral;
+      public SimpleAlligenceManager()
+      {
+         this.Add(new Alligence() { Name = "Greenskins" });
+      }
 
       public void Add(Some<Alligence> alligence)
       {

@@ -31,7 +31,7 @@ namespace DraconicEngine.GameWorld.Actions
 
          var itemComponent = itemToPick.GetComponent<ItemComponent>();
 
-         if (inventory.TryPickUp(itemComponent.Item))
+         if (inventory.TryPickUp(itemToPick))
          {
             scene.EntityStore.Remove(itemToPick);
          }

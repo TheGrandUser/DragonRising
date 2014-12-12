@@ -11,7 +11,7 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
    {
       public bool RequiresItem { get; set; }
 
-      public bool Use(Item itemToUse)
+      public bool Use(Entity itemToUse)
       {
          return false;
       }

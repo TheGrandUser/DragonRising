@@ -10,7 +10,6 @@ namespace DraconicEngine.Generators
 {
    public interface IItemGenerator
    {
-      Item GenerateItem();
-      Entity GenerateEntityItem();
+      Entity GenerateItem();
    }
 }

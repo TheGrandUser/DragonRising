@@ -95,6 +95,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       }
    }
 
+   [Serializable]
    public abstract class ComponentTemplate
    {
       public EntityTemplate Template { get; set; }

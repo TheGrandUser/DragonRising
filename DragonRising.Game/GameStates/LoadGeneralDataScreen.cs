@@ -14,6 +14,8 @@ using DraconicEngine.GameWorld.Alligences;
 using DragonRising.TempConstants;
 using LanguageExt;
 using LanguageExt.Prelude;
+using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.GameWorld.EntitySystem.Components;
 
 namespace DragonRising.GameStates
 {
@@ -100,14 +102,14 @@ namespace DragonRising.GameStates
       public string Message => "Loading Item...";
       public Task Load()
       {
-         var itemLibrary = new ItemLibrary();
+         var itemLibrary = Library.Items;
 
-         itemLibrary.Add(new ItemTemplate(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet) { Usage = new HealingItem() });
-         itemLibrary.Add(new ItemTemplate(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow) { Usage = new LightningScroll() });
-         itemLibrary.Add(new ItemTemplate(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow) { Usage = new FireballScroll() });
-         itemLibrary.Add(new ItemTemplate(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet) { Usage = BehaviorReplacementItem.CreateConfusionItem() });
+         itemLibrary.Add(new EntityTemplate(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet, new ItemComponentTemplate() { Usage = new HealingItem() }));
+         itemLibrary.Add(new EntityTemplate(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow, new ItemComponentTemplate() { Usage = new LightningScroll() }));
+         itemLibrary.Add(new EntityTemplate(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow, new ItemComponentTemplate() { Usage = new FireballScroll() }));
+         itemLibrary.Add(new EntityTemplate(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet, new ItemComponentTemplate() { Usage = BehaviorReplacementItem.CreateConfusionItem() }));
 
-         Library.SetItemLibrary(itemLibrary);
+         //Library.SetItemLibrary(itemLibrary);
 
          return Task.Delay(TimeSpan.FromSeconds(0.5));
       }
@@ -118,11 +120,11 @@ namespace DragonRising.GameStates
       public string Message => "Loading Alligences...";
       public Task Load()
       {
-         var manager = new SimpleAlligenceManager();
+         var manager = AlligenceManager.Current;//new SimpleAlligenceManager();
          manager.Add(new Alligence() { Name = "Player" });
-         manager.Add(new Alligence() { Name = "Greenskins" });
+         //manager.Add(new Alligence() { Name = "Greenskins" });
 
-         AlligenceManager.SetAlligenceManager(manager);
+         //AlligenceManager.SetAlligenceManager(manager);
 
          return Task.Delay(TimeSpan.FromSeconds(0.5));
       }

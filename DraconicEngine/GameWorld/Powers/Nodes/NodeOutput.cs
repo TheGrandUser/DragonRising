@@ -40,7 +40,7 @@ namespace DraconicEngine.Powers.Nodes
    {
    }
 
-   public class ItemNodeOutput : NodeOutput<Item>
+   public class ItemNodeOutput : NodeOutput<Entity>
    {
    }
 

@@ -1,5 +1,6 @@
 ﻿using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.Storage;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
@@ -12,18 +13,22 @@ namespace DraconicEngine
    [Serializable]
    public sealed class Scene
    {
+      public static int VoidId;
       Entity focusEntity = null;
-      Tile beyondTheEdge = new Tile(true);
+      Tile beyondTheEdge;
       bool recomputeFov = true;
 
       public Scene(int mapWidth, int mapHeight)
       {
+         this.beyondTheEdge = new Tile(TileLibrary.Current.VoidId);
+         var wallId = TileLibrary.Current.BasicWallId;
+
          this.Map = new Tile[mapWidth, mapHeight];
          for (int row = 0; row < mapHeight; row++)
          {
             for (int col = 0; col < mapWidth; col++)
             {
-               Map[col, row] = new Tile(true);
+               Map[col, row] = new Tile(wallId);
             }
          }
       }
@@ -42,7 +47,7 @@ namespace DraconicEngine
             (x, y) =>
             {
                var tile = GetTileSafe(x, y);
-               if (tile != beyondTheEdge)
+               if (tile.TileTypeId != VoidId)
                {
                   tile.Visibility = TileVisibility.Seen;
                }
@@ -93,10 +98,10 @@ namespace DraconicEngine
          }
 
          var radius = (this.FocusEntity.GetComponentOrDefault<CreatureComponent>()?.VisionRadius ?? 1) + 1;
-         var xStart = Math.Max(this.FocusEntity.X - radius, 0);
-         var yStart = Math.Max(this.FocusEntity.Y - radius, 0);
-         var xEnd = Math.Min(this.FocusEntity.X + radius, this.MapWidth);
-         var yEnd = Math.Min(this.FocusEntity.Y + radius, this.MapHeight);
+         var xStart = Math.Max(this.FocusEntity.X - radius - 1, 0);
+         var yStart = Math.Max(this.FocusEntity.Y - radius - 1, 0);
+         var xEnd = Math.Min(this.FocusEntity.X + radius + 1, this.MapWidth);
+         var yEnd = Math.Min(this.FocusEntity.Y + radius + 1, this.MapHeight);
 
          for (int x = xStart; x < xEnd; x++)
          {
@@ -176,15 +181,13 @@ namespace DraconicEngine
       {
          var width = this.MapWidth;
          var height = this.MapHeight;
+         var wallId = TileLibrary.Current.BasicWallId;
 
          for (int column = 0; column < width; column++)
          {
             for (int row = 0; row < height; row++)
             {
-               var tile = Map[column, row];
-               tile.BlocksMovement = true;
-               tile.BlocksSight = true;
-               tile.Visibility = TileVisibility.NotSeen;
+               Map[column, row] = new Tile(wallId);
             }
          }
       }

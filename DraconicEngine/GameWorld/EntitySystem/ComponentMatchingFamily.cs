@@ -1,6 +1,7 @@
 ﻿using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -30,8 +31,8 @@ namespace DraconicEngine.GameWorld.EntitySystem
          var nodeType = typeof(TNode);
 
          var nodeVariables = nodeType.GetProperties()
-            .Where(pi => pi.PropertyType.GetInterface(nameof(Component)) != null);
-
+            .Where(pi => typeof(Component).IsAssignableFrom(pi.PropertyType));
+         Debug.Assert(nodeVariables.Any(), "No node variables");
          foreach (var variable in nodeVariables)
          {
             componentFields[variable.PropertyType] = variable;
@@ -77,7 +78,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       {
          if (!entities.ContainsKey(entity))
          {
-            if (componentFields.Keys.Any(componentType => !entity.HasComponent(componentType)))
+            if (!componentFields.Keys.All(componentType => entity.HasComponent(componentType)))
             {
                return;
             }

@@ -10,10 +10,10 @@ namespace DraconicEngine.Widgets
 {
    public class SceneWidget : Widget
    {
-      Character darkWall = new Character(Glyph.Space, RogueColors.White, new RogueColor(0, 0, 100));
-      Character lightWall = new Character(Glyph.Space, RogueColors.White, new RogueColor(130, 110, 50));
-      Character darkGround = new Character(Glyph.Space, RogueColors.White, new RogueColor(50, 50, 150));
-      Character lightGround = new Character(Glyph.Space, RogueColors.White, new RogueColor(200, 180, 50));
+      //Character darkWall = new Character(Glyph.Space, RogueColors.White, new RogueColor(0, 0, 100));
+      //Character lightWall = new Character(Glyph.Space, RogueColors.White, new RogueColor(130, 110, 50));
+      //Character darkGround = new Character(Glyph.Space, RogueColors.White, new RogueColor(50, 50, 150));
+      //Character lightGround = new Character(Glyph.Space, RogueColors.White, new RogueColor(200, 180, 50));
 
       Scene scene;
       SceneView sceneView;
@@ -40,15 +40,15 @@ namespace DraconicEngine.Widgets
             foreach (var col in Enumerable.Range(colStart, colCount))
             {
                var tile = this.scene.Map[col, row];
-
+               var tileType = tile.GetTileType();
                if (tile.Visibility == TileVisibility.Explored)
                {
-                  var display = tile.BlocksMovement ? darkWall : darkGround;
+                  var display = tileType.Explored;
                   this.Panel.Set(col - this.sceneView.ViewOffset.X, row - this.sceneView.ViewOffset.Y, display);
                }
                else if (tile.Visibility == TileVisibility.Seen)
                {
-                  var display = tile.BlocksMovement ? lightWall : lightGround;
+                  var display = tileType.InView;
                   this.Panel.Set(col - this.sceneView.ViewOffset.X, row - this.sceneView.ViewOffset.Y, display);
                }
             }

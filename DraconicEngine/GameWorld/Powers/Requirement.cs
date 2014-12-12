@@ -87,7 +87,7 @@ namespace DraconicEngine.Powers
       // Entity Type
       // - Enemies or allies, same creature type, or specific type (such as animals)
 
-      public FulfilmentItem Fulfil(Item value, ImmutableList<Fulfilment> dependantFulfilments)
+      public FulfilmentItem Fulfil(Entity value, ImmutableList<Fulfilment> dependantFulfilments)
       {
          throw new NotImplementedException();
       }

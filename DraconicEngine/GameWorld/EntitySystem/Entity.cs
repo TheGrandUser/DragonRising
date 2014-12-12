@@ -2,6 +2,7 @@
 using DraconicEngine.Terminals;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Text;
@@ -9,8 +10,11 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.EntitySystem
 {
+   [DebuggerDisplay("Entity {Name}")]
    public class Entity
    {
+      public EntityTemplate Template { get; set; }
+
       Dictionary<Type, Component> components = new Dictionary<Type, Component>();
       public IEnumerable<Component> Components => this.components.Values;
 
@@ -29,11 +33,13 @@ namespace DraconicEngine.GameWorld.EntitySystem
 
       public bool IsDisposed { get { return false; } }
 
-      public Entity(string name, Glyph glyph, RogueColor color, bool blocks = false)
+      public Entity(string name, EntityTemplate template)
       {
          this.Name = name;
-         this.Character = new Character(glyph, color);
-         this.Blocks = blocks;
+         this.Template = template;
+
+         this.Character = template.Character;
+         this.Blocks = template.Blocks;
       }
       public IObservable<Component> ComponentAdded => componentAdded;
       public IObservable<Component> ComponentRemoved => componentRemoved;
@@ -74,6 +80,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       public void AddComponent(Type type, Component component)
       {
          components.Add(type, component);
+         component.Owner = this;
 
          componentAdded.OnNext(component);
 
@@ -83,7 +90,6 @@ namespace DraconicEngine.GameWorld.EntitySystem
             this.AddComponentAlias(type, compType);
          }
 
-         component.Owner = this;
          OnComponentAdded(component);
       }
 

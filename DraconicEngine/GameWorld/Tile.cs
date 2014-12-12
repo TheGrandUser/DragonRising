@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DraconicEngine.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,22 +18,30 @@ namespace DraconicEngine
    [Serializable]
    public class Tile
    {
-      public bool BlocksMovement { get; set; }
-      public bool BlocksSight { get; set; }
+      public TileType GetTileType() { return TileLibrary.Current.GetById(TileTypeId); }
+      public int TileTypeId { get; set; }
       public TileVisibility Visibility { get; set; }
 
-      public Tile(bool blocksMovement)
+      public bool BlocksSight => GetTileType().BlocksSight;
+      public bool BlocksMovement => GetTileType().BlocksMovement;
+
+      public Tile(int tileId)
       {
-         this.BlocksMovement = blocksMovement;
-         this.BlocksSight = this.BlocksMovement;
+         this.TileTypeId = tileId;
          this.Visibility = TileVisibility.NotSeen;
       }
 
-      public Tile(bool blocksMovement, bool blocksSight)
-      {
-         this.BlocksMovement = blocksMovement;
-         this.BlocksSight = blocksSight;
-         this.Visibility = TileVisibility.NotSeen;
-      }
+   }
+
+   [Serializable]
+   public class TileType
+   {
+      public int Id { get; set; }
+      public string Name { get; set; }
+      public string Description { get; set; } = string.Empty;
+      public Character InView { get; set; }
+      public Character Explored { get; set; }
+      public bool BlocksMovement { get; set; }
+      public bool BlocksSight { get; set; }
    }
 }

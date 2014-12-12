@@ -18,7 +18,7 @@ namespace DraconicEngine.GameWorld.Behaviors
    {
       RogueAction PlanTurn(Entity owner);
 
-      Item SelectInventoryItem(Entity owner);
+      Entity SelectInventoryItem(Entity owner);
 
       Loc? SelectTargetLocation(Entity owner, bool isLimitedToFoV = true);
 

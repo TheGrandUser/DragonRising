@@ -7,15 +7,18 @@ using DraconicEngine.GameWorld.EntitySystem;
 
 namespace DraconicEngine.Storage
 {
-   public class EntityLibrary
+   public interface IEntityLibrary
    {
-      Dictionary<string, EntityTemplate> templates = new Dictionary<string, EntityTemplate>();
+      Dictionary<string, EntityTemplate> Templates { get; }
 
-      public Dictionary<string, EntityTemplate> Templates { get { return templates; } }
+      EntityTemplate Get(string templateName);
+   }
 
-      public EntityLibrary()
-      {
+   public static class EntityLibrary
+   {
+      static IEntityLibrary current;
+      public static IEntityLibrary Current => current;
 
-      }
+      public static void SetLibrary(IEntityLibrary library) => current = library;
    }
 }

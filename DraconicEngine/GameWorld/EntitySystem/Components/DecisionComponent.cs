@@ -14,4 +14,11 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 
       public RogueAction ActionToDo { get { return actionToDo; } set { actionToDo = value; } }
    }
+
+   public class DecisionComponentTemplate : ComponentTemplate
+   {
+      public override Type ComponentType => typeof(DecisionComponent);
+
+      public override Component CreateComponent() => new DecisionComponent();
+   }
 }

@@ -9,4 +9,9 @@ namespace DraconicEngine.Storage
    public class PowerLibrary
    {
    }
+
+   public interface IPowerLibrary
+   {
+
+   }
 }

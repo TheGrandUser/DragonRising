@@ -11,16 +11,18 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
    public class CombatantComponent : Component
    {
-      public int MaxHP { get; set; }
+      public CombatantComponentTemplate Template { get; set; }
       public int HP { get; set; }
-      public int Defense { get; set; }
-      public int Power { get; set; }
+      public int MaxHP => Template.MaxHP;
+      public int Power => Template.Power;
+      public int Defense => Template.Defense;
 
-      public CombatantComponent(int hp, int defense, int power)
+      public bool IsAlive { get; set; } = true;
+
+      public CombatantComponent(CombatantComponentTemplate template)
       {
-         this.MaxHP = this.HP = hp;
-         this.Defense = defense;
-         this.Power = power;
+         this.Template = template;
+         this.HP = template.MaxHP;
       }
 
       public void TakeDamage(int damage, Entity from)
@@ -31,6 +33,8 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 
             if (this.HP <= 0)
             {
+               this.IsAlive = false;
+               this.Owner.Blocks = false;
                Scene.CurrentScene.EntityStore.KillEntity(this.Owner);
                var eventAggregator = ServiceLocator.Current.GetInstance<IEventAggregator>();
                var creatureKilledEvent = eventAggregator.GetEvent<CreatureKilledEvent>();
@@ -42,6 +46,26 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
       public void Heal(int amount)
       {
          this.HP = Math.Min(this.HP + amount, this.MaxHP);
+      }
+   }
+
+   public class CombatantComponentTemplate : ComponentTemplate
+   {
+      public CombatantComponentTemplate() { }
+      public CombatantComponentTemplate(int hp, int defense, int power)
+      {
+         this.MaxHP = hp;
+         this.Defense = defense;
+         this.Power = power;
+      }
+      public int MaxHP { get; set; }
+      public int Defense { get; set; }
+      public int Power { get; set; }
+      public override Type ComponentType => typeof(CombatantComponent);
+
+      public override Component CreateComponent()
+      {
+         return new CombatantComponent(this);
       }
    }
 }

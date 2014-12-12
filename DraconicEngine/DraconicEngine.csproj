@@ -155,10 +155,7 @@
     <Compile Include="GameWorld\EntitySystem\Components\IComponent.cs" />
     <Compile Include="GameWorld\EntitySystem\IFamily.cs" />
     <Compile Include="GameWorld\Items\IItemUsage.cs" />
-    <Compile Include="GameWorld\Items\IItemUsageTemplate.cs" />
     <Compile Include="GameWorld\EntitySystem\IResultSelector.cs" />
-    <Compile Include="GameWorld\Items\Item.cs" />
-    <Compile Include="GameWorld\Items\ItemTemplate.cs" />
     <Compile Include="GameWorld\Items\PowerItemUsageTemplate.cs" />
     <Compile Include="GameWorld\EntityStore.cs" />
     <Compile Include="GameWorld\EntitySystem\Nodes\CreatureNode.cs" />

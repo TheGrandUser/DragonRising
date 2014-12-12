@@ -6,7 +6,22 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.Storage
 {
-   public class TileLibrary
+   public static class TileLibrary
    {
+      static ITileLibrary current;
+      public static ITileLibrary Current { get { return current; } }
+      public static void Set(ITileLibrary library)
+      {
+         current = library;
+      }
+   }
+
+   public interface ITileLibrary
+   {
+      TileType GetById(int id);
+
+      int VoidId { get; }
+      int BasicClearId { get; }
+      int BasicWallId { get; }
    }
 }
