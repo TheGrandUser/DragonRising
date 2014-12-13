@@ -1,4 +1,5 @@
-﻿using DraconicEngine.GameWorld.EntitySystem.Components;
+﻿using DraconicEngine.GameWorld.Actions;
+using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.Terminals;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,43 @@ namespace DraconicEngine.GameWorld.EntitySystem
       public Character Character { get; set; }
 
       public int X { get; set; }
+
+      public T GetActionResolver<T>()
+         where T : IActionResolver
+      {
+
+         throw new NotImplementedException();
+      }
+
+      static Dictionary<Type, IActionResolver> defaultResolvers = new Dictionary<Type, IActionResolver>();
+
+      static T GetDefaultResolver<T>()
+         where T : class, IActionResolver
+      {
+         if (defaultResolvers.ContainsKey(typeof(T)))
+         {
+            return defaultResolvers[typeof(T)] as T;
+         }
+         var assembly = typeof(T).Assembly;
+         var defaultResolverTypes = assembly.GetTypes().Where(t => typeof(T).IsAssignableFrom(t) &&
+         t.CustomAttributes.Any(cad => cad.AttributeType == typeof(DefaultResolverAttribute))).ToList();
+
+         if (defaultResolverTypes.Count > 1)
+         {
+            throw new Exception("Too many defaults");
+         }
+         else if (defaultResolverTypes.Count < 1)
+         {
+            throw new Exception("No default");
+         }
+
+         T resolver = assembly.CreateInstance(defaultResolverTypes.Single().FullName) as T;
+
+         defaultResolvers[typeof(T)] = resolver;
+
+         return resolver;
+      }
+
       public int Y { get; set; }
 
       public string Name { get; set; }

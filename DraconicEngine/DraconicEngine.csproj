@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="CharacterEventArgs.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="GameWorld\Actions\IActionResolver.cs" />
     <Compile Include="GameWorld\Actions\Requirements\ActionRequirement.cs" />
     <Compile Include="GameWorld\Actions\Requirements\AndMaybeRequirement.cs" />
     <Compile Include="GameWorld\Actions\Requirements\AndRequirement.cs" />

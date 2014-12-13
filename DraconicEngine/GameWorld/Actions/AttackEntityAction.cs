@@ -14,30 +14,74 @@ namespace DraconicEngine.GameWorld.Actions
 {
    public class AttackEntityAction : RogueAction
    {
-      Entity target;
+      public Entity Target { get; set; }
 
       public AttackEntityAction(Entity target)
       {
          Contract.Requires(target != null);
-         this.target = target;
+         this.Target = target;
       }
 
       public override void Do(Entity executer)
       {
-         var me = executer.GetComponent<CombatantComponent>();
-         var them = target.GetComponent<CombatantComponent>();
+         var attack = new Attack()
+         {
+            Attacker = executer,
+            Target = Target,
+            Weapon = null,
+         };
+
+         var resolver = Target.GetActionResolver<IAttackResolver>();
+      }
+   }
+
+   public class Attack
+   {
+      public Entity Target { get; set; }
+      public Entity Attacker { get; set; }
+      public Entity Weapon { get; set; }
+   }
+
+   public class AttackResult
+   {
+      public bool Negated { get; set; }
+      public int InitialDamage { get; set; }
+      public int DamageDealt { get; set; }
+   }
+
+   public interface IAttackResolver : IActionResolver
+   {
+      AttackResult Resolve(Attack attack);
+   }
+
+   [DefaultResolverAttribute(typeof(Attack))]
+   public class DefaultAttackResolver : IAttackResolver
+   {
+      public Type ActionType => typeof(Attack);
+      public Type ResultType => typeof(AttackResult);
+      public AttackResult Resolve(Attack attack)
+      {
+         var me = attack.Attacker.GetComponent<CombatantComponent>();
+         var them = attack.Target.GetComponent<CombatantComponent>();
 
          var damage = me.Power - them.Defense;
 
          if (damage > 0)
          {
-            MessageService.Current.PostMessage(executer.Name + " attacks " + target.Name + " for " + damage + " hit points.");
-            them.TakeDamage(damage, executer);
+            MessageService.Current.PostMessage(attack.Attacker.Name + " attacks " + attack.Target.Name + " for " + damage + " hit points.");
+            them.TakeDamage(damage, attack.Attacker);
          }
          else
          {
-            MessageService.Current.PostMessage(executer.Name + " attacks " + target.Name + " but it has no effect");
+            MessageService.Current.PostMessage(attack.Attacker.Name + " attacks " + attack.Target.Name + " but it has no effect");
          }
+
+         return new AttackResult()
+         {
+            InitialDamage = me.Power,
+            DamageDealt = damage,
+            Negated = damage <= 0
+         };
       }
    }
 }
