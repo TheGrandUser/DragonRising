@@ -1,6 +1,8 @@
 ﻿using DraconicEngine.GameWorld.Actions;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.Terminals;
+using LanguageExt;
+using LanguageExt.Prelude;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,27 +14,21 @@ using System.Threading.Tasks;
 namespace DraconicEngine.GameWorld.EntitySystem
 {
    [DebuggerDisplay("Entity {Name}")]
-   public class Entity
+   public sealed class Entity
    {
-      public EntityTemplate Template { get; set; }
-
       Dictionary<Type, Component> components = new Dictionary<Type, Component>();
-      public IEnumerable<Component> Components => this.components.Values;
 
+      [NonSerialized]
       Subject<Component> componentAdded = new Subject<Component>();
+      [NonSerialized]
       Subject<Component> componentRemoved = new Subject<Component>();
 
-      readonly Dictionary<Type, Type> aliases = new Dictionary<Type, Type>();
-
-      public Character Character { get; set; }
-
-      public int X { get; set; }
+      #region Action Resolvers
 
       public T GetActionResolver<T>()
-         where T : IActionResolver
+         where T : class, IActionResolver
       {
-
-         throw new NotImplementedException();
+         return GetDefaultResolver<T>();
       }
 
       static Dictionary<Type, IActionResolver> defaultResolvers = new Dictionary<Type, IActionResolver>();
@@ -64,55 +60,55 @@ namespace DraconicEngine.GameWorld.EntitySystem
          return resolver;
       }
 
-      public int Y { get; set; }
+      #endregion
+
+      public Entity()
+      {
+      }
+
+      public Entity(string name, params Component[] components)
+      {
+         this.Name = name;
+         foreach(var component in components)
+         {
+            this.components.Add(component.GetType(), component);
+            component.Owner = this;
+         }
+      }
+      public IEnumerable<Component> Components => this.components.Values;
+      public IObservable<Component> ComponentAdded => componentAdded;
+      public IObservable<Component> ComponentRemoved => componentRemoved;
 
       public string Name { get; set; }
-      public bool Blocks { get; set; }
 
       public bool IsDisposed { get { return false; } }
 
-      public Entity(string name, EntityTemplate template)
-      {
-         this.Name = name;
-         this.Template = template;
+      //public void Draw(ITerminal terminal, Vector viewOffset)
+      //{
+      //   var display = Location - viewOffset;
 
-         this.Character = template.Character;
-         this.Blocks = template.Blocks;
-      }
-      public IObservable<Component> ComponentAdded => componentAdded;
-      public IObservable<Component> ComponentRemoved => componentRemoved;
-      public void Draw(ITerminal terminal, Vector viewOffset)
-      {
-         var displayX = X - viewOffset.X;
-         var displayY = Y - viewOffset.Y;
+      //   if (display.X >= 0 && display.X < terminal.Size.X &&
+      //       display.Y >= 0 && display.Y < terminal.Size.Y)
+      //   {
+      //      terminal.Set(display, this.Character);
+      //   }
+      //}
 
-         if (displayX >= 0 && displayX < terminal.Size.X &&
-             displayY >= 0 && displayY < terminal.Size.Y)
-         {
-            terminal.Set(displayX, displayY, this.Character);
-         }
-      }
-
-      public void Clear(ITerminal terminal, Vector viewOffset)
-      {
-         var displayX = X - viewOffset.X;
-         var displayY = Y - viewOffset.Y;
-
-         if (displayX >= 0 && displayX < terminal.Size.X &&
-             displayY >= 0 && displayY < terminal.Size.Y)
-         {
-            terminal.Set(displayX, displayY, Character.Space);
-         }
-      }
+      //public Character Character
+      //{
+      //   get { return this.GetComponentOrDefault<DrawnComponent>()?.SeenCharacter ?? new Character(Glyph.Space, RogueColors.White); }
+      //   set { this.As<DrawnComponent>(comp => comp.SeenCharacter = value); }
+      //}
 
       public Loc Location
       {
-         get { return new Loc(X, Y); }
-         set
-         {
-            X = value.X;
-            Y = value.Y;
-         }
+         get { return this.GetComponentOrDefault<LocationComponent>()?.Location ?? new Loc(-1, -1); }
+         set { this.As<LocationComponent>(comp => comp.Location = value); }
+      }
+      public bool Blocks
+      {
+         get { return this.GetComponentOrDefault<LocationComponent>()?.Blocks ?? false; }
+         set { this.As<LocationComponent>(comp => comp.Blocks = value); }
       }
 
       public void AddComponent(Type type, Component component)
@@ -121,24 +117,6 @@ namespace DraconicEngine.GameWorld.EntitySystem
          component.Owner = this;
 
          componentAdded.OnNext(component);
-
-         var compType = component.GetType();
-         if (compType != type)
-         {
-            this.AddComponentAlias(type, compType);
-         }
-
-         OnComponentAdded(component);
-      }
-
-      protected virtual void OnComponentAdded(Component component) { }
-
-      public void AddComponentAlias(Type registeredType, Type alias)
-      {
-         if (this.components.ContainsKey(registeredType))
-         {
-            aliases[alias] = registeredType;
-         }
       }
 
       public bool HasComponent(Type type)
@@ -147,21 +125,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          {
             throw new ObjectDisposedException("CompositeObject");
          }
-         return this.components.ContainsKey(type) || (this.aliases.ContainsKey(type) && this.components.ContainsKey(this.aliases[type]));
-      }
-
-      protected void SetComponent<TComp>(ref TComp component, TComp value)
-         where TComp : Component
-      {
-         if (!object.Equals(component, value))
-         {
-            if (this.HasComponent(typeof(TComp)))
-            {
-               this.RemoveComponent(typeof(TComp));
-            }
-            component = value;
-            AddComponent(typeof(TComp), value);
-         }
+         return this.components.ContainsKey(type);
       }
 
       public Component GetComponent(Type type)
@@ -175,31 +139,24 @@ namespace DraconicEngine.GameWorld.EntitySystem
          {
             return component;
          }
-         else if (this.aliases.ContainsKey(type))
-         {
-            var alias = this.aliases[type];
-            if (components.TryGetValue(alias, out component))
-            {
-               return component;
-            }
-         }
 
          throw new ArgumentException(string.Format("object {0} does not have a component of type {1}", this, type.Name));
       }
 
-      public bool TryGetComponent(Type type, out Component component)
+      public Option<Component> TryGetComponent(Type type)
       {
+
          if (this.IsDisposed)
          {
             throw new ObjectDisposedException("CompositeObject");
          }
-         var result = components.TryGetValue(type, out component);
-         if (!result && this.aliases.ContainsKey(type))
+         Component component;
+         if (components.TryGetValue(type, out component))
          {
-            var alias = this.aliases[type];
-            result = components.TryGetValue(alias, out component);
+            return component;
          }
-         return result;
+
+         return None;
       }
 
       public void RemoveComponent(Type type)
@@ -211,23 +168,28 @@ namespace DraconicEngine.GameWorld.EntitySystem
          if (components.ContainsKey(type))
          {
             var component = components[type];
-            var allAliases = this.aliases.Where(kvp => kvp.Value == type).Select(kvp => kvp.Key).ToArray();
-            foreach (var alias in allAliases)
-            {
-               this.aliases.Remove(alias);
-            }
+
             components.Remove(type);
             componentRemoved.OnNext(component);
             if (component.Owner == this)
             {
                component.Owner = null;
             }
-            OnComponentRemoved(component);
          }
       }
 
-      protected virtual void OnComponentRemoved(Component component)
+      public Entity Clone(bool fresh = true)
       {
+         var newEntity = new Entity() { Name = this.Name };
+
+         foreach(var kvp in this.components)
+         {
+            var newComp = kvp.Value.Clone(fresh);
+
+            newEntity.components.Add(kvp.Key, newComp);
+         }
+
+         return newEntity;
       }
    }
 
@@ -239,19 +201,6 @@ namespace DraconicEngine.GameWorld.EntitySystem
       }
 
       public static void AddComponent<TComponent>(this Entity self, TComponent component)
-          where TComponent : Component
-      {
-         self.AddComponent(typeof(TComponent), component);
-      }
-
-      public static void AddComponent<TInterface, TComponent>(this Entity self, TComponent component)
-         where TInterface : Component
-         where TComponent : TInterface
-      {
-         self.AddComponent(typeof(TInterface), component);
-      }
-
-      public static void AddComponentAlias<TComponent>(this Entity self, TComponent component)
           where TComponent : Component
       {
          self.AddComponent(typeof(TComponent), component);
@@ -279,13 +228,14 @@ namespace DraconicEngine.GameWorld.EntitySystem
          return default(T);
       }
 
-      public static bool TryGetComponent<T>(this Entity self, out T component)
+      public static Option<T> TryGetComponent<T>(this Entity self)
          where T : Component
       {
-         Component comp;
-         var result = self.TryGetComponent(typeof(T), out comp);
-         component = (T)comp;
-         return result;
+         var result = self.TryGetComponent(typeof(T));
+
+         return result.Match(
+            Some: comp => (T)comp,
+            None: () => (T)null);
       }
 
       public static void RemoveComponent<T>(this Entity self)

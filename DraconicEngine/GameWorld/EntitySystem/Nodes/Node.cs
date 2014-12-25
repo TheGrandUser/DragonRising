@@ -11,8 +11,5 @@ namespace DraconicEngine.GameWorld.EntitySystem
       Dictionary<string, Component> components = new Dictionary<string, Component>();
 
       public Entity Entity { get; set; }
-
-      public abstract void SetComponents(Entity entity);
-      public abstract void ClearComponents();
    }
 }

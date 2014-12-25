@@ -16,6 +16,7 @@ using DragonRising.Services;
 using DraconicEngine.GameWorld.Alligences;
 using LanguageExt;
 using LanguageExt.Prelude;
+using DraconicEngine.GameWorld.EntitySystem.Systems;
 
 namespace DragonRising.GameStates
 {
@@ -57,34 +58,28 @@ namespace DragonRising.GameStates
          var startPoint = generator.MakeMap(scene);
          var playerAlligence = new Alligence() { Name = "Player" };
 
-         var playerTemplate = new EntityTemplate("Player", Glyph.At, RogueColors.White,
-            new CombatantComponentTemplate(hp: 30, defense: 2, power: 5),
-            new CreatureComponentTemplate(playerAlligence) { VisionRadius = 6 },
-            new DecisionComponentTemplate(),
-            new InventoryComponentTemplate(26))
+         var player = new Entity("Player",
+            new DrawnComponent() { SeenCharacter = new Character(Glyph.At, RogueColors.White) },
+            new LocationComponent() { Blocks = true, Location = startPoint },
+            new CombatantComponent(hp: 30, defense: 2, power: 5),
+            new CreatureComponent(playerAlligence, 6),
+            new InventoryComponent() { Capacity = 26 })
          {
             Blocks = true
          };
 
-         Entity player = playerTemplate.Create();
-         player.Location = startPoint;
-
          var inventory = player.GetComponent<InventoryComponent>();
 
-         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfLightningBolt).Create());
-         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfFireball).Create());
-         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfConfusion).Create());
+         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfLightningBolt).Clone());
+         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfFireball).Clone());
+         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfConfusion).Clone());
 
          var playingState = new MyPlayingState(scene, player);
 
          return playingState;
       }
 
-      public new PlayerController PlayerController
-      {
-         get { return (PlayerController)base.PlayerController; }
-         set { base.PlayerController = value; }
-      }
+      public PlayerController PlayerController { get; set; }
 
       public MyPlayingState(Scene scene, Entity player)
          : base(scene)
@@ -109,11 +104,27 @@ namespace DragonRising.GameStates
 
          this.highlightWidget = new HighlightWidget(this.sceneWidget.Panel[RogueColors.Black, RogueColors.LightCyan]);
 
+         var gameManagerEntity = new Entity()
+         {
+            Name = "Game Manager"
+         };
+         gameManagerEntity.AddComponent(new GameActionsComponent());
+
+         this.Engine.AddEntity(gameManagerEntity);
+
+         this.Engine.AddSystem(new AIDecisionSystem(), 1, SystemTrack.Game);
+         this.Engine.AddSystem(new CreatureActionSystem(), 2, SystemTrack.Game);
+         this.Engine.AddSystem(new TimerSystem(), 3, SystemTrack.Game);
+
+         this.Engine.AddSystem(new RenderSystem(scenePanel, sceneView, scene), 4, SystemTrack.Render);
+         this.Engine.AddSystem(new ItemRenderSystem(scenePanel, sceneView, scene), 5, SystemTrack.Render);
+         this.Engine.AddSystem(new CreatureRenderSystem(scenePanel, sceneView, scene), 6, SystemTrack.Render);
+
          this.Widgets.Add(sceneWidget);
-         this.Widgets.Add(this.hpBarWidget);
-         this.Widgets.Add(this.messageWidget);
-         this.Widgets.Add(this.highlightWidget);
-         this.Widgets.Add(this.infoWidget);
+         this.Widgets.Add(hpBarWidget);
+         this.Widgets.Add(messageWidget);
+         this.Widgets.Add(highlightWidget);
+         this.Widgets.Add(infoWidget);
 
          this.PlayerController = new PlayerController(sceneView) { PlayerCreature = player };
          this.lifeDeathMonitorService = new LifeDeathMonitorService(scene.EntityStore);
@@ -185,6 +196,16 @@ namespace DragonRising.GameStates
       protected override bool IsGameEndState()
       {
          return this.lifeDeathMonitorService.HasPlayerLost;
+      }
+
+      protected override bool IsUnderPlayerControl()
+      {
+         return this.PlayerController != null;
+      }
+
+      protected override Task<PlayerTurnResult> GetPlayerTurn(TimeSpan timeout)
+      {
+         return this.PlayerController.GetInputAsync(timeout);
       }
    }
 }

@@ -11,18 +11,34 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
    public class CombatantComponent : Component
    {
-      public CombatantComponentTemplate Template { get; set; }
       public int HP { get; set; }
-      public int MaxHP => Template.MaxHP;
-      public int Power => Template.Power;
-      public int Defense => Template.Defense;
+      public int MaxHP { get; set; }
+      public int Power { get; set; }
+      public int Defense { get; set; }
 
       public bool IsAlive { get; set; } = true;
 
-      public CombatantComponent(CombatantComponentTemplate template)
+      public CombatantComponent()
       {
-         this.Template = template;
-         this.HP = template.MaxHP;
+      }
+      
+
+      protected CombatantComponent(CombatantComponent original, bool fresh) : base(original, fresh)
+      {
+         
+         this.MaxHP = original.MaxHP;
+         this.Power = original.Power;
+         this.Defense = original.Defense;
+
+         this.HP = fresh ? original.MaxHP : original.HP;
+         this.IsAlive = fresh | original.IsAlive;
+      }
+
+      public CombatantComponent(int hp, int defense, int power)
+      {
+         HP = hp;
+         Defense = defense;
+         Power = power;
       }
 
       public void TakeDamage(int damage, Entity from)
@@ -47,25 +63,10 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
       {
          this.HP = Math.Min(this.HP + amount, this.MaxHP);
       }
-   }
 
-   public class CombatantComponentTemplate : ComponentTemplate
-   {
-      public CombatantComponentTemplate() { }
-      public CombatantComponentTemplate(int hp, int defense, int power)
+      protected override Component CloneCore(bool fresh)
       {
-         this.MaxHP = hp;
-         this.Defense = defense;
-         this.Power = power;
-      }
-      public int MaxHP { get; set; }
-      public int Defense { get; set; }
-      public int Power { get; set; }
-      public override Type ComponentType => typeof(CombatantComponent);
-
-      public override Component CreateComponent()
-      {
-         return new CombatantComponent(this);
+         return new CombatantComponent(this, fresh);
       }
    }
 }

@@ -14,6 +14,14 @@ namespace DraconicEngine
    {
       public static bool IsAdjacent(this Entity me, Entity other)
       {
+         var diff =
+            me.GetComponentOrDefault<LocationComponent>()?.Location - 
+            other.GetComponentOrDefault<LocationComponent>()?.Location;
+         return diff?.KingLength == 1;
+      }
+
+      public static bool IsAdjacent(this LocationComponent me, LocationComponent other)
+      {
          var diff = me.Location - other.Location;
          return diff.KingLength == 1;
       }

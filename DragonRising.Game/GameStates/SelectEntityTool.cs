@@ -15,12 +15,14 @@ using DraconicEngine.Terminals.Input;
 using DraconicEngine.Terminals.Input.Commands;
 using LanguageExt;
 using LanguageExt.Prelude;
+using System.Threading;
+using DragonRising.GameWorld.Nodes;
 
 namespace DragonRising.GameStates
 {
    class SelectEntityTool : IGameState<Entity>
    {
-      IImmutableList<Entity> availableEntities;
+      IImmutableList<SeeableNode> availableEntities;
       SceneView sceneView;
       ITerminal sceneTerminal;
 
@@ -29,7 +31,7 @@ namespace DragonRising.GameStates
 
       public GameStateType Type { get { return GameStateType.Tool; } }
 
-      public SelectEntityTool(IImmutableList<Entity> availableEntities, SceneView sceneView, ITerminal scenePanel)
+      public SelectEntityTool(IImmutableList<SeeableNode> availableEntities, SceneView sceneView, ITerminal scenePanel)
       {
          
 
@@ -80,7 +82,7 @@ namespace DragonRising.GameStates
 
       public async Task<TickResult> Tick()
       {
-         var inputResult = await InputSystem.Current.GetCommandAsync(this.Gestures);
+         var inputResult = await InputSystem.Current.GetCommandAsync(this.Gestures, CancellationToken.None);
          var command = inputResult.Command as ValueCommand<TargetAction>;
 
          switch (command.Value)
@@ -109,7 +111,7 @@ namespace DragonRising.GameStates
             case TargetAction.Accept:
                if (this.currentSelectedIndex.HasValue && this.currentSelectedIndex.Value < this.availableEntities.Count)
                {
-                  this.result = this.availableEntities[this.currentSelectedIndex.Value];
+                  this.result = this.availableEntities[this.currentSelectedIndex.Value].Entity;
                   return TickResult.Finished;
                }
                break;
@@ -124,7 +126,7 @@ namespace DragonRising.GameStates
                {
                   var scenePoint = this.sceneView.ViewOffset + localPoint;
 
-                  var entity = this.availableEntities.FirstOrDefault(e => e.Location == scenePoint);
+                  var entity = this.availableEntities.FirstOrDefault(e => e.Loc.Location == scenePoint);
 
                   if (entity != null)
                   {
@@ -143,16 +145,16 @@ namespace DragonRising.GameStates
          return TickResult.Continue;
       }
 
-      public void Draw()
+      public Task Draw()
       {
          int index = 0;
          foreach(var entity in this.availableEntities)
          {
-            Loc displayLocation = entity.Location - this.sceneView.ViewOffset;
+            Loc displayLocation = entity.Loc.Location - this.sceneView.ViewOffset;
 
-            var foreColor = index == this.currentSelectedIndex ? entity.Character.ForeColor : RogueColors.Gray;
+            var foreColor = index == this.currentSelectedIndex ? entity.Drawn.SeenCharacter.ForeColor : RogueColors.Gray;
 
-            var character = new Character(entity.Character.Glyph, foreColor, RogueColors.White);
+            var character = new Character(entity.Drawn.SeenCharacter.Glyph, foreColor, RogueColors.White);
 
             if (this.sceneTerminal.Size.Contains(displayLocation))
             {
@@ -160,6 +162,8 @@ namespace DragonRising.GameStates
             }
             index++;
          }
+         
+         return Task.FromResult(0);
       }
 
       public Option<IGameState> Finish()

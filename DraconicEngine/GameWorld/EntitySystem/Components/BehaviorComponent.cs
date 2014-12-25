@@ -15,28 +15,36 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
    public sealed class BehaviorComponent : Component
    {
       static readonly JustPassBehavior defaultBehavior = new JustPassBehavior();
+      LinkedList<Behavior> behaviors = new LinkedList<Behavior>();
 
       public BehaviorComponent()
       {
       }
 
-      public BehaviorComponent(IBehavior initialBehavior)
+      public BehaviorComponent(Behavior initialBehavior)
       {
          this.behaviors.AddLast(initialBehavior);
       }
 
-      public bool IsDirectlyControlled { get; set; }
+      protected BehaviorComponent(BehaviorComponent original, bool fresh)
+         : base(original, fresh)
+      {
+         this.behaviors = new LinkedList<Behavior>(original.behaviors.Select(b => b.Clone()));
+      }
 
-      LinkedList<IBehavior> behaviors = new LinkedList<IBehavior>();
+      protected override Component CloneCore(bool fresh)
+      {
+         return new BehaviorComponent(this, fresh);
+      }
 
-      public IBehavior CurrentBehavior => behaviors.Count > 0 ? behaviors.Last.Value : defaultBehavior;
+      public Behavior CurrentBehavior => behaviors.Count > 0 ? behaviors.Last.Value : defaultBehavior;
 
-      public void PushBehavior(IBehavior behavior)
+      public void PushBehavior(Behavior behavior)
       {
          this.behaviors.AddLast(behavior);
       }
 
-      public IBehavior PopBehavior()
+      public Behavior PopBehavior()
       {
          if (this.behaviors.Count > 0)
          {
@@ -47,35 +55,16 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
          return null;
       }
 
-      public IEnumerable<IBehavior> Behaviors => this.behaviors.AsEnumerable();
+      public IEnumerable<Behavior> Behaviors => this.behaviors.AsEnumerable();
 
       public void ClearBehaviors()
       {
          this.behaviors.Clear();
       }
 
-      public void RemoveBehavior(IBehavior behavior)
+      public void RemoveBehavior(Behavior behavior)
       {
          this.behaviors.Remove(behavior);
-      }
-   }
-
-   public class BehaviorComponentTemplate : ComponentTemplate
-   {
-      Type behaviorType;
-
-      public BehaviorComponentTemplate(Type behaviorType)
-      {
-         this.behaviorType = behaviorType;
-      }
-
-      public override Type ComponentType => typeof(BehaviorComponent);
-
-      public override Component CreateComponent()
-      {
-         var behavior = (IBehavior)behaviorType.Assembly.CreateInstance(behaviorType.FullName);
-         Debug.Assert(behavior != null, "No behavior!");
-         return new BehaviorComponent(behavior);
       }
    }
 }

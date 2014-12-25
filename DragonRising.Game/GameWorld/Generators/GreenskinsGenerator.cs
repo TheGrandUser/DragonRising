@@ -35,7 +35,7 @@ namespace DragonRising.Generators
 
       public Entity GenerarateMonster()
       {
-         EntityTemplate monsterTemplate;
+         Entity monsterTemplate;
          var value = random.NextDouble();
          if (value < 0.8)
          {
@@ -46,7 +46,7 @@ namespace DragonRising.Generators
             monsterTemplate = EntityLibrary.Current.Get("Troll");
          }
 
-         return monsterTemplate.Create();
+         return monsterTemplate.Clone();
       }
    }
 }

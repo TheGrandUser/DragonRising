@@ -43,12 +43,14 @@ namespace DragonRising.GameStates
          return TickResult.Continue;
       }
 
-      public void Draw()
+      public Task Draw()
       {
          this.messageTerminal.Clear();
 
          messageTerminal.DrawBox(DrawBoxOptions.DoubleLines);
          messageTerminal[2, 2].Write(message);
+
+         return Task.FromResult(0);
       }
 
       public GameStateType Type { get { return GameStateType.Dialog; } }

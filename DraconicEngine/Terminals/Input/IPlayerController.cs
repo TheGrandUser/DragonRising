@@ -13,12 +13,13 @@ namespace DraconicEngine.Input
    public enum PlayerTurnResult
    {
       None,
-      RealTimeIdle,
+      Idle,
       TurnAdvancing,
       Quit,
    }
    public interface IPlayerController
    {
-      Task<PlayerTurnResult> CheckInputAsync();
+      Task<PlayerTurnResult> GetInputAsync(TimeSpan timeout);
+      RogueAction GetAction();
    }
 }

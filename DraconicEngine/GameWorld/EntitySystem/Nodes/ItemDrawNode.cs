@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.EntitySystem.Nodes
 {
-   public class TimerNode : Node
+   public class ItemDrawNode : Node
    {
-      public TimerComponent Timer { get; set; }
+      public LocationComponent Location { get; set; }
+      public ItemComponent Item { get; set; }
+      public DrawnComponent Drawn { get; set; }
    }
 }

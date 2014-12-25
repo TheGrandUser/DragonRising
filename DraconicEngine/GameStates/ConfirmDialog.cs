@@ -66,7 +66,7 @@ namespace DraconicEngine.GameStates
          }
       }
 
-      public void Draw()
+      public Task Draw()
       {
          this.dialogPanel.Clear();
          this.dialogPanel.DrawBox(DrawBoxOptions.DoubleLines);
@@ -77,6 +77,8 @@ namespace DraconicEngine.GameStates
          {
             this.dialogPanel[margine, margine + i].Write(this.lines[i]);
          }
+
+         return Task.FromResult(0);
       }
 
       public Option<IGameState> Finish()

@@ -15,8 +15,8 @@ namespace DragonRising.Libraries
 {
    class SimpleEntityLibrary : IEntityLibrary
    {
-      Dictionary<string, EntityTemplate> templates = new Dictionary<string, EntityTemplate>();
-      public Dictionary<string, EntityTemplate> Templates => templates;
+      Dictionary<string, Entity> templates = new Dictionary<string, Entity>();
+      public Dictionary<string, Entity> Templates => templates;
 
       public SimpleEntityLibrary()
       {
@@ -24,28 +24,28 @@ namespace DragonRising.Libraries
             Some: a => a,
             None: () => { throw new Exception("No Greenskins alligence error!"); });
 
-         Add(new EntityTemplate("Orc", new Character(Glyph.OLower, RogueColors.LightGreen),
-            new CombatantComponentTemplate(hp: 10, defense: 0, power: 3),
-            new DecisionComponentTemplate(),
-            new BehaviorComponentTemplate(typeof(BasicMonsterBehavior)),
-            new CreatureComponentTemplate(alligence))
-         { Blocks = true });
+         Add(new Entity("Orc",
+            new LocationComponent() { Blocks = true },
+            new DrawnComponent() { SeenCharacter = new Character(Glyph.OLower, RogueColors.LightGreen) },
+            new CombatantComponent(hp: 10, defense: 0, power: 3),
+            new BehaviorComponent(new BasicMonsterBehavior()),
+            new CreatureComponent(alligence, 6)));
 
 
-         Add(new EntityTemplate("Troll", new Character(Glyph.TUpper, RogueColors.LightGreen),
-            new CombatantComponentTemplate(hp: 16, defense: 1, power: 4),
-            new DecisionComponentTemplate(),
-            new BehaviorComponentTemplate(typeof(BasicMonsterBehavior)),
-            new CreatureComponentTemplate(alligence))
-         { Blocks = true });
+         Add(new Entity("Troll",
+            new LocationComponent() { Blocks = true },
+            new DrawnComponent() { SeenCharacter = new Character(Glyph.TUpper, RogueColors.LightGreen) },
+            new CombatantComponent(hp: 16, defense: 1, power: 4),
+            new BehaviorComponent(new BasicMonsterBehavior()),
+            new CreatureComponent(alligence, 5)));
       }
 
-      private void Add(EntityTemplate entityTemplate)
+      private void Add(Entity entityTemplate)
       {
          this.templates.Add(entityTemplate.Name, entityTemplate);
       }
 
-      public EntityTemplate Get(string templateName)
+      public Entity Get(string templateName)
       {
          return templates[templateName];
       }

@@ -10,15 +10,30 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
    public class InventoryComponent : Component
    {
-      public InventoryComponent(InventoryComponentTemplate template)
+      public int Capacity { get; set; }
+
+      public InventoryComponent()
       {
-         this.Template = template;
+      }
+
+      protected InventoryComponent(InventoryComponent original, bool fresh)
+         : base(original, fresh)
+      {
+         Capacity = original.Capacity;
+
+         if (!fresh)
+         {
+            foreach(var item in original.Items)
+            {
+               this.Items.Add(item.Clone(fresh: false));
+            }
+         }
       }
 
       public bool TryPickUp(Entity item)
       {
          if (!item.HasComponent<ItemComponent>()) { return false; } // throw?
-         if (this.Items.Count >= this.Template.Capacity)
+         if (this.Items.Count >= this.Capacity)
          {
             return false;
          }
@@ -30,23 +45,26 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 
       public List<Entity> Items { get; } = new List<Entity>();
 
-      public InventoryComponentTemplate Template { get; set; }
-   }
-
-   public class InventoryComponentTemplate : ComponentTemplate
-   {
-      public int Capacity { get; set; }
-
-      public override Type ComponentType => typeof(InventoryComponent);
-
-      public InventoryComponentTemplate(int capacity)
+      protected override Component CloneCore(bool fresh)
       {
-         this.Capacity = capacity;
-      }
-
-      public override Component CreateComponent()
-      {
-         return new InventoryComponent(this);
+         return new InventoryComponent(this,fresh);
       }
    }
+
+   //public class InventoryComponentTemplate : ComponentTemplate
+   //{
+   //   public int Capacity { get; set; }
+
+   //   public override Type ComponentType => typeof(InventoryComponent);
+
+   //   public InventoryComponentTemplate(int capacity)
+   //   {
+   //      this.Capacity = capacity;
+   //   }
+
+   //   public override Component CreateComponent()
+   //   {
+   //      return new InventoryComponent(this);
+   //   }
+   //}
 }

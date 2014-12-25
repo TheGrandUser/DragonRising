@@ -14,7 +14,7 @@ namespace DraconicEngine.Terminals.Input.Commands
    public class InteractWithCreatureCommand: ActionCommand
    {
       ActionRequirement requirement = //new OrRequirement(
-         new EntityRequirement();//,
+         new EntityRequirement(1, typeof(CreatureComponent));//,
                                  //new DirectionRequirement());
 
       public override ActionRequirement Requirement => requirement;

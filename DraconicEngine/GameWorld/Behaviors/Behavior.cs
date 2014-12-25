@@ -9,20 +9,24 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.Behaviors
 {
-   public interface IBehaviorTemplate
+   [Serializable]
+   public abstract class Behavior
    {
-      IBehavior Create();
+      public abstract RogueAction PlanTurn(Entity owner);
+      public Behavior Clone()
+      {
+         return CloneCore();
+      }
+
+      protected abstract Behavior CloneCore();
+
+      protected Behavior()
+      {
+      }
+
+      protected Behavior(Behavior original)
+      {
+         // Nothing to copy right now
+      }
    }
-
-   public interface IBehavior
-   {
-      RogueAction PlanTurn(Entity owner);
-
-      Entity SelectInventoryItem(Entity owner);
-
-      Loc? SelectTargetLocation(Entity owner, bool isLimitedToFoV = true);
-
-      Entity SelectTargetCreature(Entity owner, int range = 0);
-   }
-
 }

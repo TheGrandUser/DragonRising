@@ -11,16 +11,16 @@ namespace DragonRising.Libraries
 {
    class SimpleItemLibrary : IItemLibrary
    {
-      Dictionary<string, EntityTemplate> templates = new Dictionary<string, EntityTemplate>(StringComparer.InvariantCultureIgnoreCase);
+      Dictionary<string, Entity> templates = new Dictionary<string, Entity>(StringComparer.InvariantCultureIgnoreCase);
 
       public bool Contains(string name)
       {
          return templates.ContainsKey(name);
       }
 
-      public EntityTemplate Get(string name) => this.templates[name];
+      public Entity Get(string name) => this.templates[name];
 
-      public void Add(EntityTemplate itemTemplate)
+      public void Add(Entity itemTemplate)
       {
          this.templates.Add(itemTemplate.Name, itemTemplate);
       }

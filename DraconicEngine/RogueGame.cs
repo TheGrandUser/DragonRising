@@ -10,6 +10,7 @@ using LanguageExt.Prelude;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
+using System.Diagnostics;
 
 namespace DraconicEngine
 {
@@ -66,22 +67,33 @@ namespace DraconicEngine
 
       protected async Task StartDrawLoop()
       {
+         var watch = new Stopwatch();
+
          while (gameStates.Count > 0)
          {
             drawStarted.OnNext(unit);
+
+            watch.Restart();
+
             var screen = gameStates.FirstOrDefault(state => state.Type == GameStateType.Screen);
             if (screen != null)
             {
-               screen.Draw();
+               await screen.Draw();
             }
             foreach (var gameState in gameStates.TakeWhile(gs => ShowsPrior(gs.Type)).Reverse())
             {
-               gameState.Draw();
+               await gameState.Draw();
             }
 
             Present();
             drawFinished.OnNext(unit);
-            await Task.Delay(frameTime);
+
+            watch.Stop();
+
+            if (watch.Elapsed < frameTime)
+            {
+               await Task.Delay(frameTime - watch.Elapsed);
+            }
          }
       }
 

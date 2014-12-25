@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DraconicEngine;
 using DraconicEngine.Terminals.Input;
 using DraconicEngine.Terminals.Input.Commands;
+using System.Threading;
 
 namespace DraconicEngine.Input
 {
@@ -109,7 +110,7 @@ namespace DraconicEngine.Input
 
    public interface IInputSystem
    {
-      Task<InputResult> GetCommandAsync(IEnumerable<CommandGesture> gestures);
+      Task<InputResult> GetCommandAsync(IEnumerable<CommandGesture> gestures, CancellationToken cancelToken);
 
       Task<RogueKeyEvent> GetKeyPressAsync();
       bool IsKeyPressed(RogueKey key);

@@ -7,22 +7,26 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.EntitySystem.Systems
 {
-   public class CreatureActionSystem : ListIteratingSystemSync<CreatureActionNode>
+   public class CreatureActionSystem : GameSystemSync
    {
-      Dictionary<Entity, Action> actionsToDo = new Dictionary<Entity, Action>();
+      ActionManagementNode actionsNode;
 
-      protected override void NodeUpdateFunction(CreatureActionNode node, double time)
+      public override void AddToEngine(Engine engine)
       {
-         var decision = node.Decision;
+         this.actionsNode = engine.GetNodes<ActionManagementNode>().Single();
 
-         decision.ActionToDo.Do(node.Entity);
+         base.AddToEngine(engine);
+
       }
 
       public override void Update(double time)
       {
-         base.Update(time);
+         var actionsToDo = actionsNode.Actions.GetAndClearActions();
 
-         actionsToDo.Clear();
+         foreach(var tuple in actionsToDo)
+         {
+            tuple.With((entity, action) => action.Do(entity));
+         }
       }
    }
 }

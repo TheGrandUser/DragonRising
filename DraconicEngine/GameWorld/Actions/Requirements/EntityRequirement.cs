@@ -12,22 +12,18 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
    {
       public IImmutableList<Type> ComponentTypes { get; }
 
-      public int MaxRange { get; }
-
-      public EntityRequirement(int? maxRange = null)
-      {
-         this.ComponentTypes = ImmutableList.Create<Type>();
-      }
+      public int? MaxRange { get; }
 
       public EntityRequirement(int? maxRange, params Type[] componentTypes)
       {
+         this.MaxRange = maxRange;
          this.ComponentTypes = ImmutableList.CreateRange(componentTypes);
       }
 
       public EntityRequirement(int? maxRange, IEnumerable<Type> componentTypes)
       {
+         this.MaxRange = maxRange;
          this.ComponentTypes = ImmutableList.CreateRange(componentTypes);
-
       }
 
       public bool DoesEntityMatch(Entity entity)

@@ -46,11 +46,13 @@ namespace DragonRising.GameStates
 
       public GameStateType Type { get { return GameStateType.Screen; } }
 
-      public void Draw()
+      public Task Draw()
       {
          RogueGame.Current.RootTerminal.Clear();
 
          this.messageTerminal[3, 3][RogueColors.LightGray].Write(message);
+
+         return Task.FromResult(0);
       }
 
       public Option<IGameState> Finish()
@@ -64,7 +66,7 @@ namespace DragonRising.GameStates
 
       public async Task<TickResult> Tick()
       {
-         if(loaders.Count == 0)
+         if (loaders.Count == 0)
          {
             return TickResult.Finished;
          }
@@ -104,14 +106,26 @@ namespace DragonRising.GameStates
       {
          var itemLibrary = Library.Items;
 
-         itemLibrary.Add(new EntityTemplate(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet, new ItemComponentTemplate() { Usage = new HealingItem() }));
-         itemLibrary.Add(new EntityTemplate(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow, new ItemComponentTemplate() { Usage = new LightningScroll() }));
-         itemLibrary.Add(new EntityTemplate(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow, new ItemComponentTemplate() { Usage = new FireballScroll() }));
-         itemLibrary.Add(new EntityTemplate(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet, new ItemComponentTemplate() { Usage = BehaviorReplacementItem.CreateConfusionItem() }));
+         itemLibrary.Add(Make(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet, RogueColors.Violet, new HealingItem()));
+         itemLibrary.Add(Make(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow, RogueColors.LightYellow, new LightningScroll()));
+         itemLibrary.Add(Make(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow, RogueColors.Yellow, new FireballScroll()));
+         itemLibrary.Add(Make(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet, RogueColors.Violet, BehaviorReplacementItem.CreateConfusionItem()));
 
          //Library.SetItemLibrary(itemLibrary);
 
          return Task.Delay(TimeSpan.FromSeconds(0.5));
+      }
+
+      static Entity Make(string name, Glyph glyph, RogueColor seen, RogueColor explored, IItemUsage usage)
+      {
+         return new Entity(name,
+            new DrawnComponent()
+            {
+               SeenCharacter = new Character(glyph, seen),
+               ExploredCharacter = new Character(glyph, explored),
+            },
+            new LocationComponent(),
+            new ItemComponent() { Usage = usage });
       }
    }
 

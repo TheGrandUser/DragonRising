@@ -10,6 +10,21 @@ namespace DraconicEngine.GameWorld.EntitySystem
    public abstract class Component
    {
       public Entity Owner { get; set; }
+
+      public Component Clone(bool fresh = true)
+      {
+         return CloneCore(fresh);
+      }
+
+      protected Component()
+      {
+      }
+
+      protected Component(Component original, bool fresh)
+      {
+         // Nothing to copy yet, will be a differetn Entity Owner
+      }
+      protected abstract Component CloneCore(bool fresh);
    }
 
    public static class ComponentUtility
@@ -93,16 +108,5 @@ namespace DraconicEngine.GameWorld.EntitySystem
          }
          return withoutComponent;
       }
-   }
-
-   [Serializable]
-   public abstract class ComponentTemplate
-   {
-      public EntityTemplate Template { get; set; }
-      public string Name { get; set; }
-
-      public abstract Type ComponentType { get; }
-
-      public abstract Component CreateComponent();
    }
 }

@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using DraconicEngine.GameWorld.EntitySystem.Nodes;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +19,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       ReactiveList<TNode> nodes = new ReactiveList<TNode>();
       Dictionary<Entity, TNode> entities = new Dictionary<Entity, TNode>();
       Dictionary<Type, PropertyInfo> componentFields = new Dictionary<Type, PropertyInfo>();
+      HashSet<Type> shouldNotHave = new HashSet<Type>();
       NodePool<TNode> nodePool;
 
       public ComponentMatchingFamily(Engine engine)
@@ -37,6 +39,11 @@ namespace DraconicEngine.GameWorld.EntitySystem
          {
             componentFields[variable.PropertyType] = variable;
          }
+
+         foreach(var attribute in nodeType.GetCustomAttributes<DoesNotHaveAttribute>())
+         {
+            this.shouldNotHave.Add(attribute.ComponentType);
+         }
       }
 
       public IReadOnlyReactiveList<TNode> Nodes => nodes;
@@ -44,7 +51,14 @@ namespace DraconicEngine.GameWorld.EntitySystem
 
       public void ComponentAddedToEntity(Entity entity, Type componentType)
       {
-         AddIfMatch(entity);
+         if (componentFields.ContainsKey(componentType))
+         {
+            AddIfMatch(entity);
+         }
+         else if (shouldNotHave.Contains(componentType))
+         {
+            RemoveIfMatch(entity);
+         }
       }
 
       public void ComponentRemovedFromEntity(Entity entity, Type componentType)
@@ -52,6 +66,10 @@ namespace DraconicEngine.GameWorld.EntitySystem
          if (componentFields.ContainsKey(componentType))
          {
             RemoveIfMatch(entity);
+         }
+         else if (shouldNotHave.Contains(componentType))
+         {
+            AddIfMatch(entity);
          }
       }
 
@@ -78,15 +96,22 @@ namespace DraconicEngine.GameWorld.EntitySystem
       {
          if (!entities.ContainsKey(entity))
          {
-            if (!componentFields.Keys.All(componentType => entity.HasComponent(componentType)))
+            if (
+               !componentFields.Keys.All(componentType => entity.HasComponent(componentType)) ||
+               shouldNotHave.Any(componentType => entity.HasComponent(componentType)))
             {
                return;
             }
+            
 
             var node = nodePool.Get();
 
             node.Entity = entity;
-            node.SetComponents(entity);
+            foreach(var pi in this.componentFields.Values)
+            {
+               var component = entity.GetComponent(pi.PropertyType);
+               pi.SetValue(node, component);
+            }
             entities[entity] = node;
             nodes.Add(node);
          }

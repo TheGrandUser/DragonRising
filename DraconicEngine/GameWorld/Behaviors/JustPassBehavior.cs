@@ -10,14 +10,23 @@ using System.Threading.Tasks;
 namespace DraconicEngine.GameWorld.Behaviors
 {
    [Serializable]
-   public class JustPassBehavior : IBehavior
+   public class JustPassBehavior : Behavior
    {
-      public RogueAction PlanTurn(Entity owner) => RogueAction.Idle;
+      public override RogueAction PlanTurn(Entity owner) => RogueAction.Idle;
 
-      public Entity SelectInventoryItem(Entity owner) => null;
+      public JustPassBehavior()
+      {
 
-      public Loc? SelectTargetLocation(Entity owner, bool isLimitedToFoV = true) => null;
+      }
 
-      public Entity SelectTargetCreature(Entity owner, int range = 0) => null;
+      protected JustPassBehavior(JustPassBehavior original) : base(original)
+      {
+
+      }
+
+      protected override Behavior CloneCore()
+      {
+         return new JustPassBehavior(this);
+      }
    }
 }

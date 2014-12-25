@@ -8,15 +8,25 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.EntitySystem.Systems
 {
-   public class AIDecisionSystem : ListIteratingSystemSync<AiCreatureNode>
+   public class AIDecisionSystem : ListIteratingSystemSync<BehaviorNode>
    {
-      protected override void NodeUpdateFunction(AiCreatureNode node, double time)
+      ActionManagementNode actionsNode;
+
+      public AIDecisionSystem()
       {
-         if (!node.AI.IsDirectlyControlled)
-         {
-            var readyAction = node.AI.CurrentBehavior.PlanTurn(node.Entity);
-            node.Decision.ActionToDo = readyAction;
-         }
+      }
+
+      public override void AddToEngine(Engine engine)
+      {
+         actionsNode = engine.GetNodes<ActionManagementNode>().Single();
+
+         base.AddToEngine(engine);
+      }
+
+      protected override void NodeUpdateFunction(BehaviorNode node, double time)
+      {
+         var readyAction = node.Behavior.CurrentBehavior.PlanTurn(node.Entity);
+         actionsNode.Actions.AddAction(node.Entity, readyAction);
       }
    }
 }

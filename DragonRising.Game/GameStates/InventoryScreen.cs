@@ -63,7 +63,7 @@ namespace DragonRising.GameStates
          return TickResult.Continue;
       }
 
-      public void Draw()
+      public Task Draw()
       {
          this.rootTerminal.Clear();
          this.rootTerminal.DrawBox(DrawBoxOptions.DoubleLines);
@@ -84,7 +84,7 @@ namespace DragonRising.GameStates
 
             foreach (var item in this.inventory.Items)
             {
-               var text = "(" + option + ") " + item.Template.Name;
+               var text = "(" + option + ") " + item.Name;
                this.itemsTerminal[0, y].Write(text);
                y++;
                option++;
@@ -94,6 +94,8 @@ namespace DragonRising.GameStates
                }
             }
          }
+
+         return Task.FromResult(0);
       }
 
       public Option<IGameState> Finish()

@@ -27,8 +27,9 @@ namespace DragonRising.GameStates
          throw new NotImplementedException();
       }
 
-      public void Draw()
+      public Task Draw()
       {
+         return Task.FromResult(0);
       }
 
       public Option<IGameState> Finish()

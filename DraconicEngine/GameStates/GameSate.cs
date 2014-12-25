@@ -41,7 +41,7 @@ namespace DraconicEngine.GameStates
       GameStateType Type { get; }
 
       Task<TickResult> Tick();
-      void Draw();
+      Task Draw();
 
       Option<IGameState> Finish();
 
@@ -53,13 +53,13 @@ namespace DraconicEngine.GameStates
       TData Result { get; }
    }
 
-   public abstract class GameSate : IGameState
+   public abstract class GameState : IGameState
    {
       public abstract GameStateType Type { get; }
 
       public abstract Task<TickResult> Tick();
 
-      public abstract void Draw();
+      public abstract Task Draw();
 
       public virtual Option<IGameState> Finish()
       {

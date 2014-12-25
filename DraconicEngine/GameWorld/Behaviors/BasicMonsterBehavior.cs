@@ -13,12 +13,22 @@ using DraconicEngine.GameWorld.Alligences;
 namespace DraconicEngine.GameWorld.Behaviors
 {
    [Serializable]
-   public class BasicMonsterBehavior : IBehavior
+   public class BasicMonsterBehavior : Behavior
    {
-      public RogueAction PlanTurn(Entity owner)
+      public BasicMonsterBehavior()
+      {
+
+      }
+
+      protected BasicMonsterBehavior(BasicMonsterBehavior original)
+         : base(original)
+      {
+      }
+
+      public override RogueAction PlanTurn(Entity owner)
       {
          RogueAction action = null;
-         if (Scene.CurrentScene.IsVisible(owner.Location))
+         if (Scene.CurrentScene.IsVisible(owner.GetComponent<LocationComponent>().Location))
          {
             var player = Scene.CurrentScene.FocusEntity;
             if (player != null)
@@ -27,25 +37,22 @@ namespace DraconicEngine.GameWorld.Behaviors
                {
                   action = Attack(player);
                }
-               action = MoveTowards(owner, player.Location);
+               action = MoveTowards(owner, player.GetComponent<LocationComponent>().Location);
             }
          }
-         if (action == null)
-         {
-            return RogueAction.Idle;
-         }
 
-         return action;
+         return action ?? RogueAction.Idle;
       }
 
-      private RogueAction Attack(Entity player)
+      RogueAction Attack(Entity player)
       {
          return new AttackEntityAction(player);
       }
 
       RogueAction MoveTowards(Entity owner, Loc targetLocation)
       {
-         var directionVec = targetLocation - owner.Location;
+         var locComp = owner.GetComponent<LocationComponent>();
+         var directionVec = targetLocation - locComp.Location;
 
          Vector[] moveAttempts = directionVec.PathFindAttempts().ToArray();
 
@@ -53,7 +60,7 @@ namespace DraconicEngine.GameWorld.Behaviors
 
          foreach (var moveVec in moveAttempts)
          {
-            var newLoc = owner.Location + moveVec;
+            var newLoc = locComp.Location + moveVec;
             var blockage = Scene.CurrentScene.IsBlocked(newLoc);
 
             if (blockage == Blockage.None)
@@ -79,10 +86,9 @@ namespace DraconicEngine.GameWorld.Behaviors
          return RogueAction.Idle;
       }
 
-      public Entity SelectInventoryItem(Entity owner) => null;
-
-      public Loc? SelectTargetLocation(Entity owner, bool isLimitedToFoV = true) => null;
-
-      public Entity SelectTargetCreature(Entity owner, int range = 0) => null;
+      protected override Behavior CloneCore()
+      {
+         return new BasicMonsterBehavior(this);
+      }
    }
 }

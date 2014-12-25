@@ -17,7 +17,7 @@ namespace DraconicEngine.Terminals.Input.Commands
       public override string Name => "Attack";
 
       ActionRequirement requirement = new OrRequirement(
-         new EntityRequirement(),
+         new EntityRequirement(1, typeof(CombatantComponent)),
          new DirectionRequirement());
       public override ActionRequirement Requirement => requirement;
 

@@ -29,5 +29,4 @@ namespace DraconicEngine.Terminals.Input.Commands
          return new DropItemAction(item.Item);
       }
    }
-
 }

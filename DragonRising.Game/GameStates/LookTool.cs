@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageExt;
 using LanguageExt.Prelude;
+using System.Threading;
 
 namespace DragonRising.GameStates
 {
@@ -43,7 +44,7 @@ namespace DragonRising.GameStates
       Loc lastPoint;
       public async Task<TickResult> Tick()
       {
-         var input = await InputSystem.Current.GetCommandAsync(Gestures);
+         var input = await InputSystem.Current.GetCommandAsync(Gestures, CancellationToken.None);
 
          var command = (ValueCommand<LookActions>)input.Command;
 
@@ -70,9 +71,9 @@ namespace DragonRising.GameStates
          throw new NotImplementedException();
       }
 
-      public void Draw()
+      public Task Draw()
       {
-
+         return Task.FromResult(0);
       }
 
       public Option<IGameState> Finish()

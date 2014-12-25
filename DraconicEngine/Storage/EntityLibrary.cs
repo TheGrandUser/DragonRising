@@ -9,9 +9,9 @@ namespace DraconicEngine.Storage
 {
    public interface IEntityLibrary
    {
-      Dictionary<string, EntityTemplate> Templates { get; }
+      Dictionary<string, Entity> Templates { get; }
 
-      EntityTemplate Get(string templateName);
+      Entity Get(string templateName);
    }
 
    public static class EntityLibrary

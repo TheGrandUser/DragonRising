@@ -29,10 +29,6 @@ namespace DraconicEngine
       void SetSpecial(Entity creature, bool isSpecial);
       void SendToBack(Entity entity);
 
-      IEnumerable<Entity> GetEntitiesAt(Loc location);
-      Entity GetCreatureAt(Loc location);
-      IEnumerable<Entity> GetItemsAt(Loc location);
-
       IObservable<Entity> Added { get; }
       IObservable<Entity> Removed { get; }
 
@@ -171,29 +167,6 @@ namespace DraconicEngine
          }
       }
 
-      public IEnumerable<Entity> GetEntitiesAt(Loc location)
-      {
-         return this.AllEntities.Where(e => e.Location == location);
-      }
-
-      public Entity GetCreatureAt(Loc location)
-      {
-         var creature = this.AllCreaturesSpecialFirst.FirstOrDefault(c => c.Location == location);
-
-         return creature;
-      }
-
-      public IEnumerable<Entity> GetItemsAt(Loc location)
-      {
-         foreach (var entity in this.AllItems)
-         {
-            if (entity.Location == location)
-            {
-               yield return entity;
-            }
-         }
-      }
-
       public void SendToBack(Entity entity)
       {
          if (this.entities.Contains(entity))
@@ -219,6 +192,32 @@ namespace DraconicEngine
          }
 
          killed.OnNext(entity);
+      }
+   }
+
+   public static class EntityStoreExtensions
+   {
+      public static IEnumerable<Entity> GetEntitiesAt(this IEntityStore store, Loc location)
+      {
+         return store.AllEntities.Where(e => e.GetComponentOrDefault<LocationComponent>()?.Location == location);
+      }
+
+      public static Entity GetCreatureAt(this IEntityStore store, Loc location)
+      {
+         var creature = store.AllCreaturesSpecialFirst.FirstOrDefault(c => c.GetComponentOrDefault<LocationComponent>()?.Location == location);
+
+         return creature;
+      }
+
+      public static IEnumerable<Entity> GetItemsAt(this IEntityStore store, Loc location)
+      {
+         foreach (var entity in store.AllItems)
+         {
+            if (entity.GetComponentOrDefault<LocationComponent>()?.Location == location)
+            {
+               yield return entity;
+            }
+         }
       }
    }
 }

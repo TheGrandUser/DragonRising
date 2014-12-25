@@ -25,9 +25,8 @@ namespace DraconicEngine.GameWorld.Actions
       {
          var scene = Scene.CurrentScene;
 
-         executer.As<InventoryComponent>(inventory => inventory.Items.Remove(this.item));
-         
-         this.item.Location = executer.Location;
+         executer.GetComponent<InventoryComponent>().Items.Remove(item);
+         item.GetComponent<LocationComponent>().Location = executer.GetComponent<LocationComponent>().Location;
          scene.EntityStore.Add(this.item);
       }
    }

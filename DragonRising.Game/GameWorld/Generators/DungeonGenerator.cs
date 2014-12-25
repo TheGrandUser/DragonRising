@@ -82,8 +82,7 @@ namespace DragonRising.Generators
          DoGeneration(scene, room, this.itemGenerator.GenerateItem, MaxRoomItems);
       }
 
-      private void DoGeneration<TEntity>(Scene scene, TerminalRect room, Func<TEntity> generator, int maxCount)
-         where TEntity : Entity
+      private void DoGeneration(Scene scene, TerminalRect room, Func<Entity> generator, int maxCount)
       {
          var count = this.random.Next(maxCount + 1);
 

@@ -42,17 +42,23 @@ namespace DragonRising.Services
 
          this.isPlayerDead = true;
 
-         this.PlayerCreature.Character = new Character(Glyph.Percent, RogueColors.DarkRed);
+         this.PlayerCreature.As<DrawnComponent>(dc => dc.SeenCharacter = new Character(Glyph.Percent, RogueColors.DarkRed));
+         this.PlayerCreature.As<LocationComponent>(lc => lc.Blocks = false);
+         this.PlayerCreature.As<BehaviorComponent>(bc => bc.ClearBehaviors());
       }
       public void NpcDeath(Entity npc)
       {
          MessageService.Current.PostMessage(npc.Name + " is dead!", RogueColors.Orange);
-         npc.Character = new Character(Glyph.Percent, RogueColors.DarkRed);
-         npc.Blocks = false;
-         //npc.RemoveComponent<CombatantComponent>();
-         //npc.RemoveComponent<CreatureComponent>();
-         npc.GetComponent<BehaviorComponent>().ClearBehaviors();
+         
+         npc.As<DrawnComponent>(dc => dc.SeenCharacter = new Character(Glyph.Percent, RogueColors.DarkRed));
+         npc.As<LocationComponent>(lc => lc.Blocks = false);
+         //npc.As<CombatantComponent>(cc => cc.IsAlive)
+         //npc.AsCreature(cc => cc.IsAlive = false);
+         
          npc.Name = "remains of " + npc.Name;
+
+         npc.RemoveComponent<BehaviorComponent>();
+         npc.RemoveComponent<CreatureComponent>();
 
          Scene.CurrentScene.EntityStore.SendToBack(npc);
       }

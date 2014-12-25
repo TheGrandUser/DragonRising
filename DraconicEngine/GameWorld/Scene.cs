@@ -42,7 +42,7 @@ namespace DraconicEngine
 
       private void ResetFoV()
       {
-         ShadowCaster.ComputeFieldOfViewWithShadowCasting(this.FocusEntity.X, this.FocusEntity.Y, this.FocusEntity.GetComponentOrDefault<CreatureComponent>()?.VisionRadius ?? 1,
+         ShadowCaster.ComputeFieldOfViewWithShadowCasting(this.FocusEntity.Location.X, this.FocusEntity.Location.Y, this.FocusEntity.GetComponentOrDefault<CreatureComponent>()?.VisionRadius ?? 1,
             (x, y) => GetTileSafe(x, y).BlocksSight,
             (x, y) =>
             {
@@ -98,10 +98,10 @@ namespace DraconicEngine
          }
 
          var radius = (this.FocusEntity.GetComponentOrDefault<CreatureComponent>()?.VisionRadius ?? 1) + 1;
-         var xStart = Math.Max(this.FocusEntity.X - radius - 1, 0);
-         var yStart = Math.Max(this.FocusEntity.Y - radius - 1, 0);
-         var xEnd = Math.Min(this.FocusEntity.X + radius + 1, this.MapWidth);
-         var yEnd = Math.Min(this.FocusEntity.Y + radius + 1, this.MapHeight);
+         var xStart = Math.Max(this.FocusEntity.Location.X - radius - 1, 0);
+         var yStart = Math.Max(this.FocusEntity.Location.Y - radius - 1, 0);
+         var xEnd = Math.Min(this.FocusEntity.Location.X + radius + 1, this.MapWidth);
+         var yEnd = Math.Min(this.FocusEntity.Location.Y + radius + 1, this.MapHeight);
 
          for (int x = xStart; x < xEnd; x++)
          {
@@ -139,31 +139,6 @@ namespace DraconicEngine
          else
          {
             return this.EntityStore.GetEntitiesAt(location).Any(e => e.Blocks) ? Blockage.Entity : Blockage.None;
-         }
-      }
-
-      public Blockage IsBlocked<T>(Loc location, Predicate<T> ignoreWhere = null)
-         where T : Entity
-      {
-         int x = location.X;
-         int y = location.Y;
-
-         if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight)
-         {
-            return Blockage.OffMap;
-         }
-         if (Map[x, y].BlocksMovement)
-         {
-            return Blockage.Tile;
-         }
-
-         if (ignoreWhere != null)
-         {
-            return this.EntityStore.GetEntitiesAt(location).OfType<T>().Any(e => e.Blocks && !ignoreWhere(e)) ? Blockage.Entity : Blockage.None;
-         }
-         else
-         {
-            return this.EntityStore.GetEntitiesAt(location).OfType<T>().Any(e => e.Blocks) ? Blockage.Entity : Blockage.None;
          }
       }
 

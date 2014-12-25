@@ -16,15 +16,7 @@ namespace DraconicEngine.GameStates
 {
    public abstract class PlayingState : IGameState
    {
-      
-      IPlayerController playerController;
       private IDisposable subscriptions;
-
-      public IPlayerController PlayerController
-      {
-         get { return playerController; }
-         set { playerController = value; }
-      }
 
       public Scene Scene { get; set; }
 
@@ -36,38 +28,37 @@ namespace DraconicEngine.GameStates
       {
          this.Scene = scene;
 
-         this.Engine.AddSystem(new AIDecisionSystem(), 1);
-         this.Engine.AddSystem(new CreatureActionSystem(), 2);
-         this.Engine.AddSystem(new TimerSystem(), 3);
-
+         
          this.subscriptions = this.Engine.ObserveStore(this.Scene.EntityStore);
       }
 
       public TimeSpan IdleUpdate { get; set; } = TimeSpan.FromSeconds(0.3);
-      public TimeSpan ActionUpdate { get; set; } = TimeSpan.FromSeconds(0.05);
+      public TimeSpan ActionUpdate { get; set; } = TimeSpan.FromSeconds(1.0 / 30.0);
+
+      protected abstract bool IsUnderPlayerControl();
+      protected abstract Task<PlayerTurnResult> GetPlayerTurn(TimeSpan timeout);
 
       public async Task<TickResult> Tick()
       {
-         if (this.playerController != null)
+         if (this.IsUnderPlayerControl())
          {
-            var playerTurn = await this.playerController.CheckInputAsync();
+            var playerTurn = await this.GetPlayerTurn(IdleUpdate);
 
             if (playerTurn == PlayerTurnResult.None)
             {
                return TickResult.Continue;
             }
-            else if (playerTurn == PlayerTurnResult.RealTimeIdle)
+            else if (playerTurn == PlayerTurnResult.TurnAdvancing)
             {
-               await Task.Delay(IdleUpdate);
+               await Task.Delay(ActionUpdate);
             }
             else if (playerTurn == PlayerTurnResult.Quit)
             {
                this.Save();
                return TickResult.Finished;
             }
-            else
+            else // Idle, already timed out
             {
-               await Task.Delay(ActionUpdate);
             }
          }
          else
@@ -75,11 +66,11 @@ namespace DraconicEngine.GameStates
             await Task.Delay(IdleUpdate);
          }
 
-         await Engine.Update(1.0);
+         await Engine.Update(1.0, UpdateTrack.Game);
 
          if (IsGameEndState())
          {
-            
+
             await RogueGame.Current.RunGameState(CreateEndScreen());
 
             return TickResult.Finished;
@@ -90,9 +81,6 @@ namespace DraconicEngine.GameStates
 
       protected virtual void Save()
       {
-         //var filePath = "saveGame.drgame";
-
-
       }
 
       protected abstract bool IsGameEndState();
@@ -101,7 +89,7 @@ namespace DraconicEngine.GameStates
       {
       }
 
-      public void Draw()
+      public async Task Draw()
       {
          RogueGame.Current.RootTerminal.Clear();
 
@@ -111,6 +99,8 @@ namespace DraconicEngine.GameStates
          {
             widget.Draw();
          }
+
+         await this.Engine.Update(1.0, UpdateTrack.Render);
 
          PostSceneDraw();
       }

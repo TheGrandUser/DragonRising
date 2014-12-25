@@ -20,13 +20,16 @@ using DraconicEngine.GameStates;
 using DraconicEngine.Terminals.Input.Commands;
 using DraconicEngine.Terminals.Input;
 using DragonRising.Commands;
+using DraconicEngine.GameWorld.Behaviors;
+using System.Threading;
+using System.Diagnostics;
+using DragonRising.GameWorld.Nodes;
 
 namespace DragonRising
 {
    public class PlayerController : IPlayerController
    {
-      DecisionComponent playerDecisionComponent;
-
+      PlayerControlledBehavior playerControlledBehavior;
       Entity playerCreature;
       public Entity PlayerCreature
       {
@@ -37,15 +40,13 @@ namespace DragonRising
             {
                if (this.playerCreature != null)
                {
-                  this.playerCreature.As<BehaviorComponent>(b => b.IsDirectlyControlled = false);
-                  this.playerDecisionComponent = null;
+                  this.playerCreature.As<BehaviorComponent>(b => b.PushBehavior(playerControlledBehavior));
                }
                this.playerCreature = value;
 
                if (this.playerCreature != null)
                {
-                  this.playerCreature.As<BehaviorComponent>(b => b.IsDirectlyControlled = true);
-                  this.playerDecisionComponent = this.playerCreature.GetComponent<DecisionComponent>();
+                  this.playerCreature.As<BehaviorComponent>(b => b.RemoveBehavior(playerControlledBehavior));
                }
             }
          }
@@ -54,16 +55,23 @@ namespace DragonRising
       FocusEntitySceneView sceneView;
 
 
-      static IEnumerable<CommandGesture> CommandGestures
+      static IEnumerable<CommandGesture> ActionCommandGestures
       {
          get
          {
             yield return moveCommandGesture;
-            yield return mouseLookCommandGesture;
             yield return useItemCommandGesture;
             yield return pickUpCommandGesture;
             yield return dropCommandGesture;
             yield return waitCommandGesture;
+         }
+      }
+
+      static IEnumerable<CommandGesture> NonActionCommandGestures
+      {
+         get
+         {
+            yield return mouseLookCommandGesture;
             yield return quitCommandGesture;
          }
       }
@@ -82,15 +90,32 @@ namespace DragonRising
 
       public PlayerController(FocusEntitySceneView sceneView)
       {
+         this.playerControlledBehavior = new PlayerControlledBehavior(this);
          this.sceneView = sceneView;
       }
 
-      public async Task<PlayerTurnResult> CheckInputAsync()
-      {
+      RogueAction actionToDo;
 
-         if (playerCreature.GetComponentOrDefault<BehaviorComponent>()?.IsDirectlyControlled ?? true)
+      public async Task<PlayerTurnResult> GetInputAsync(TimeSpan timeout)
+      {
+         var isControlled = playerCreature.GetComponentOrDefault<BehaviorComponent>()?.CurrentBehavior == this.playerControlledBehavior;
+
+         var commands = isControlled ?
+            NonActionCommandGestures.Concat(ActionCommandGestures) :
+            NonActionCommandGestures;
+
+         CancellationToken cancelToken = CancellationToken.None;
+
+         if (!isControlled)
          {
-            var inputResult = await InputSystem.Current.GetCommandAsync(CommandGestures);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            cts.CancelAfter(timeout);
+            cancelToken = cts.Token;
+         }
+
+         try
+         {
+            var inputResult = await InputSystem.Current.GetCommandAsync(ActionCommandGestures, cancelToken);
 
             if (inputResult.Command is LookAtCommand)
             {
@@ -115,7 +140,7 @@ namespace DragonRising
                   return PlayerTurnResult.None;
                }
 
-               this.playerDecisionComponent.ActionToDo = action;
+               this.actionToDo = action;
                return PlayerTurnResult.TurnAdvancing;
             }
             else if (inputResult.Command is LookCommand)
@@ -126,7 +151,7 @@ namespace DragonRising
             }
             else if (inputResult.Command == RogueCommands.Wait)
             {
-               this.playerDecisionComponent.ActionToDo = RogueAction.Idle;
+               this.actionToDo = RogueAction.Idle;
                return PlayerTurnResult.TurnAdvancing;
             }
             else if (inputResult.Command == RogueCommands.NoOp)
@@ -141,14 +166,24 @@ namespace DragonRising
             }
             else
             {
-               throw new NotImplementedException();
+               this.actionToDo = RogueAction.Idle;
+               return PlayerTurnResult.Idle;
             }
          }
-         else
+         catch (OperationCanceledException)
          {
-            await Task.Delay(TimeSpan.FromSeconds(0.3));
-            return PlayerTurnResult.TurnAdvancing;
+            this.actionToDo = RogueAction.Idle;
+            return PlayerTurnResult.Idle;
          }
+      }
+
+      public RogueAction GetAction()
+      {
+         Debug.Assert(actionToDo != null);
+
+         var atd = actionToDo;
+         actionToDo = null;
+         return atd;
       }
 
       async Task<RequirementFulfillment> GetFulfillmentAsync(ActionRequirement requirements)
@@ -172,8 +207,8 @@ namespace DragonRising
             if (itemRequirement.NeedsItemsFulfillment)
             {
                RequirementFulfillment itemFulfillment =
-                  item.GetComponent<ItemComponent>().Template.Usage.Requirements is NoRequirement ? NoFulfillment.None :
-                  await GetFulfillmentAsync(item.GetComponent<ItemComponent>().Template.Usage.Requirements);
+                  item.GetComponent<ItemComponent>().Usage.Requirements is NoRequirement ? NoFulfillment.None :
+                  await GetFulfillmentAsync(item.GetComponent<ItemComponent>().Usage.Requirements);
 
                return new ItemFulfillment(item, itemFulfillment);
             }
@@ -350,17 +385,22 @@ namespace DragonRising
          var range = requirement.MaxRange;
          var rangeSquared = range * range;
 
-         var entitiesInRange = Scene.CurrentScene.EntityStore.AllCreaturesExceptSpecial.Where(c => 
+
+         var entitiesInRange = Scene.CurrentScene.EntityStore.AllCreaturesExceptSpecial
+            .Where(c =>
+            c.HasComponent<DrawnComponent>() && c.HasComponent<LocationComponent>() &&
             requirement.DoesEntityMatch(c) &&
-            Scene.CurrentScene.IsVisible(c.Location) &&
-            (range == 0 || (c.Location - this.PlayerCreature.Location).LengthSquared <= rangeSquared)).ToArray();
+            Scene.CurrentScene.IsVisible(c.GetComponent<LocationComponent>().Location) &&
+            (range == null || (c.GetComponent<LocationComponent>().Location - this.PlayerCreature.GetComponent<LocationComponent>().Location).LengthSquared <= rangeSquared))
+            .Select(e => new SeeableNode() { Entity = e, Drawn = e.GetComponent<DrawnComponent>(), Loc = e.GetComponent<LocationComponent>() })
+            .ToArray();
 
          if (!entitiesInRange.Any())
          {
             return None;
          }
 
-         var selectEntityTool = new SelectEntityTool(ImmutableList.CreateRange<Entity>(entitiesInRange), this.sceneView, playingState.ScenePanel);
+         var selectEntityTool = new SelectEntityTool(ImmutableList.CreateRange(entitiesInRange), this.sceneView, playingState.ScenePanel);
 
          await RogueGame.Current.RunGameState(selectEntityTool);
 
@@ -371,5 +411,6 @@ namespace DragonRising
       {
          throw new NotImplementedException();
       }
+
    }
 }

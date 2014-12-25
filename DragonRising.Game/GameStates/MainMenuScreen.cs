@@ -15,6 +15,7 @@ using DraconicEngine.Terminals.Input;
 using DraconicEngine.Terminals.Input.Commands;
 using LanguageExt;
 using LanguageExt.Prelude;
+using System.Threading;
 
 namespace DragonRising.GameStates
 {
@@ -72,7 +73,7 @@ namespace DragonRising.GameStates
       {
          while (true)
          {
-            var result = await InputSystem.Current.GetCommandAsync(this.Gestures);
+            var result = await InputSystem.Current.GetCommandAsync(this.Gestures, CancellationToken.None);
             var command = result.Command as ValueCommand<MenuCommands>;
 
             if (command.Value == MenuCommands.Select)
@@ -130,7 +131,7 @@ namespace DragonRising.GameStates
          }
       }
 
-      public void Draw()
+      public Task Draw()
       {
          RogueGame.Current.RootTerminal.Clear();
          // Render the big title screen and the options;
@@ -141,6 +142,8 @@ namespace DragonRising.GameStates
             var color = menuItem.CanExecute() ? (currentMenuItem == i ? RogueColors.White : RogueColors.LightGray) : RogueColors.Gray;
             this.optionsTerminal[3, 3 + i][color].Write(menuItem.Name);
          }
+
+         return Task.FromResult(0);
       }
 
       public GameStateType Type { get { return GameStateType.Screen; } }

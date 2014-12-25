@@ -11,6 +11,21 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameWorld.EntitySystem
 {
+   public enum SystemTrack
+   {
+      Game,
+      Render,
+   }
+
+   [Flags]
+   public enum UpdateTrack
+   {
+      None = 0,
+      Game,
+      Render,
+      Both = Game | Render,
+   }
+
    public class Engine
    {
       private Subject<Unit> updateComplete = new Subject<Unit>();
@@ -18,8 +33,10 @@ namespace DraconicEngine.GameWorld.EntitySystem
       private Dictionary<Entity, IDisposable> entityList = new Dictionary<Entity, IDisposable>();
 
 
-      private SortedList<int, GameSystem> systemList = new SortedList<int, GameSystem>();
+      private SortedList<int, GameSystem> gameSystemList = new SortedList<int, GameSystem>();
+      private SortedList<int, GameSystem> renderSystemList = new SortedList<int, GameSystem>();
       private Dictionary<Type, IFamily> families = new Dictionary<Type, IFamily>();
+
 
       public Engine()
       {
@@ -115,38 +132,112 @@ namespace DraconicEngine.GameWorld.EntitySystem
          }
       }
 
-      public void AddSystem(GameSystem system, int priority)
+      public void AddSystem(GameSystem system, int priority, SystemTrack track)
       {
          system.priority = priority;
          system.AddToEngine(this);
-         this.systemList.Add(system.priority, system);
+         if (track == SystemTrack.Game)
+         {
+            this.gameSystemList.Add(system.priority, system);
+         }
+         else
+         {
+            this.renderSystemList.Add(system.priority, system);
+         }
       }
 
       public GameSystem GetSystem(Type type)
       {
-         return this.systemList.Values.FirstOrDefault(sys => type.IsInstanceOfType(sys));
+         return
+            this.gameSystemList.Values.FirstOrDefault(sys => type.IsInstanceOfType(sys)) ??
+            this.renderSystemList.Values.FirstOrDefault(sys => type.IsInstanceOfType(sys));
       }
 
-      public IEnumerable<GameSystem> Systems => this.systemList.Values.AsEnumerable();
+      public IEnumerable<GameSystem> GameSystems => this.gameSystemList.Values.AsEnumerable();
+      public IEnumerable<GameSystem> RenderSystems => this.renderSystemList.Values.AsEnumerable();
 
       public void RemoveSystem(GameSystem system)
       {
-         systemList.Remove(system.priority);
-         system.RemoveFromEngine(this);
+         if (gameSystemList.ContainsValue(system))
+         {
+            gameSystemList.Remove(system.priority);
+            system.RemoveFromEngine(this);
+         }
+         else if (renderSystemList.ContainsValue(system))
+         {
+            renderSystemList.Remove(system.priority);
+            system.RemoveFromEngine(this);
+         }
       }
 
       public void RemoveAllSystems()
       {
-         foreach (var system in systemList.Values.ToArray())
+         foreach (var system in gameSystemList.Values.Concat(renderSystemList.Values).ToArray())
          {
             RemoveSystem(system);
          }
       }
 
-      public async Task Update(double time)
+      IEnumerable<GameSystem> GetInterleavedsystems()
       {
+         using (IEnumerator<KeyValuePair<int, GameSystem>>
+            gameEnumerator = gameSystemList.GetEnumerator(),
+            renderEnumerator = renderSystemList.GetEnumerator())
+         {
+            var hasGame = gameEnumerator.MoveNext();
+            var hasRender = renderEnumerator.MoveNext();
+
+            while (hasGame && hasRender)
+            {
+               var currentGame = gameEnumerator.Current;
+               var currentRender = renderEnumerator.Current;
+
+               if (currentGame.Key <= currentRender.Key)
+               {
+                  yield return currentGame.Value;
+                  hasGame = gameEnumerator.MoveNext();
+               }
+               else
+               {
+                  yield return currentRender.Value;
+                  hasRender = renderEnumerator.MoveNext();
+               }
+            }
+            while (hasGame)
+            {
+               yield return gameEnumerator.Current.Value;
+               gameEnumerator.MoveNext();
+            }
+            while (hasRender)
+            {
+               yield return renderEnumerator.Current.Value;
+               renderEnumerator.MoveNext();
+            }
+         }
+      }
+
+
+      public async Task Update(double time, UpdateTrack track)
+      {
+         IEnumerable<GameSystem> systems;
+         switch (track)
+         {
+            case UpdateTrack.Game:
+               systems = gameSystemList.Values;
+               break;
+            case UpdateTrack.Render:
+               systems = renderSystemList.Values;
+               break;
+            case UpdateTrack.Both:
+               systems = GetInterleavedsystems();
+               break;
+            default:
+               return;
+         }
+
          this.IsUpdating = true;
-         foreach (var system in systemList.Values)
+
+         foreach (var system in systems)
          {
             if (system is GameSystemSync)
             {

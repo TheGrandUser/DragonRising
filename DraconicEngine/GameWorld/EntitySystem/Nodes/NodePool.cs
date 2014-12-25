@@ -22,7 +22,10 @@ namespace DraconicEngine.GameWorld.EntitySystem
 
       public void Return(TNode node)
       {
-         node.ClearComponents();
+         foreach(var pi in components.Values)
+         {
+            pi.SetValue(node, null);
+         }
          node.Entity = null;
          nodes.Enqueue(node);
       }

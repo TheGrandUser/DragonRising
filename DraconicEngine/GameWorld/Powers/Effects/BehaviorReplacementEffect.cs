@@ -19,7 +19,7 @@ namespace DraconicEngine.Powers.Effects
       NumberNodeInput durationInput = new NumberNodeInput();
       public NumberNodeInput DurationInput { get { return durationInput; } }
 
-      public IBehaviorTemplate BehaviorTemplate { get; set; }
+      public Behavior BehaviorTemplate { get; set; }
       public string BeginMessageTemplate { get; set; }
       public string EndMessageTemplate { get; set; }
 
@@ -28,7 +28,7 @@ namespace DraconicEngine.Powers.Effects
          var targets = this.targetInput.Value;
          foreach (var target in targets)
          {
-            var newBehavior = this.BehaviorTemplate.Create();
+            var newBehavior = this.BehaviorTemplate.Clone();
             target.GetComponent<BehaviorComponent>().PushBehavior(newBehavior);
             var duration = this.durationInput.Value;
 

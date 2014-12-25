@@ -17,7 +17,7 @@ namespace DragonRising.Entities.Items
 {
    public class BehaviorReplacementItem : IItemUsage
    {
-      Func<IBehavior> behaviorFactory;
+      Behavior behaviorPrototype;
       int duration;
       int range;
 
@@ -25,13 +25,13 @@ namespace DragonRising.Entities.Items
       Func<Entity, string> beginMessage;
       Func<Entity, string> endMessage;
 
-      public BehaviorReplacementItem(Func<IBehavior> behaviorFactory,
+      public BehaviorReplacementItem(Behavior behaviorFactory,
          string verb,
          Func<Entity, string> beginMessage,
          Func<Entity, string> endMessage,
          int duration = 10, int range = 8)
       {
-         this.behaviorFactory = behaviorFactory;
+         this.behaviorPrototype = behaviorFactory;
          this.duration = duration;
          this.verb = verb;
          this.beginMessage = beginMessage;
@@ -41,7 +41,7 @@ namespace DragonRising.Entities.Items
 
       public static BehaviorReplacementItem CreateConfusionItem()
       {
-         return new BehaviorReplacementItem(() => new ConfusedBehavior(),
+         return new BehaviorReplacementItem(new ConfusedBehavior(),
             "confuse",
             c => "The eyes of the " + c.Name + " look vacant, as he starts to stumble around.",
             c => "The " + c.Name + " is no longer confused.");
@@ -54,7 +54,7 @@ namespace DragonRising.Entities.Items
          return closestMonster.Match(
             Some: target =>
             {
-               var behavior = behaviorFactory();
+               var behavior = behaviorPrototype.Clone();
                var controller = target.GetComponent<BehaviorComponent>();
                controller.PushBehavior(behavior);
                MessageService.Current.PostMessage(beginMessage(target), RogueColors.LightGreen);

@@ -10,29 +10,29 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
    public sealed class CreatureComponent : Component
    {
-      public CreatureComponentTemplate Template { get; set; }
-      public int VisionRadius => Template.VisionRadius;
-      public Some<Alligence> Alligence { get; set; } = AlligenceManager.Current.Neutral;
-
-      public CreatureComponent(CreatureComponentTemplate template)
-      {
-         this.Template = template;
-         this.Alligence = template.Alligence;
-      }
-   }
-
-   public class CreatureComponentTemplate : ComponentTemplate
-   {
       public int VisionRadius { get; set; }
       public Some<Alligence> Alligence { get; set; } = AlligenceManager.Current.Neutral;
 
-      public CreatureComponentTemplate(Some<Alligence> alligence)
+      public CreatureComponent()
       {
-         this.Alligence = alligence;
       }
 
-      public override Type ComponentType=> typeof(CreatureComponent);
+      public CreatureComponent(Some<Alligence> alligence, int visionRadius)
+      {
+         this.Alligence = alligence;
+         this.VisionRadius = visionRadius;
+      }
 
-      public override Component CreateComponent() => new CreatureComponent(this);
+      protected CreatureComponent(CreatureComponent original, bool fresh)
+         : base(original, fresh)
+      {
+         this.Alligence = original.Alligence;
+         this.VisionRadius = original.VisionRadius;
+      }
+
+      protected override Component CloneCore(bool fresh)
+      {
+         return new CreatureComponent(this, fresh);
+      }
    }
 }

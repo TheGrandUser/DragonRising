@@ -16,6 +16,11 @@ namespace DraconicEngine.Timers
          this.duration = duration;
       }
 
+      protected TurnTimer(TurnTimer original)
+      {
+         this.duration = original.duration;
+      }
+
       public void Tick()
       {
          --duration;
@@ -26,6 +31,12 @@ namespace DraconicEngine.Timers
       }
       public int Duration { get { return duration; } }
 
+      public TurnTimer Clone()
+      {
+         return CloneCore();
+      }
+
+      protected abstract TurnTimer CloneCore();
       protected abstract void Trigger();
    }
 }

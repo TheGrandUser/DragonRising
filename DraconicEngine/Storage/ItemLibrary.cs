@@ -10,8 +10,8 @@ namespace DraconicEngine.Storage
 {
    public interface IItemLibrary
    {
-      void Add(EntityTemplate itemTemplate);
-      EntityTemplate Get(string name);
+      Entity Get(string name);
       bool Contains(string name);
+      void Add(Entity entity);
    }
 }

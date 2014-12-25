@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.Terminals;
 using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.GameWorld.EntitySystem.Components;
 
 namespace DraconicEngine.Widgets
 {
@@ -54,30 +55,30 @@ namespace DraconicEngine.Widgets
             }
          }
 
-         foreach(var entity in this.scene.EntityStore.AllNonCreatures)
-         {
-            if (this.scene.GetTileSafe(entity.Location).Visibility == TileVisibility.Seen)
-            {
+         //foreach(var entity in this.scene.EntityStore.AllNonCreatures)
+         //{
+         //   if (this.scene.GetTileSafe(entity.Location).Visibility == TileVisibility.Seen)
+         //   {
 
-               entity.Draw(this.Panel, this.sceneView.ViewOffset);
-            }
-         }
+         //      entity.Draw(this.Panel, this.sceneView.ViewOffset);
+         //   }
+         //}
 
-         foreach (var creature in this.scene.EntityStore.AllCreaturesExceptSpecial)
-         {
-            if (this.scene.GetTileSafe(creature.Location).Visibility == TileVisibility.Seen)
-            {
-               creature.Draw(this.Panel, this.sceneView.ViewOffset);
-            }
-         }
+         //foreach (var creature in this.scene.EntityStore.AllCreaturesExceptSpecial)
+         //{
+         //   if (this.scene.GetTileSafe(creature.Location).Visibility == TileVisibility.Seen)
+         //   {
+         //      creature.Draw(this.Panel, this.sceneView.ViewOffset);
+         //   }
+         //}
 
-         foreach (var creature in this.scene.EntityStore.AllSpecialCreatures)
-         {
-            if (this.scene.GetTileSafe(creature.Location).Visibility == TileVisibility.Seen)
-            {
-               creature.Draw(this.Panel, this.sceneView.ViewOffset);
-            }
-         }
+         //foreach (var creature in this.scene.EntityStore.AllSpecialCreatures)
+         //{
+         //   if (this.scene.GetTileSafe(creature.Location).Visibility == TileVisibility.Seen)
+         //   {
+         //      creature.Draw(this.Panel, this.sceneView.ViewOffset);
+         //   }
+         //}
       }
    }
 }

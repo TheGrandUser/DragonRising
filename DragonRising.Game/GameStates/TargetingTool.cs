@@ -71,7 +71,7 @@ namespace DragonRising.GameStates
          return TickResult.Continue;
       }
 
-      public void Draw()
+      public Task Draw()
       {
          var path = this.startLocation.GetLineTo(this.location);
          foreach (var scenePoint in path.TakeWhile(p => p != this.location))
@@ -88,6 +88,8 @@ namespace DragonRising.GameStates
          {
             this.sceneTerminal[finalPoint][RogueColors.White, RogueColors.DarkCyan].Write(Glyph.Plus);
          }
+
+         return Task.FromResult(0);
       }
 
       public Option<IGameState> Finish()

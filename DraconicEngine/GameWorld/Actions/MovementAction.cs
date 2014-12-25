@@ -21,10 +21,11 @@ namespace DraconicEngine.GameWorld.Actions
 
       public override void Do(Entity executer)
       {
-         var newLocation = executer.Location + Vector.FromDirection(dir);
+         var locComp = executer.GetComponent<LocationComponent>();
+         var newLocation = locComp.Location + Vector.FromDirection(dir);
          if (Scene.CurrentScene.IsBlocked(newLocation) == Blockage.None)
          {
-            executer.Location = newLocation;
+            locComp.Location = newLocation;
          }
       }
    }
@@ -41,7 +42,7 @@ namespace DraconicEngine.GameWorld.Actions
       {
          if (Scene.CurrentScene.IsBlocked(newLocation) == Blockage.None)
          {
-            executer.Location = newLocation;
+            executer.GetComponent<LocationComponent>().Location = newLocation;
          }
       }
    }

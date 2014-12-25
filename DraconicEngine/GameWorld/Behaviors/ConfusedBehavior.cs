@@ -11,17 +11,25 @@ using DraconicEngine.GameWorld.Actions.Requirements;
 
 namespace DraconicEngine.GameWorld.Behaviors
 {
-   [Serializable]
-   public class ConfusedBehavior : IBehavior
+   public class ConfusedBehavior : Behavior
    {
-      public RogueAction PlanTurn(Entity owner)
+      public ConfusedBehavior()
+      {
+      }
+
+      protected ConfusedBehavior(ConfusedBehavior original)
+         : base(original)
+      {
+      }
+
+      public override RogueAction PlanTurn(Entity owner)
       {
          var result = RogueGame.Current.GameRandom.Next(100);
 
          if (result < 70) // Move
          {
             var direction = (Direction)RogueGame.Current.GameRandom.Next(9);
-            var loc = owner.Location + Vector.FromDirection(direction);
+            var loc = owner.GetComponent<LocationComponent>().Location + Vector.FromDirection(direction);
             if (Scene.CurrentScene.IsBlocked(loc) == Blockage.None)
             {
                return new MoveToAction(loc);
@@ -37,10 +45,9 @@ namespace DraconicEngine.GameWorld.Behaviors
          }
       }
 
-      public Entity SelectInventoryItem(Entity owner) => null;
-
-      public Loc? SelectTargetLocation(Entity owner, bool isLimitedToFoV = true) => null;
-
-      public Entity SelectTargetCreature(Entity owner, int range = 0) => null;
+      protected override Behavior CloneCore()
+      {
+         return new ConfusedBehavior(this);
+      }
    }
 }

@@ -55,8 +55,8 @@ namespace DraconicEngine.Widgets
 
          var offsetSize = this.Panel.Size / 2;
          this.ViewOffset = new Vector(
-            Math.Min(Math.Max(this.Scene.FocusEntity.X - offsetSize.X, 0), this.Scene.MapWidth - this.Panel.Size.X),
-            Math.Min(Math.Max(this.Scene.FocusEntity.Y - offsetSize.Y, 0), this.Scene.MapHeight - this.Panel.Size.Y));
+            Math.Min(Math.Max(this.Scene.FocusEntity.Location.X - offsetSize.X, 0), this.Scene.MapWidth - this.Panel.Size.X),
+            Math.Min(Math.Max(this.Scene.FocusEntity.Location.Y - offsetSize.Y, 0), this.Scene.MapHeight - this.Panel.Size.Y));
       }
    }
 }

@@ -12,17 +12,34 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
    public class ItemComponent : Component
    {
-      public ItemComponentTemplate Template { get; set; }
+      public IItemUsage Usage { get; set; }
+      public int MaxCharges { get; set; }
+      public bool IsCharged { get; set; }
       public int Charges { get; set; }
+
+      public ItemComponent()
+      {
+
+      }
+
+      protected ItemComponent(ItemComponent original, bool fresh)
+         : base(original, fresh)
+      {
+         this.Usage = original.Usage;
+         this.MaxCharges = original.MaxCharges;
+         this.IsCharged = original.IsCharged;
+
+         this.Charges = fresh ? MaxCharges : original.Charges;
+      }
 
       public ItemUseResult Use(Entity user, Some<RequirementFulfillment> itemsRequirements)
       {
-         var usage = this.Template.Usage;
+         var usage = this.Usage;
          if (usage != null)
          {
             if (usage.Use(user, itemsRequirements))
             {
-               if (this.Template.IsCharged)
+               if (this.IsCharged)
                {
                   this.Charges--;
 
@@ -38,21 +55,27 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 
          return ItemUseResult.NotUsed;
       }
-   }
 
-   public class ItemComponentTemplate : ComponentTemplate
-   {
-      public IItemUsage Usage { get; set; }
-      public int MaxCharges { get; set; }
-      public bool IsCharged { get; set; }
-
-      public override Type ComponentType => typeof(ItemComponent);
-
-      public override Component CreateComponent()
+      protected override Component CloneCore(bool fresh)
       {
-         return new ItemComponent() { Template = this, Charges = this.MaxCharges };
+         return new ItemComponent(this, fresh);
       }
    }
+
+   //public class ItemComponentTemplate : ComponentTemplate
+   //{
+   //   public IItemUsage Usage { get; set; }
+   //   public int MaxCharges { get; set; }
+   //   public bool IsCharged { get; set; }
+
+   //   public override Type ComponentType => typeof(ItemComponent);
+
+   //   public override Component CreateComponent()
+   //   {
+   //      return new ItemComponent() { Template = this, Charges = this.MaxCharges };
+   //   }
+   //}
+
    public enum ItemUseResult
    {
       Used,

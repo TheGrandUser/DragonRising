@@ -26,25 +26,22 @@ namespace DragonRising.Generators
          if (value <= 0.7 && Library.Items.Contains(HealingPotion))
          {
             var template = Library.Items.Get(HealingPotion);
-            item = template.Create();
+            item = template.Clone();
          }
          else if (value <= 0.85 && Library.Items.Contains(ScrollOfLightningBolt))
          {
             var template = Library.Items.Get(ScrollOfLightningBolt);
-            item = template.Create();
-            //item = CreateScrollOfLightningBolt();
+            item = template.Clone();
          }
          else if (value <= 0.90 && Library.Items.Contains(ScrollOfFireball))
          {
             var template = Library.Items.Get(ScrollOfFireball);
-            item = template.Create();
-            //item = CreateScrollOfFireball();
+            item = template.Clone();
          }
          else if (Library.Items.Contains(ScrollOfConfusion))
          {
             var template = Library.Items.Get(ScrollOfConfusion);
-            item = template.Create();
-            //item = CreateScrollOfConfusion();
+            item = template.Clone();
          }
 
          return item;
