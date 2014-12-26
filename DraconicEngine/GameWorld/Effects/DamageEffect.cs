@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DraconicEngine.Powers.Effects
+namespace DraconicEngine.GameWorld.Effects
 {
    public class DamageEffect : IEffect
    {

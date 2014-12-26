@@ -12,6 +12,7 @@ using DraconicEngine.GameWorld.Behaviors;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using LanguageExt;
 using LanguageExt.Prelude;
+using DraconicEngine.GameWorld.Effects;
 
 namespace DragonRising.Entities.Items
 {
@@ -59,12 +60,12 @@ namespace DragonRising.Entities.Items
                controller.PushBehavior(behavior);
                MessageService.Current.PostMessage(beginMessage(target), RogueColors.LightGreen);
 
-               var setTimer = new PopBehaviorTimer(this.duration, target);
-               var messageTimer = new MessageTimer(this.duration, endMessage(target), RogueColors.Red);
-
+               var setTimer = new TurnTimer(this.duration, user,
+                  new RemoveBehaviorEffect(behavior, target),
+                  new MessageEffect(endMessage(target), RogueColors.Red));
+               
                target.AttachTimer(setTimer);
-               target.AttachTimer(messageTimer);
-
+               
                return true;
             },
             None: () => false);

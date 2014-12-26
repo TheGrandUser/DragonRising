@@ -17,10 +17,9 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
       protected TimerComponent(TimerComponent original, bool fresh)
          : base(original, fresh)
       {
-         if (!fresh)
-         {
-            this.Timers.AddRange(original.Timers.Select(t => t.Clone()));
-         }
+         // Never copy timers, even when not asking for a fresh clone
+
+         // This might be an indication that entities should not be the containers for timers
       }
       public List<TurnTimer> Timers { get; } = new List<TurnTimer>();
 

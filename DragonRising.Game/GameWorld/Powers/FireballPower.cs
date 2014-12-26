@@ -1,5 +1,5 @@
-﻿using DraconicEngine.Powers;
-using DraconicEngine.Powers.Effects;
+﻿using DraconicEngine.GameWorld.Effects;
+using DraconicEngine.Powers;
 using DraconicEngine.Powers.Nodes;
 using System;
 using System.Collections.Generic;

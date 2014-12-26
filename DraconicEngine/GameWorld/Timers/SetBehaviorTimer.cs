@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.Timers
 {
-   public class PopBehaviorTimer : TurnTimer
-   {
-      Entity target;
+   //public class PopBehaviorTimer : TurnTimer
+   //{
+   //   Entity target;
 
-      public PopBehaviorTimer(int duration, Entity target)
-         : base(duration)
-      {
-         this.target = target;
-      }
+   //   public PopBehaviorTimer(int duration, Entity target)
+   //      : base(duration)
+   //   {
+   //      this.target = target;
+   //   }
 
-      protected override void Trigger()
-      {
-         target.As<BehaviorComponent>(controler => controler.PopBehavior());
-      }
-   }
+   //   protected override void Trigger()
+   //   {
+   //      target.As<BehaviorComponent>(controler => controler.PopBehavior());
+   //   }
+   //}
 }

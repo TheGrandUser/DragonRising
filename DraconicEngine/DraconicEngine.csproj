@@ -99,6 +99,8 @@
     <Compile Include="GameWorld\Alligences\AlligenceManager.cs" />
     <Compile Include="GameWorld\Alligences\Relationship.cs" />
     <Compile Include="GameWorld\Behaviors\PlayerControlledBehavior.cs" />
+    <Compile Include="GameWorld\Effects\MessageEffect.cs" />
+    <Compile Include="GameWorld\Effects\RemoveBehaviorEffect.cs" />
     <Compile Include="GameWorld\EntitySystem\Components\DrawnComponent.cs" />
     <Compile Include="GameWorld\EntitySystem\Components\GameActionsComponent.cs" />
     <Compile Include="GameWorld\EntitySystem\Components\LocationComponent.cs" />
@@ -208,9 +210,9 @@
     <Compile Include="Terminals\Media\Transform.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Utilities\Obj.cs" />
-    <Compile Include="GameWorld\Powers\Effects\BehaviorReplacementEffect.cs" />
-    <Compile Include="GameWorld\Powers\Effects\DamageEffect.cs" />
-    <Compile Include="GameWorld\Powers\Effects\Effect.cs" />
+    <Compile Include="GameWorld\Effects\BehaviorReplacementEffect.cs" />
+    <Compile Include="GameWorld\Effects\DamageEffect.cs" />
+    <Compile Include="GameWorld\Effects\Effect.cs" />
     <Compile Include="GameWorld\Powers\Fulfilment.cs" />
     <Compile Include="GameWorld\Powers\Nodes\ChooseTarget.cs" />
     <Compile Include="GameWorld\Powers\Nodes\ConstantNodes.cs" />
@@ -260,7 +262,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="GameWorld\Powers\Effects\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

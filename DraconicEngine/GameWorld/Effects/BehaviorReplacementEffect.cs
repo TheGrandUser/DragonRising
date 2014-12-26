@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DraconicEngine.Powers.Effects
+namespace DraconicEngine.GameWorld.Effects
 {
    public class BehaviorReplacementEffect : IEffect
    {
@@ -37,14 +37,14 @@ namespace DraconicEngine.Powers.Effects
                MessageService.Current.PostMessage(string.Format(this.BeginMessageTemplate, target, initiator), RogueColors.LightGreen);
             }
 
-            var setTimer = new PopBehaviorTimer(duration, target);
-            target.AttachTimer(setTimer);
+            var setTimer =
+               string.IsNullOrEmpty(EndMessageTemplate) ?
+               new TurnTimer(duration, initiator, new RemoveBehaviorEffect(newBehavior, target)) :
+               new TurnTimer(duration, initiator,
+                  new RemoveBehaviorEffect(newBehavior, target),
+                  new MessageEffect(string.Format(this.EndMessageTemplate, target, initiator), RogueColors.Red));
 
-            if (!string.IsNullOrEmpty(this.EndMessageTemplate))
-            {
-               var messageTimer = new MessageTimer(duration, string.Format(this.EndMessageTemplate, target, initiator), RogueColors.Red);
-               target.AttachTimer(messageTimer);
-            }
+            target.AttachTimer(setTimer);
          }
       }
    }
