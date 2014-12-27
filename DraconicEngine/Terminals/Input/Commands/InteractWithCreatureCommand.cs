@@ -27,7 +27,7 @@ namespace DraconicEngine.Terminals.Input.Commands
 
          if (executer.IsEnemy(other.Entity) && other.Entity.HasComponent<CombatantComponent>())
          {
-            return new AlternateCommmand(new AttackEntityCommand(), new EntityFulfillment(other.Entity));
+            return new AlternateCommmand(new AttackEntityCommand(), other);
          }
          return RogueAction.Abort;
       }

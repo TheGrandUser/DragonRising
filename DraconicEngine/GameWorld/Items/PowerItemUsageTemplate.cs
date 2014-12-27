@@ -26,8 +26,7 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
       {
          if (DoFulfillmentsMatch(fulfillment))
          {
-            List<Fulfilment> fulfilments = null;
-            this.Power.Do(user, ImmutableList.CreateRange(fulfilments));
+            this.Power.Do(user, fulfillment);
             return true;
          }
          return false;

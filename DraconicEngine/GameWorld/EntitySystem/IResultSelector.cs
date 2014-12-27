@@ -1,4 +1,5 @@
-﻿using DraconicEngine.GameWorld.EntitySystem.Components;
+﻿using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.Items;
 using DraconicEngine.Powers;
 using System;
@@ -11,7 +12,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
 {
     public interface IResultSelector
     {
-        ItemUseResult Select(Entity user, List<Fulfilment> fulfilments);
+        ItemUseResult Select(Entity user, RequirementFulfillment fulfilment);
     }
 
     public class FixedResultSelector : IResultSelector
@@ -22,7 +23,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
             result = isDestroyed ? ItemUseResult.Destroyed : ItemUseResult.Used;
         }
 
-        public ItemUseResult Select(Entity user, List<Fulfilment> fulfilments)
+        public ItemUseResult Select(Entity user, RequirementFulfillment fulfilment)
         {
             return result;
         }

@@ -1,4 +1,6 @@
-﻿using DraconicEngine.GameWorld.EntitySystem;
+﻿using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.GameWorld.EntitySystem.Components;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -16,19 +18,13 @@ namespace DraconicEngine.Powers.Nodes
       NumberNodeInput rangeInput = new NumberNodeInput();
       public NumberNodeInput RangeInput { get { return rangeInput; } }
 
-      RequirementCreature creatureRequirement = new RequirementCreature();
-      public RequirementCreature CreatureRequirement { get { return creatureRequirement; } }
+      public override ActionRequirement Requirements { get; } = new EntityRequirement(null, typeof(CreatureComponent));
 
-      public override void Do(Entity initiator, ImmutableDictionary<Requirement, Fulfilment> fulfilments)
+      public override void Do(Entity initiator, RequirementFulfillment fulfillment)
       {
-         var fulfilment = fulfilments[this.creatureRequirement] as FulfilmentCreature;
+         var creatureFulfillment = (EntityFulfillment)fulfillment;
 
-         if(fulfilment == null)
-         {
-            throw new PowerException("Requirement not met");
-         }
-
-         this.creatureOutput.Pipe(EnumerableEx.Return(fulfilment.Value));
+         this.creatureOutput.Pipe(EnumerableEx.Return(creatureFulfillment.Entity));
       }
    }
 
@@ -39,20 +35,12 @@ namespace DraconicEngine.Powers.Nodes
 
       NumberNodeInput rangeInput = new NumberNodeInput();
       public NumberNodeInput RangeInput { get { return rangeInput; } }
+      public override ActionRequirement Requirements { get; } = new LocationRequirement();
 
-      RequirementLocation locationRequirement = new RequirementLocation();
-      public RequirementLocation LocationRequirement { get { return locationRequirement; } }
-
-      public override void Do(Entity initiator, ImmutableDictionary<Requirement, Fulfilment> fulfilments)
+      public override void Do(Entity initiator, RequirementFulfillment fulfillment)
       {
-         var fulfilment = fulfilments[this.locationRequirement] as FulfilmentLocation;
-
-         if (fulfilment == null)
-         {
-            throw new PowerException("Requirement not met");
-         }
-
-         this.locationOutput.Pipe(EnumerableEx.Return(fulfilment.Value));
+         var locationFulfillment = (LocationFulfillment)fulfillment;
+         this.locationOutput.Pipe(EnumerableEx.Return(locationFulfillment.Location));
       }
    }
 }

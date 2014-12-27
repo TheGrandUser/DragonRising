@@ -212,7 +212,6 @@
     <Compile Include="GameWorld\Effects\BehaviorReplacementEffect.cs" />
     <Compile Include="GameWorld\Effects\DamageEffect.cs" />
     <Compile Include="GameWorld\Effects\Effect.cs" />
-    <Compile Include="GameWorld\Powers\Fulfilment.cs" />
     <Compile Include="GameWorld\Powers\Nodes\ChooseTarget.cs" />
     <Compile Include="GameWorld\Powers\Nodes\ConstantNodes.cs" />
     <Compile Include="GameWorld\Powers\Nodes\GetEntitiesWithinNode.cs" />
@@ -224,7 +223,6 @@
     <Compile Include="GameWorld\Powers\Nodes\TargetSelf.cs" />
     <Compile Include="GameWorld\Powers\Power.cs" />
     <Compile Include="GameWorld\Powers\PowerException.cs" />
-    <Compile Include="GameWorld\Powers\Requirement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\RogueColor.cs" />
     <Compile Include="Utilities\RogueColors.cs" />

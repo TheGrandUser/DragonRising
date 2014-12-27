@@ -1,4 +1,5 @@
-﻿using DraconicEngine.GameWorld.EntitySystem;
+﻿using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.GameWorld.EntitySystem;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -12,8 +13,8 @@ namespace DraconicEngine.Powers.Nodes
    {
       EntityNodeOutput entityOutput = new EntityNodeOutput();
       public EntityNodeOutput EntityOutput { get { return entityOutput; } }
-
-      public override void Do(Entity initiator, ImmutableDictionary<Requirement, Fulfilment> fulfilments)
+      public override ActionRequirement Requirements => NoRequirement.None;
+      public override void Do(Entity initiator, RequirementFulfillment fulfillment)
       {
          //entityOutput.Entities = EnumerableEx.Return(initiator);
       }

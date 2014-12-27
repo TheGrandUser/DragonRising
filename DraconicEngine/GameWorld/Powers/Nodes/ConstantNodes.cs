@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DraconicEngine.GameWorld.Actions.Requirements;
 
 namespace DraconicEngine.Powers.Nodes
 {
@@ -15,10 +16,10 @@ namespace DraconicEngine.Powers.Nodes
 
       NumberNodeOutput valueOutput = new NumberNodeOutput();
       public NumberNodeOutput ValueOutput { get { return valueOutput; } }
+      public override ActionRequirement Requirements => NoRequirement.None;
 
-      public override void Do(Entity initiator, ImmutableDictionary<Requirement, Fulfilment> fulfilments)
+      public override void Do(Entity initiator, RequirementFulfillment fulfillment)
       {
-         //valueOutput.Value = this.value;
       }
    }
 }

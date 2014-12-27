@@ -1,4 +1,5 @@
-﻿using DraconicEngine.GameWorld.EntitySystem;
+﻿using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.GameWorld.EntitySystem;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -10,7 +11,7 @@ namespace DraconicEngine.Powers.Nodes
 {
    public abstract class PowerNode
    {
-      public abstract void Do(Entity initiator, ImmutableDictionary<Requirement, Fulfilment> fulfilments);
+      public abstract ActionRequirement Requirements { get; }
+      public abstract void Do(Entity initiator, RequirementFulfillment fulfillment);
    }
-
 }

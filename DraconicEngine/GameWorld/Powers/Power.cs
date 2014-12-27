@@ -1,4 +1,5 @@
-﻿using DraconicEngine.GameWorld.EntitySystem;
+﻿using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.Powers.Nodes;
 using System;
 using System.Collections.Generic;
@@ -15,12 +16,12 @@ namespace DraconicEngine.Powers
       private List<NodeConnection> connections = new List<NodeConnection>();
 
 
-      public IImmutableList<Requirement> Requirements { get; set; }
+      public ActionRequirement Requirements { get; set; }
 
       public List<PowerNode> Nodes { get { return this.nodes; } }
       public List<NodeConnection> Connections { get { return this.connections; } }
 
-      public virtual void Do(Entity initiator, ImmutableList<Fulfilment> fulfilments)
+      public virtual void Do(Entity initiator, RequirementFulfillment fulfilment)
       {
 
       }

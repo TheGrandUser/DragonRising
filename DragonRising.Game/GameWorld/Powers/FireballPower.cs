@@ -10,6 +10,7 @@ using DraconicEngine.GameWorld.EntitySystem;
 using System.Collections.Immutable;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.GameWorld.Actions.Requirements;
 
 namespace DragonRising.Powers
 {
@@ -30,12 +31,10 @@ namespace DragonRising.Powers
 
       }
 
-      public override void Do(Entity initiator, ImmutableList<Fulfilment> fulfilments)
+      public override void Do(Entity initiator, RequirementFulfillment fulfillment)
       {
-         var fulfillment = fulfilments.Single();
-
-         var locationFulfillment = fulfillment as FulfilmentLocation;
-         var target = locationFulfillment.Value;
+         var locationFulfillment = fulfillment as LocationFulfillment;
+         var target = locationFulfillment.Location;
 
          var rangeSquared = 3 * 3;
 
@@ -48,7 +47,7 @@ namespace DragonRising.Powers
             var damageEffect = new DamageEffect(initiator);
          }
 
-         base.Do(initiator, fulfilments);
+         base.Do(initiator, fulfillment);
       }
    }
 }
