@@ -20,7 +20,7 @@ namespace DraconicEngine.GameWorld.Effects
          this.target = target;
       }
 
-      public void Do(Entity initiator)
+      public void Do()
       {
          target.As<BehaviorComponent>(bc => bc.RemoveBehavior(behavior));
       }

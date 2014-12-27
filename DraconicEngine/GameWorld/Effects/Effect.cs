@@ -10,6 +10,6 @@ namespace DraconicEngine.GameWorld.Effects
 {
    public interface IEffect
    {
-      void Do(Entity initiator);
+      void Do();
    }
 }

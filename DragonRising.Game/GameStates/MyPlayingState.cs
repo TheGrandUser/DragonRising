@@ -114,7 +114,6 @@ namespace DragonRising.GameStates
 
          this.Engine.AddSystem(new AIDecisionSystem(), 1, SystemTrack.Game);
          this.Engine.AddSystem(new CreatureActionSystem(), 2, SystemTrack.Game);
-         this.Engine.AddSystem(new TimerSystem(), 3, SystemTrack.Game);
 
          this.Engine.AddSystem(new RenderSystem(scenePanel, sceneView, scene), 4, SystemTrack.Render);
          this.Engine.AddSystem(new ItemRenderSystem(scenePanel, sceneView, scene), 5, SystemTrack.Render);

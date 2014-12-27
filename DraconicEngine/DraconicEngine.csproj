@@ -109,10 +109,10 @@
     <Compile Include="GameWorld\EntitySystem\Nodes\DoesNotHaveAttribute.cs" />
     <Compile Include="GameWorld\EntitySystem\Nodes\DrawNode.cs" />
     <Compile Include="GameWorld\EntitySystem\Nodes\ItemDrawNode.cs" />
-    <Compile Include="GameWorld\EntitySystem\Nodes\TimerNode.cs" />
     <Compile Include="GameWorld\EntitySystem\Systems\RenderSystem.cs" />
-    <Compile Include="GameWorld\EntitySystem\Systems\TimerSystem.cs" />
     <Compile Include="GameWorld\GameState.cs" />
+    <Compile Include="Services\TimedEvents.cs" />
+    <Compile Include="Services\TurnEffects.cs" />
     <Compile Include="Storage\EntityLibrary.cs" />
     <Compile Include="Storage\PowerLibrary.cs" />
     <Compile Include="Storage\TileLibrary.cs" />
@@ -132,7 +132,6 @@
     <Compile Include="GameWorld\Alligences\Alligence.cs" />
     <Compile Include="GameWorld\EntitySystem\Components\ItemComponent.cs" />
     <Compile Include="GameWorld\EntitySystem\Components\ManipulatableComponent.cs" />
-    <Compile Include="GameWorld\EntitySystem\Components\TimerComponent.cs" />
     <Compile Include="GameWorld\EntitySystem\Nodes\BehaviorNode.cs" />
     <Compile Include="GameWorld\Actions\AttackEntityAction.cs" />
     <Compile Include="GameWorld\Actions\DropItemAction.cs" />
@@ -244,9 +243,6 @@
     <Compile Include="Terminals\TerminalExtensions.cs" />
     <Compile Include="Terminals\WindowTerminal.cs" />
     <Compile Include="GameWorld\Tile.cs" />
-    <Compile Include="GameWorld\Timers\MessageTimer.cs" />
-    <Compile Include="GameWorld\Timers\SetBehaviorTimer.cs" />
-    <Compile Include="GameWorld\Timers\TurnTimer.cs" />
     <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\Vector.cs" />
     <Compile Include="Visitors\BaseVisitor.cs" />

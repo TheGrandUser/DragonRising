@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.Timers;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.Items;
 using DraconicEngine.GameWorld.EntitySystem.Components;
@@ -13,6 +12,7 @@ using DraconicEngine.GameWorld.Actions.Requirements;
 using LanguageExt;
 using LanguageExt.Prelude;
 using DraconicEngine.GameWorld.Effects;
+using DraconicEngine.Services;
 
 namespace DragonRising.Entities.Items
 {
@@ -23,20 +23,20 @@ namespace DragonRising.Entities.Items
       int range;
 
       string verb;
-      Func<Entity, string> beginMessage;
-      Func<Entity, string> endMessage;
+      string beginMessageTemplate;
+      string endMessageTemplate;
 
       public BehaviorReplacementItem(Behavior behaviorFactory,
          string verb,
-         Func<Entity, string> beginMessage,
-         Func<Entity, string> endMessage,
+         string beginMessageTemplate,
+         string endMessageTemplate,
          int duration = 10, int range = 8)
       {
          this.behaviorPrototype = behaviorFactory;
          this.duration = duration;
          this.verb = verb;
-         this.beginMessage = beginMessage;
-         this.endMessage = endMessage;
+         this.beginMessageTemplate = beginMessageTemplate;
+         this.endMessageTemplate = endMessageTemplate;
          this.range = range;
       }
 
@@ -44,8 +44,8 @@ namespace DragonRising.Entities.Items
       {
          return new BehaviorReplacementItem(new ConfusedBehavior(),
             "confuse",
-            c => "The eyes of the " + c.Name + " look vacant, as he starts to stumble around.",
-            c => "The " + c.Name + " is no longer confused.");
+            "The eyes of the {target} look vacant, as he starts to stumble around.",
+            "The {target} is no longer confused.");
       }
 
       public bool Use(Entity user, Some<RequirementFulfillment> fulfillment)
@@ -55,16 +55,11 @@ namespace DragonRising.Entities.Items
          return closestMonster.Match(
             Some: target =>
             {
-               var behavior = behaviorPrototype.Clone();
-               var controller = target.GetComponent<BehaviorComponent>();
-               controller.PushBehavior(behavior);
-               MessageService.Current.PostMessage(beginMessage(target), RogueColors.LightGreen);
-
-               var setTimer = new TurnTimer(this.duration, user,
-                  new RemoveBehaviorEffect(behavior, target),
-                  new MessageEffect(endMessage(target), RogueColors.Red));
-               
-               target.AttachTimer(setTimer);
+               var effect = new BehaviorReplacementEffect(user, target, duration, this.behaviorPrototype)
+               {
+                  BeginMessageTemplate = beginMessageTemplate,
+                  EndMessageTemplate = endMessageTemplate,
+               };
                
                return true;
             },

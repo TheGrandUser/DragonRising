@@ -1,7 +1,7 @@
 ﻿using DraconicEngine.GameWorld.Alligences;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.Timers;
+using DraconicEngine.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,16 +49,6 @@ namespace DraconicEngine
          }
 
          return otherwise;
-      }
-
-      public static void AttachTimer(this Entity entity, TurnTimer timer)
-      {
-         if (!entity.HasComponent<TimerComponent>())
-         {
-            entity.AddComponent(new TimerComponent());
-         }
-         var timers = entity.GetComponent<TimerComponent>();
-         timers.AttachTimer(timer);
       }
    }
 }

@@ -52,8 +52,6 @@ namespace DragonRising.Services
          
          npc.As<DrawnComponent>(dc => dc.SeenCharacter = new Character(Glyph.Percent, RogueColors.DarkRed));
          npc.As<LocationComponent>(lc => lc.Blocks = false);
-         //npc.As<CombatantComponent>(cc => cc.IsAlive)
-         //npc.AsCreature(cc => cc.IsAlive = false);
          
          npc.Name = "remains of " + npc.Name;
 

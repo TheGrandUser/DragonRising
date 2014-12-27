@@ -11,13 +11,20 @@ namespace DraconicEngine.GameWorld.Effects
 {
    public class DamageEffect : IEffect
    {
+      Entity initiator;
+
+      public DamageEffect(Entity initiator)
+      {
+         this.initiator = initiator;
+      }
+
       CreatureNodeInput targetInput = new CreatureNodeInput();
       public CreatureNodeInput TargetInput { get { return targetInput; } }
       
       NumberNodeInput damageInput = new NumberNodeInput();
       public NumberNodeInput DamageInput { get { return damageInput; } }
 
-      public void Do(Entity initiator)
+      public void Do()
       {
          var targets = this.targetInput.Value;
          foreach (var target in targets)

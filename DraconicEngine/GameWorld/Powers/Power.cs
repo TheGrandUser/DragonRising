@@ -20,7 +20,7 @@ namespace DraconicEngine.Powers
       public List<PowerNode> Nodes { get { return this.nodes; } }
       public List<NodeConnection> Connections { get { return this.connections; } }
 
-      public void Do(Entity initiator, ImmutableList<Fulfilment> fulfilments)
+      public virtual void Do(Entity initiator, ImmutableList<Fulfilment> fulfilments)
       {
 
       }

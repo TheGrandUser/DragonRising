@@ -17,7 +17,7 @@ namespace DraconicEngine.GameWorld.Effects
          this.message = message;
          this.foreColor = foreColor;
       }
-      public void Do(Entity initiator)
+      public void Do()
       {
          MessageService.Current.PostMessage(message, foreColor);
       }
