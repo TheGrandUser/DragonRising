@@ -15,22 +15,23 @@ namespace DraconicEngine.GameWorld.Actions
    public class AttackEntityAction : RogueAction
    {
       public Entity Target { get; set; }
-      public Entity Weapon { get; set; }
+      public Option<Entity> Weapon { get; set; }
 
-      public AttackEntityAction(Entity target, Entity weapon = null)
+      public AttackEntityAction(Entity target, Option<Entity> weapon)
       {
          Contract.Requires(target != null);
+         Contract.Requires(weapon.ForAll(w => w.HasComponent<ItemComponent>() && w.GetComponent<ItemComponent>().WeaponUse.IsSome));
          this.Target = target;
          this.Weapon = weapon;
 
+         
       }
 
       public override void Do(Entity executer)
       {
-         if (Weapon == null)
-         {
-            Debug.Assert(executer.Location.IsAdjacentTo(Target.Location), "Attacker and Target are not adjacent");
-         }
+         Debug.Assert(Weapon.Match(
+            Some: w => w.GetComponent<ItemComponent>().WeaponUse.All(wu => executer.DistanceTo(Target).KingLength <= wu.Range),
+            None: () => executer.IsAdjacent(Target)), "Target is not within attacker's range");
 
          var attack = new Attack()
          {
@@ -49,7 +50,7 @@ namespace DraconicEngine.GameWorld.Actions
    {
       public Entity Target { get; set; }
       public Entity Attacker { get; set; }
-      public Entity Weapon { get; set; }
+      public Option<Entity> Weapon { get; set; }
    }
 
    public class AttackResult

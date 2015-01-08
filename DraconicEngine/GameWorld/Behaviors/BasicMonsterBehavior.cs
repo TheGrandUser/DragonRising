@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using DraconicEngine.GameWorld.Alligences;
+using LanguageExt;
+using LanguageExt.Prelude;
 
 namespace DraconicEngine.GameWorld.Behaviors
 {
@@ -46,7 +48,7 @@ namespace DraconicEngine.GameWorld.Behaviors
 
       RogueAction Attack(Entity player)
       {
-         return new AttackEntityAction(player);
+         return new AttackEntityAction(player, None);
       }
 
       RogueAction MoveTowards(Entity owner, Loc targetLocation)
@@ -80,7 +82,7 @@ namespace DraconicEngine.GameWorld.Behaviors
                   {
                      dir = moveVec.ToDirection();
 
-                     return new AttackEntityAction(blocker);
+                     return new AttackEntityAction(blocker, None);
                   }
                }
             }

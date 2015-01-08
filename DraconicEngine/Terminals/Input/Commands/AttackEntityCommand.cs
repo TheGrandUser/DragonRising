@@ -9,6 +9,7 @@ using System.Diagnostics;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using DraconicEngine.GameWorld.Actions;
+using LanguageExt.Prelude;
 
 namespace DraconicEngine.Terminals.Input.Commands
 {
@@ -51,7 +52,7 @@ namespace DraconicEngine.Terminals.Input.Commands
 
          if (targetEntity != null)
          {
-            return new AttackEntityAction(targetEntity);
+            return new AttackEntityAction(targetEntity, None);
          }
          else
          {
