@@ -89,7 +89,7 @@
     <Compile Include="GameWorld\Actions\IActionResolver.cs" />
     <Compile Include="GameWorld\Actions\Requirements\ActionRequirement.cs" />
     <Compile Include="GameWorld\Actions\Requirements\AndMaybeRequirement.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\AndRequirement.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\AllRequirement.cs" />
     <Compile Include="GameWorld\Actions\Requirements\ConfirmRequirement.cs" />
     <Compile Include="GameWorld\Actions\Requirements\DirectionRequirement.cs" />
     <Compile Include="GameWorld\Actions\Requirements\EntityRequirement.cs" />
@@ -102,6 +102,7 @@
     <Compile Include="GameWorld\Effects\MessageEffect.cs" />
     <Compile Include="GameWorld\Effects\RemoveBehaviorEffect.cs" />
     <Compile Include="GameWorld\EntitySystem\Components\DrawnComponent.cs" />
+    <Compile Include="GameWorld\EntitySystem\Components\EquipmentComponent.cs" />
     <Compile Include="GameWorld\EntitySystem\Components\GameActionsComponent.cs" />
     <Compile Include="GameWorld\EntitySystem\Components\LocationComponent.cs" />
     <Compile Include="GameWorld\EntitySystem\Nodes\ActionManagementNode.cs" />
@@ -135,7 +136,6 @@
     <Compile Include="GameWorld\EntitySystem\Nodes\BehaviorNode.cs" />
     <Compile Include="GameWorld\Actions\AttackEntityAction.cs" />
     <Compile Include="GameWorld\Actions\DropItemAction.cs" />
-    <Compile Include="GameWorld\Actions\InteractWithCreatureAction.cs" />
     <Compile Include="GameWorld\Actions\ManipulateEntityAction.cs" />
     <Compile Include="GameWorld\Actions\MovementAction.cs" />
     <Compile Include="GameWorld\Actions\PickUpItemAction.cs" />
@@ -256,9 +256,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GameWorld\Powers\Effects\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

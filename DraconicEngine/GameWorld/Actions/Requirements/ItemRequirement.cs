@@ -28,7 +28,9 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
          {
             if (this.NeedsItemsFulfillment)
             {
-               return itemFulfillment.Item.Value.GetComponentOrDefault<ItemComponent>()?.Usage.Requirements.MeetsRequirement(itemFulfillment.ItemsFulfillments) ?? false;
+               return itemFulfillment.Item.Value.GetComponentOrDefault<ItemComponent>().Usable.Match(
+                  Some: usable => usable.Usage.Requirements.MeetsRequirement(itemFulfillment.ItemsFulfillments),
+                  None: () => false);
             }
             else
             {

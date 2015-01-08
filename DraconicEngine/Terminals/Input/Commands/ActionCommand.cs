@@ -14,7 +14,7 @@ namespace DraconicEngine.Terminals.Input.Commands
    public abstract class ActionCommand : RogueCommand
    {
       public abstract string Name { get; }
-      public abstract ActionRequirement Requirement { get; }
+      public abstract ActionRequirement GetRequirement(Entity user);
       public abstract Either<RogueAction, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment);
 
       public static async Task<RogueAction> GetFinalActionAsync(
@@ -22,10 +22,12 @@ namespace DraconicEngine.Terminals.Input.Commands
          Func<ActionRequirement, Task<RequirementFulfillment>> getFulfillment,
          RequirementFulfillment preFulfillment = null)
       {
-         RequirementFulfillment fulfillment = action.Requirement is NoRequirement ? NoFulfillment.None :
-            preFulfillment ?? await getFulfillment(action.Requirement);
+         var requirement = action.GetRequirement(entity);
 
-         if(fulfillment is NoFulfillment && !(action.Requirement is NoRequirement))
+         RequirementFulfillment fulfillment = requirement is NoRequirement ? NoFulfillment.None :
+            preFulfillment ?? await getFulfillment(requirement);
+
+         if(fulfillment is NoFulfillment && !(requirement is NoRequirement))
          {
             return RogueAction.Abort;
          }

@@ -12,24 +12,43 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
    public class ItemComponent : Component
    {
-      public IItemUsage Usage { get; set; }
-      public int MaxCharges { get; set; }
-      public bool IsCharged { get; set; }
-      public int Charges { get; set; }
+      public Option<Usable> Usable { get; set; }
+      public Option<EquipableUse> EquipableUse { get; set; }
+      public Option<WeaponUse> WeaponUse { get; set; }
 
-      public ItemComponent()
-      {
-
-      }
+      public ItemComponent() { }
 
       protected ItemComponent(ItemComponent original, bool fresh)
          : base(original, fresh)
       {
-         this.Usage = original.Usage;
-         this.MaxCharges = original.MaxCharges;
-         this.IsCharged = original.IsCharged;
+         this.Usable = original.Usable.Bind(cu => (Option<Usable>)cu.Clone(fresh));
+         this.EquipableUse = original.EquipableUse.Bind(cu => (Option<EquipableUse>)cu.Clone(fresh));
+         this.WeaponUse = original.WeaponUse.Bind(cu => (Option<WeaponUse>)cu.Clone(fresh));
+      }
 
-         this.Charges = fresh ? MaxCharges : original.Charges;
+      protected override Component CloneCore(bool fresh)
+      {
+         return new ItemComponent(this, fresh);
+      }
+   }
+
+   public class Usable
+   {
+      public IItemUsage Usage { get; set; }
+      public int MaxCharges { get; set; }
+
+      public int Charges { get; set; }
+      public bool IsCharged { get; set; }
+
+      public Usable Clone(bool fresh)
+      {
+         return new Usable()
+         {
+            Usage = Usage,
+            MaxCharges = MaxCharges,
+            IsCharged = IsCharged,
+            Charges = fresh ? MaxCharges : Charges
+         };
       }
 
       public ItemUseResult Use(Entity user, Some<RequirementFulfillment> itemsRequirements)
@@ -55,26 +74,42 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 
          return ItemUseResult.NotUsed;
       }
+   }
 
-      protected override Component CloneCore(bool fresh)
+   public class EquipableUse
+   {
+      public EquipmentSlot Slot { get; set; }
+
+      // Stuff
+
+      public EquipableUse Clone(bool fresh)
       {
-         return new ItemComponent(this, fresh);
+         return new EquipableUse()
+         {
+            Slot = Slot
+         };
       }
    }
 
-   //public class ItemComponentTemplate : ComponentTemplate
-   //{
-   //   public IItemUsage Usage { get; set; }
-   //   public int MaxCharges { get; set; }
-   //   public bool IsCharged { get; set; }
+   public class WeaponUse
+   {
+      public bool IsTwoHanded { get; set; }
 
-   //   public override Type ComponentType => typeof(ItemComponent);
+      public int Power { get; set; }
+      public int Range { get; set; }
 
-   //   public override Component CreateComponent()
-   //   {
-   //      return new ItemComponent() { Template = this, Charges = this.MaxCharges };
-   //   }
-   //}
+      // takes ammo?
+
+      public WeaponUse Clone(bool fresh)
+      {
+         return new WeaponUse()
+         {
+            IsTwoHanded = IsTwoHanded,
+            Power = Power,
+            Range = Range
+         };
+      }
+   }
 
    public enum ItemUseResult
    {

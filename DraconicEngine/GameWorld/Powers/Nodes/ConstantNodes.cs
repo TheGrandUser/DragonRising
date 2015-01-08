@@ -16,10 +16,5 @@ namespace DraconicEngine.Powers.Nodes
 
       NumberNodeOutput valueOutput = new NumberNodeOutput();
       public NumberNodeOutput ValueOutput { get { return valueOutput; } }
-      public override ActionRequirement Requirements => NoRequirement.None;
-
-      public override void Do(Entity initiator, RequirementFulfillment fulfillment)
-      {
-      }
    }
 }

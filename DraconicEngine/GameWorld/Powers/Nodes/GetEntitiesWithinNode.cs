@@ -11,12 +11,6 @@ namespace DraconicEngine.Powers.Nodes
 {
    public class GetEntitiesWithinNode : PowerNode
    {
-      public override ActionRequirement Requirements => NoRequirement.None;
-      public override void Do(Entity initiator, RequirementFulfillment fulfillment)
-      {
-
-      }
-
       public int Radius { get; set; }
 
       public bool LineOfEffect { get; set; }

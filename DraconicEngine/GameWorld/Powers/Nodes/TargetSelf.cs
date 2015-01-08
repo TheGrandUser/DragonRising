@@ -13,10 +13,5 @@ namespace DraconicEngine.Powers.Nodes
    {
       EntityNodeOutput entityOutput = new EntityNodeOutput();
       public EntityNodeOutput EntityOutput { get { return entityOutput; } }
-      public override ActionRequirement Requirements => NoRequirement.None;
-      public override void Do(Entity initiator, RequirementFulfillment fulfillment)
-      {
-         //entityOutput.Entities = EnumerableEx.Return(initiator);
-      }
    }
 }

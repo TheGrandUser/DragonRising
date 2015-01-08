@@ -137,6 +137,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          Component component;
          if (components.TryGetValue(type, out component))
          {
+            Debug.Assert(component.Owner == this, "A component's Owner is not the entity");
             return component;
          }
 
@@ -153,6 +154,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          Component component;
          if (components.TryGetValue(type, out component))
          {
+            Debug.Assert(component.Owner == this, "A component's Owner is not the entity");
             return component;
          }
 
@@ -185,7 +187,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          foreach(var kvp in this.components)
          {
             var newComp = kvp.Value.Clone(fresh);
-
+            newComp.Owner = newEntity;
             newEntity.components.Add(kvp.Key, newComp);
          }
 

@@ -10,7 +10,13 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.Powers
 {
-   public class Power
+   public interface IPower
+   {
+      ActionRequirement Requirements { get; }
+      void Do(Entity initiator, RequirementFulfillment fulfilment);
+   }
+
+   public class Power : IPower
    {
       private List<PowerNode> nodes = new List<PowerNode>();
       private List<NodeConnection> connections = new List<NodeConnection>();

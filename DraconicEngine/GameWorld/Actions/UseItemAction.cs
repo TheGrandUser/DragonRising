@@ -24,11 +24,15 @@ namespace DraconicEngine.GameWorld.Actions
 
       public override void Do(Entity executer)
       {
-         var result = item.Value.GetComponent<ItemComponent>().Use(executer, itemReqFulfillment);
-         if (result == ItemUseResult.Destroyed)
+         var itemComponent = item.Value.GetComponent<ItemComponent>();
+         itemComponent.Usable.ForEach(usable =>
          {
-            executer.As<InventoryComponent>(inventory => inventory.Items.Remove(item));
-         }
+            var result = usable.Use(executer, itemReqFulfillment);
+            if (result == ItemUseResult.Destroyed)
+            {
+               executer.As<InventoryComponent>(inventory => inventory.Items.Remove(item));
+            }
+         });
       }
    }
 }

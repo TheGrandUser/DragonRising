@@ -1,14 +1,15 @@
-﻿using System;
+﻿using DraconicEngine.GameWorld.Actions;
+using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.Items;
+using LanguageExt;
+using LanguageExt.Prelude;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem.Components;
-using LanguageExt;
-using DraconicEngine.Items;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.Actions;
-using DraconicEngine.GameWorld.Actions.Requirements;
 
 namespace DraconicEngine.Terminals.Input.Commands
 {
@@ -27,7 +28,7 @@ namespace DraconicEngine.Terminals.Input.Commands
          new ItemRequirement("Select an item to use on the object", needsItemsFulfillment: false),
          new RequiresItemCheck());
       public override string Name => "Manipulate Entity";
-      public override ActionRequirement Requirement => requirement;
+      public override ActionRequirement GetRequirement(Entity user) => requirement;
 
       public ManipulateEntityCommand()
       {
@@ -47,7 +48,7 @@ namespace DraconicEngine.Terminals.Input.Commands
                Some: itemFulfillment => new ManipulateEntityAction(other, ((ItemFulfillment)itemFulfillment).Item),
                None: () => RogueAction.Abort);
          }
-         return new ManipulateEntityAction(other);
+         return new ManipulateEntityAction(other, None);
       }
    }
 

@@ -40,13 +40,15 @@ namespace DragonRising
             {
                if (this.playerCreature != null)
                {
-                  this.playerCreature.As<BehaviorComponent>(b => b.PushBehavior(playerControlledBehavior));
+                  this.playerCreature.TryGetComponent<BehaviorComponent>()
+                     .ForEach(bc => bc.RemoveBehavior(playerControlledBehavior));
                }
                this.playerCreature = value;
 
                if (this.playerCreature != null)
                {
-                  this.playerCreature.As<BehaviorComponent>(b => b.RemoveBehavior(playerControlledBehavior));
+                  var behaviorComponent = this.playerCreature.GetComponent<BehaviorComponent>();
+                  behaviorComponent.PushBehavior(playerControlledBehavior);
                }
             }
          }
@@ -98,7 +100,8 @@ namespace DragonRising
 
       public async Task<PlayerTurnResult> GetInputAsync(TimeSpan timeout)
       {
-         var isControlled = playerCreature.GetComponentOrDefault<BehaviorComponent>()?.CurrentBehavior == this.playerControlledBehavior;
+         var behaviorComponent = playerCreature.GetComponentOrDefault<BehaviorComponent>();
+         var isControlled = behaviorComponent?.CurrentBehavior == this.playerControlledBehavior;
 
          var commands = isControlled ?
             NonActionCommandGestures.Concat(ActionCommandGestures) :
@@ -115,7 +118,7 @@ namespace DragonRising
 
          try
          {
-            var inputResult = await InputSystem.Current.GetCommandAsync(ActionCommandGestures, cancelToken);
+            var inputResult = await InputSystem.Current.GetCommandAsync(commands, cancelToken);
 
             if (inputResult.Command is LookAtCommand)
             {
@@ -126,9 +129,9 @@ namespace DragonRising
             else if (inputResult.Command is ActionCommand)
             {
                var initialCommand = (ActionCommand)inputResult.Command;
-
+               var requirement = initialCommand.GetRequirement(playerCreature);
                RequirementFulfillment preFulfillment = null;
-               if (initialCommand.Requirement is DirectionRequirement && inputResult is InputResult2D)
+               if (requirement is DirectionRequirement && inputResult is InputResult2D)
                {
                   preFulfillment = new DirectionFulfillment(inputResult.As2D().Delta.ToDirection());
                }
@@ -204,15 +207,30 @@ namespace DragonRising
                return NoFulfillment.None;
             }
 
-            if (itemRequirement.NeedsItemsFulfillment)
-            {
-               RequirementFulfillment itemFulfillment =
-                  item.GetComponent<ItemComponent>().Usage.Requirements is NoRequirement ? NoFulfillment.None :
-                  await GetFulfillmentAsync(item.GetComponent<ItemComponent>().Usage.Requirements);
+            var itemComponent = item.GetComponent<ItemComponent>();
 
-               return new ItemFulfillment(item, itemFulfillment);
-            }
-            return new ItemFulfillment(item, NoFulfillment.None);
+            Func<Usable, Task<ItemFulfillment>> onSome = async usable =>
+            {
+               if (itemRequirement.NeedsItemsFulfillment)
+               {
+                  RequirementFulfillment itemFulfillment =
+                     usable.Usage.Requirements is NoRequirement ? NoFulfillment.None :
+                     await GetFulfillmentAsync(usable.Usage.Requirements);
+
+                  return new ItemFulfillment(item, itemFulfillment);
+               }
+               else
+               {
+                  return new ItemFulfillment(item, NoFulfillment.None);
+               }
+            };
+            Func<Task<ItemFulfillment>> onNone = () => Task.FromResult(new ItemFulfillment(item, NoFulfillment.None));
+
+            
+
+            return await itemComponent.Usable.Match(
+               Some: onSome,
+               None: onNone);
          }
          #endregion
          #region LocationRequirement
@@ -245,21 +263,21 @@ namespace DragonRising
          }
          #endregion
          #region And
-         else if (requirements is AndRequirement)
+         else if (requirements is AllRequirement)
          {
-            var andRequirement = (AndRequirement)requirements;
+            var allRequirement = (AllRequirement)requirements;
+            List<RequirementFulfillment> fulfillments = new List<RequirementFulfillment>();
+            foreach (var requirement in allRequirement.Requirements)
+            {
+               var fulfillment = await GetFulfillmentAsync(requirement);
+               if (fulfillment is NoFulfillment)
+               {
+                  return fulfillment;
+               }
+               fulfillments.Add(fulfillment);
+            }
 
-            var fulfillment1 = await GetFulfillmentAsync(andRequirement.First);
-            if (fulfillment1 is NoFulfillment)
-            {
-               return fulfillment1;
-            }
-            var fulfillment2 = await GetFulfillmentAsync(andRequirement.First);
-            if (fulfillment2 is NoFulfillment)
-            {
-               return fulfillment2;
-            }
-            return new AndFulfillment(fulfillment1, fulfillment2);
+            return new AllFulfillment(fulfillments);
          }
          #endregion
          #region And Maybe

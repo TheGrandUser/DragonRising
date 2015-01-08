@@ -70,15 +70,17 @@ namespace DraconicEngine.GameWorld.Behaviors
             else if (blockage == Blockage.Entity)
             {
                var others = Scene.CurrentScene.EntityStore.GetEntitiesAt(newLoc);
-               var creature = others.SingleOrDefault(o => o.HasComponent<CreatureComponent>());
-               if (creature != null && creature.HasComponent<CombatantComponent>())
+               var blocker = others.SingleOrDefault(o => o.HasComponent<CreatureComponent>());
+               if (blocker != null)
                {
-
-                  if (creature.As<CreatureComponent, bool>(owner, (cr1, cr2) => AlligenceManager.Current.AreEnemies(cr2.Alligence, cr1.Alligence)))
+                  var creatureComp = blocker.GetComponent<CreatureComponent>();
+                  var myCreatureComp = owner.GetComponent<CreatureComponent>();
+                     
+                  if (AlligenceManager.Current.AreEnemies(creatureComp.Alligence, myCreatureComp.Alligence))
                   {
                      dir = moveVec.ToDirection();
 
-                     return new AttackEntityAction(creature);
+                     return new AttackEntityAction(blocker);
                   }
                }
             }

@@ -36,6 +36,7 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 
       public CombatantComponent(int hp, int defense, int power)
       {
+         MaxHP = hp;
          HP = hp;
          Defense = defense;
          Power = power;

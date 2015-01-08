@@ -14,19 +14,18 @@ namespace DraconicEngine.GameWorld.Actions
 {
    public class ManipulateEntityAction : RogueAction
    {
-      Entity target;
-      Entity itemToUse;
+      Some<Entity> target;
+      Option<Entity> itemToUse;
 
-      public ManipulateEntityAction(Entity target, Entity item = null)
+      public ManipulateEntityAction(Some<Entity> target, Option<Entity> item)
       {
-         Contract.Requires(target != null);
          this.target = target;
          this.itemToUse = item;
       }
 
       public override void Do(Entity executer)
       {
-         var m = target.GetComponent<ManipulatableComponent>();
+         var m = target.Value.GetComponent<ManipulatableComponent>();
          if (m.Use(this.itemToUse))
          {
             // success!

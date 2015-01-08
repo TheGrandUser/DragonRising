@@ -14,7 +14,7 @@ namespace DraconicEngine.Terminals.Input.Commands
    public class TeleportCommand : ActionCommand
    {
       ActionRequirement requirement = new LocationRequirement();
-      public override ActionRequirement Requirement => requirement;
+      public override ActionRequirement GetRequirement(Entity user) => requirement;
       public override string Name => "Teleport";
       public TeleportCommand()
       {

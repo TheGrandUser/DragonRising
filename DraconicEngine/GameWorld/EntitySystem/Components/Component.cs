@@ -9,7 +9,12 @@ namespace DraconicEngine.GameWorld.EntitySystem
    [Serializable]
    public abstract class Component
    {
-      public Entity Owner { get; set; }
+      Entity owner;
+      public Entity Owner
+      {
+         get { return owner; }
+         set { owner = value; }
+      }
 
       public Component Clone(bool fresh = true)
       {

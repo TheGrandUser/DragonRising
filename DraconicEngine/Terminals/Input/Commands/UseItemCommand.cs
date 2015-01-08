@@ -14,7 +14,8 @@ namespace DraconicEngine.Terminals.Input.Commands
 {
    public class UseItemCommand : ActionCommand
    {
-      public override ActionRequirement Requirement { get; } = new ItemRequirement("Select an item to use", needsItemsFulfillment: true);
+      ActionRequirement requirement = new ItemRequirement("Select an item to use", needsItemsFulfillment: true);
+      public override ActionRequirement GetRequirement(Entity user) => requirement;
       public override string Name => "Use Item";
       public UseItemCommand()
       {
@@ -22,15 +23,10 @@ namespace DraconicEngine.Terminals.Input.Commands
 
       public override Either<RogueAction, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment)
       {
-         if (this.Requirement.MeetsRequirement(fulfillment))
-         {
-            var itemFulfillment = (ItemFulfillment)fulfillment;
-            var item = itemFulfillment.Item;
+         var itemFulfillment = (ItemFulfillment)fulfillment;
+         var item = itemFulfillment.Item;
 
-            return new UseItemAction(item, itemFulfillment.ItemsFulfillments);
-         }
-
-         return RogueAction.Abort;
+         return new UseItemAction(item, itemFulfillment.ItemsFulfillments);
       }
    }
 }

@@ -71,7 +71,7 @@ namespace DraconicEngine.GameWorld.Alligences
 
       public Relationship GetRelationship(Some<Alligence> alligence1, Some<Alligence> alligence2)
       {
-         return Relationship.Enemy;
+         return alligence1.Value == alligence2.Value ? Relationship.Ally : Relationship.Enemy;
       }
 
       public void SetRelationship(Some<Alligence> alligence1, Some<Alligence> alligence2, Relationship relationship)

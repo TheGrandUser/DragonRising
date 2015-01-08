@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.Powers.Nodes
 {
-   public class ChooseCreatureNode : PowerNode
+   public class ChooseCreatureNode : InputNode
    {
       CreatureNodeOutput creatureOutput = new CreatureNodeOutput();
-      public CreatureNodeOutput CreatureOutput { get { return creatureOutput; } }
-
       NumberNodeInput rangeInput = new NumberNodeInput();
+
+      public CreatureNodeOutput CreatureOutput { get { return creatureOutput; } }
       public NumberNodeInput RangeInput { get { return rangeInput; } }
 
-      public override ActionRequirement Requirements { get; } = new EntityRequirement(null, typeof(CreatureComponent));
+      public override ActionRequirement Requirements => new EntityRequirement(rangeInput.Value, typeof(CreatureComponent));
 
       public override void Do(Entity initiator, RequirementFulfillment fulfillment)
       {
@@ -28,7 +28,7 @@ namespace DraconicEngine.Powers.Nodes
       }
    }
 
-   public class ChooseLocationNode : PowerNode
+   public class ChooseLocationNode : InputNode
    {
       LocationNodeOutput locationOutput = new LocationNodeOutput();
       public LocationNodeOutput LocationOutput { get { return locationOutput; } }

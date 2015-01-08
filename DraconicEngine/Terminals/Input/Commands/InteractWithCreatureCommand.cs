@@ -17,7 +17,7 @@ namespace DraconicEngine.Terminals.Input.Commands
          new EntityRequirement(1, typeof(CreatureComponent));//,
                                  //new DirectionRequirement());
 
-      public override ActionRequirement Requirement => requirement;
+      public override ActionRequirement GetRequirement(Entity user) => requirement;
       public override string Name => "Interact With Creature";
       public InteractWithCreatureCommand() { }
 
@@ -29,6 +29,7 @@ namespace DraconicEngine.Terminals.Input.Commands
          {
             return new AlternateCommmand(new AttackEntityCommand(), other);
          }
+         // else talk to the creature
          return RogueAction.Abort;
       }
    }

@@ -15,7 +15,7 @@ namespace DraconicEngine.Terminals.Input.Commands
    public class DropItemCommand : ActionCommand
    {
       ActionRequirement requirement = new ItemRequirement("Select an item to drop", needsItemsFulfillment: false);
-      public override ActionRequirement Requirement => requirement;
+      public override ActionRequirement GetRequirement(Entity user) => requirement;
       public override string Name => "Drop Item";
       public DropItemCommand()
       {

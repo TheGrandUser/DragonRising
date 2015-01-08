@@ -16,7 +16,7 @@ namespace DraconicEngine.Terminals.Input.Commands
       Direction? direction;
 
       ActionRequirement requirement = new DirectionRequirement();
-      public override ActionRequirement Requirement => direction == null ? requirement : NoRequirement.None;
+      public override ActionRequirement GetRequirement(Entity user) => direction == null ? requirement : NoRequirement.None;
       public override string Name => "Move";
       public MovementCommand(Direction? direction = null)
       {

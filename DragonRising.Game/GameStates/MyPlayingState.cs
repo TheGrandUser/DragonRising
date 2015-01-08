@@ -63,7 +63,8 @@ namespace DragonRising.GameStates
             new LocationComponent() { Blocks = true, Location = startPoint },
             new CombatantComponent(hp: 30, defense: 2, power: 5),
             new CreatureComponent(playerAlligence, 6),
-            new InventoryComponent() { Capacity = 26 })
+            new InventoryComponent() { Capacity = 26 },
+            new BehaviorComponent())
          {
             Blocks = true
          };

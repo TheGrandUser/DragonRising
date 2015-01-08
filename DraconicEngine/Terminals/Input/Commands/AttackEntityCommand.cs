@@ -16,10 +16,14 @@ namespace DraconicEngine.Terminals.Input.Commands
    {
       public override string Name => "Attack";
 
-      ActionRequirement requirement = new OrRequirement(
-         new EntityRequirement(1, typeof(CombatantComponent)),
-         new DirectionRequirement());
-      public override ActionRequirement Requirement => requirement;
+      public override ActionRequirement GetRequirement(Entity user)
+      {
+         var range = user.GetComponentOrDefault<EquipmentComponent>();
+
+         return new OrRequirement(
+            new EntityRequirement(1, typeof(CombatantComponent)),
+            new DirectionRequirement());
+      }
 
       public AttackEntityCommand() { }
 

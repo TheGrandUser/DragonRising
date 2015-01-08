@@ -11,7 +11,12 @@ namespace DraconicEngine.Powers.Nodes
 {
    public abstract class PowerNode
    {
+   }
+
+   public abstract class InputNode : PowerNode
+   {
       public abstract ActionRequirement Requirements { get; }
+
       public abstract void Do(Entity initiator, RequirementFulfillment fulfillment);
    }
 }

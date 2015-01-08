@@ -13,7 +13,7 @@ namespace DraconicEngine.Terminals.Input.Commands
 {
    public class PickUpItemCommand : ActionCommand
    {
-      public override ActionRequirement Requirement => NoRequirement.None;
+      public override ActionRequirement GetRequirement(Entity user) => NoRequirement.None;
       public override string Name => "Pickup";
       public PickUpItemCommand()
       {

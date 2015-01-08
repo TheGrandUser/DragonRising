@@ -125,7 +125,10 @@ namespace DragonRising.GameStates
                ExploredCharacter = new Character(glyph, explored),
             },
             new LocationComponent(),
-            new ItemComponent() { Usage = usage });
+            new ItemComponent()
+            {
+               Usable = new Usable() { Usage = usage, IsCharged = true, Charges = 1, MaxCharges = 1 }
+            });
       }
    }
 

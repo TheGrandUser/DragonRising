@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.Items;
+using LanguageExt;
 
 namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
@@ -21,7 +22,7 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
       }
       public bool RequiresItem { get; set; }
 
-      public bool Use(Entity itemToUse)
+      public bool Use(Option<Entity> itemToUse)
       {
          return false;
       }

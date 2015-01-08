@@ -15,23 +15,33 @@ namespace DraconicEngine.GameWorld.Actions
    public class AttackEntityAction : RogueAction
    {
       public Entity Target { get; set; }
+      public Entity Weapon { get; set; }
 
-      public AttackEntityAction(Entity target)
+      public AttackEntityAction(Entity target, Entity weapon = null)
       {
          Contract.Requires(target != null);
          this.Target = target;
+         this.Weapon = weapon;
+
       }
 
       public override void Do(Entity executer)
       {
+         if (Weapon == null)
+         {
+            Debug.Assert(executer.Location.IsAdjacentTo(Target.Location), "Attacker and Target are not adjacent");
+         }
+
          var attack = new Attack()
          {
             Attacker = executer,
             Target = Target,
-            Weapon = null,
+            Weapon = Weapon,
          };
 
          var resolver = Target.GetActionResolver<IAttackResolver>();
+
+         resolver.Resolve(attack);
       }
    }
 
