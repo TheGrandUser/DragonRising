@@ -74,17 +74,19 @@ namespace DragonRising.GameStates
          inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfLightningBolt).Clone());
          inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfFireball).Clone());
          inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfConfusion).Clone());
-
-         var playingState = new MyPlayingState(scene, player);
+         scene.FocusEntity = player;
+         var playingState = new MyPlayingState(scene);
 
          return playingState;
       }
 
       public PlayerController PlayerController { get; set; }
 
-      public MyPlayingState(Scene scene, Entity player)
+      public MyPlayingState(Scene scene)
          : base(scene)
       {
+         var player = scene.FocusEntity;
+
          this.messageService = MessageService.Current;
          this.rootTerminal = DragonRisingGame.Current.RootTerminal;
 

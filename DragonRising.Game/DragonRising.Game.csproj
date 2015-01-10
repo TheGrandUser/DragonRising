@@ -111,7 +111,6 @@
     <Compile Include="GameWorld\Generators\GreenskinsGenerator.cs" />
     <Compile Include="GameWorld\Generators\StandardItemGenerator.cs" />
     <Compile Include="GameWorld\Nodes\SeeableNode.cs" />
-    <Compile Include="JsonSaveManger.cs" />
     <Compile Include="PlayerController.cs" />
     <Compile Include="GameWorld\Powers\FireballPower.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

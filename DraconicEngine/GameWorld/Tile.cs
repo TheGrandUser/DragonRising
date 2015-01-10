@@ -1,4 +1,5 @@
 ﻿using DraconicEngine.Storage;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,9 @@ namespace DraconicEngine
       public int TileTypeId { get; set; }
       public TileVisibility Visibility { get; set; }
 
+      [JsonIgnore]
       public bool BlocksSight => GetTileType().BlocksSight;
+      [JsonIgnore]
       public bool BlocksMovement => GetTileType().BlocksMovement;
 
       public Tile(int tileId)
