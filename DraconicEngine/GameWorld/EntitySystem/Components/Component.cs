@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +10,10 @@ namespace DraconicEngine.GameWorld.EntitySystem
    [Serializable]
    public abstract class Component
    {
+      [JsonIgnore]
       Entity owner;
-      public Entity Owner
-      {
-         get { return owner; }
-         set { owner = value; }
-      }
+      [JsonIgnore]
+      public Entity Owner { get { return owner; } set { owner = value; } }
 
       public Component Clone(bool fresh = true)
       {

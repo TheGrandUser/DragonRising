@@ -15,6 +15,7 @@ namespace DraconicEngine.GameWorld.Behaviors
       public override RogueAction PlanTurn(Entity owner) => RogueAction.Idle;
 
       public JustPassBehavior()
+         : base("Just Pass")
       {
 
       }

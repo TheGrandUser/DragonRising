@@ -52,47 +52,46 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 
          var itemComponent = item.GetComponent<ItemComponent>();
 
-         if (itemComponent.WeaponUse.IsSome)
+         if (itemComponent.WeaponUse != null)
          {
-            return itemComponent.WeaponUse.Some(wu =>
+            var wu = itemComponent.WeaponUse;
+
+            if (wu.IsTwoHanded)
             {
-               if (wu.IsTwoHanded)
-               {
-                  var old = weapon1.cons(weapon2.cons(empty<Entity>()));
+               var old = weapon1.cons(weapon2.cons(empty<Entity>()));
 
-                  weapon1 = item;
-                  weapon2 = item;
-                  equipped[EquipmentSlot.Held1] = item;
-                  equipped[EquipmentSlot.Held2] = item;
-
-                  return old;
-               }
-               else if (slot == EquipmentSlot.Held1)
-               {
-                  var old = weapon1.cons(empty<Entity>());
-                  weapon1 = item;
-                  equipped[EquipmentSlot.Held1] = item;
-                  return old;
-               }
-               else
-               {
-                  var old = weapon2.cons(empty<Entity>());
-                  weapon2 = item;
-                  equipped[EquipmentSlot.Held2] = item;
-                  return old;
-               }
-            }).None(empty<Entity>()).Where(i => i != null);
-         }
-         else if (itemComponent.EquipableUse.IsSome)
-         {
-            return itemComponent.EquipableUse.Some(eq =>
-            {
-               var old = Remove(eq.Slot);
-
-               equipped[eq.Slot] = item;
+               weapon1 = item;
+               weapon2 = item;
+               equipped[EquipmentSlot.Held1] = item;
+               equipped[EquipmentSlot.Held2] = item;
 
                return old;
-            }).None(None).Match(Some: o => EnumerableEx.Return(o), None: () => Enumerable.Empty<Entity>());
+            }
+            else if (slot == EquipmentSlot.Held1)
+            {
+               var old = weapon1.cons(empty<Entity>());
+               weapon1 = item;
+               equipped[EquipmentSlot.Held1] = item;
+               return old;
+            }
+            else
+            {
+               var old = weapon2.cons(empty<Entity>());
+               weapon2 = item;
+               equipped[EquipmentSlot.Held2] = item;
+               return old;
+            }
+
+         }
+         else if (itemComponent.EquipableUse != null)
+         {
+            var eq = itemComponent.EquipableUse;
+
+            var old = Remove(eq.Slot);
+
+            equipped[eq.Slot] = item;
+
+            return old;
          }
 
          return Enumerable.Empty<Entity>();

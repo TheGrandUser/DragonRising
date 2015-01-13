@@ -13,6 +13,7 @@ using LanguageExt;
 using LanguageExt.Prelude;
 using DraconicEngine.GameWorld.Effects;
 using DraconicEngine.Services;
+using DragonRising.Storage;
 
 namespace DragonRising.Entities.Items
 {
@@ -42,7 +43,8 @@ namespace DragonRising.Entities.Items
 
       public static BehaviorReplacementItem CreateConfusionItem()
       {
-         return new BehaviorReplacementItem(new ConfusedBehavior(),
+         Library.Current.Behaviors.Get("Confused");
+         return new BehaviorReplacementItem(Library.Current.Behaviors.Get("Confused"),
             "confuse",
             "The eyes of the {target} look vacant, as he starts to stumble around.",
             "The {target} is no longer confused.");

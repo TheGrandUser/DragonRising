@@ -20,7 +20,7 @@ namespace DraconicEngine.GameWorld.Actions
       public AttackEntityAction(Entity target, Option<Entity> weapon)
       {
          Contract.Requires(target != null);
-         Contract.Requires(weapon.ForAll(w => w.HasComponent<ItemComponent>() && w.GetComponent<ItemComponent>().WeaponUse.IsSome));
+         Contract.Requires(weapon.ForAll(w => w.HasComponent<ItemComponent>() && w.GetComponent<ItemComponent>().WeaponUse != null));
          this.Target = target;
          this.Weapon = weapon;
 
@@ -30,7 +30,7 @@ namespace DraconicEngine.GameWorld.Actions
       public override void Do(Entity executer)
       {
          Debug.Assert(Weapon.Match(
-            Some: w => w.GetComponent<ItemComponent>().WeaponUse.All(wu => executer.DistanceTo(Target).KingLength <= wu.Range),
+            Some: w => executer.DistanceTo(Target).KingLength <= w.GetComponent<ItemComponent>().WeaponUse.Range,
             None: () => executer.IsAdjacent(Target)), "Target is not within attacker's range");
 
          var attack = new Attack()

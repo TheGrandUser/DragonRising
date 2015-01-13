@@ -1,30 +1,26 @@
-﻿using System;
+﻿using DraconicEngine;
+using DraconicEngine.GameStates;
+using DraconicEngine.GameWorld.Alligences;
+using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.GameWorld.EntitySystem.Systems;
+using DraconicEngine.Input;
+using DraconicEngine.Storage;
+using DraconicEngine.Terminals;
+using DraconicEngine.Widgets;
+using DragonRising.Services;
+using LanguageExt;
+using LanguageExt.Prelude;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameStates;
-using DraconicEngine.Input;
-using DraconicEngine.Widgets;
-using DraconicEngine.Terminals;
-using DragonRising.Generators;
-using DraconicEngine.Storage;
-using DraconicEngine.GameWorld.EntitySystem.Components;
-using DragonRising.Services;
-using DraconicEngine.GameWorld.Alligences;
-using LanguageExt;
-using LanguageExt.Prelude;
-using DraconicEngine.GameWorld.EntitySystem.Systems;
 
 namespace DragonRising.GameStates
 {
    class MyPlayingState : PlayingState
    {
-      static readonly int MapWidth = 160;
-      static readonly int MapHeight = 80;
-
       public static readonly int BarWidth = 20;
       public static readonly int PanelHeight = 9;
       public static readonly int PanelY = DragonRisingGame.ScreenHeight - PanelHeight;
@@ -50,42 +46,15 @@ namespace DragonRising.GameStates
       List<RogueMessage> infoMessages = new List<RogueMessage>();
       private Terminal rootTerminal;
 
-      public static MyPlayingState CreateNew()
-      {
-         Scene scene = new Scene(MapWidth, MapHeight);
-
-         var generator = new DungeonGenerator(new GreenskinsGenerator(), new StandardItemGenerator());
-         var startPoint = generator.MakeMap(scene);
-         var playerAlligence = new Alligence() { Name = "Player" };
-
-         var player = new Entity("Player",
-            new DrawnComponent() { SeenCharacter = new Character(Glyph.At, RogueColors.White) },
-            new LocationComponent() { Blocks = true, Location = startPoint },
-            new CombatantComponent(hp: 30, defense: 2, power: 5),
-            new CreatureComponent(playerAlligence, 6),
-            new InventoryComponent() { Capacity = 26 },
-            new BehaviorComponent())
-         {
-            Blocks = true
-         };
-
-         var inventory = player.GetComponent<InventoryComponent>();
-
-         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfLightningBolt).Clone());
-         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfFireball).Clone());
-         inventory.Items.Add(Library.Items.Get(TempConstants.ScrollOfConfusion).Clone());
-         scene.FocusEntity = player;
-         var playingState = new MyPlayingState(scene);
-
-         return playingState;
-      }
+      string gameName;
 
       public PlayerController PlayerController { get; set; }
 
-      public MyPlayingState(Scene scene)
+      public MyPlayingState(Scene scene, string gameName)
          : base(scene)
       {
          var player = scene.FocusEntity;
+         this.gameName = gameName;
 
          this.messageService = MessageService.Current;
          this.rootTerminal = DragonRisingGame.Current.RootTerminal;
@@ -130,10 +99,6 @@ namespace DragonRising.GameStates
 
          this.PlayerController = new PlayerController(sceneView) { PlayerCreature = player };
          this.lifeDeathMonitorService = new LifeDeathMonitorService(scene.EntityStore);
-
-         this.Scene.EntityStore.Add(player);
-
-         this.Scene.EntityStore.AllEntities.Single(e => e == player);
       }
 
       protected override void PreSceneDraw()
@@ -153,7 +118,6 @@ namespace DragonRising.GameStates
          base.Start();
          MyPlayingState.Current = this;
 
-         this.Scene.FocusEntity = this.PlayerController.PlayerCreature;
          Scene.PushScene(this.Scene);
 
          this.messageService.PostMessage("Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.", RogueColors.Red);
@@ -161,6 +125,8 @@ namespace DragonRising.GameStates
 
       protected override Option<IGameState> OnFinished()
       {
+         SaveManager.Current.SaveGame(this.gameName, this.Scene);
+
          Scene.PopScene();
          MyPlayingState.Current = null;
 
@@ -188,11 +154,6 @@ namespace DragonRising.GameStates
 
          this.highlightWidget.Enabled = true;
          this.highlightWidget.Location = scenePoint;
-      }
-
-      public static MyPlayingState Load(string filePath)
-      {
-         throw new NotImplementedException();
       }
 
       protected override bool IsGameEndState()

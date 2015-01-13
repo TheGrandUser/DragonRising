@@ -16,6 +16,7 @@ using DraconicEngine.Terminals.Input.Commands;
 using LanguageExt;
 using LanguageExt.Prelude;
 using System.Threading;
+using DraconicEngine.Storage;
 
 namespace DragonRising.GameStates
 {
@@ -150,23 +151,30 @@ namespace DragonRising.GameStates
 
       async Task<TickResult> ContinueGame()
       {
-         var playingState = MyPlayingState.Load("");
+         string lastSave = SaveManager.Current.LastSaveGame;
+         var scene = await SaveManager.Current.LoadGame(lastSave);
+         var playingState = new MyPlayingState(scene, lastSave);
 
          await RogueGame.Current.RunGameState(playingState);
 
          return TickResult.Continue;
       }
 
-      bool CanContinueGame() { return false; }
+      bool CanContinueGame() => !string.IsNullOrEmpty(SaveManager.Current.LastSaveGame);
 
       async Task<TickResult> NewGame()
       {
-         
+         var newGameScreen = new NewGameScreen();
 
-         var playingState = MyPlayingState.CreateNew();
+         await RogueGame.Current.RunGameState(newGameScreen);
 
-         await RogueGame.Current.RunGameState(playingState);
+         if (newGameScreen.Scene != null)
+         {
+            Scene scene = newGameScreen.Scene;
+            var playingState = new MyPlayingState(scene, newGameScreen.GameName);
 
+            await RogueGame.Current.RunGameState(playingState);
+         }
          return TickResult.Continue;
       }
 
@@ -176,9 +184,11 @@ namespace DragonRising.GameStates
 
          await RogueGame.Current.RunGameState(loadGameScreen);
 
-         if (!string.IsNullOrEmpty(loadGameScreen.FilePath))
+         if (!string.IsNullOrEmpty(loadGameScreen.SelectedGame))
          {
-            var playingState = MyPlayingState.Load(loadGameScreen.FilePath);
+            var scene = await SaveManager.Current.LoadGame(loadGameScreen.SelectedGame);
+
+            var playingState = new MyPlayingState(scene, loadGameScreen.SelectedGame);
 
             await RogueGame.Current.RunGameState(playingState);
          }
@@ -186,18 +196,13 @@ namespace DragonRising.GameStates
          return TickResult.Continue;
       }
 
-      bool CanLoadGame() { return false; }
+      bool CanLoadGame() => SaveManager.Current.GetSaveGames().Any();
 
       Task<TickResult> Exit() { return Task.FromResult(TickResult.Finished); }
 
-      public void Start()
-      {
-      }
+      public void Start() { }
 
-      public Option<IGameState> Finish()
-      {
-         return None;
-      }
+      public Option<IGameState> Finish() { return None; }
 
       enum MenuCommands
       {
@@ -208,12 +213,12 @@ namespace DragonRising.GameStates
          MousePoint,
       }
 
-      CommandGesture upGesture = Create(MenuCommands.Up, GestureSet.Create(RogueKey.Up, RogueKey.NumPad8));
-      CommandGesture downGesture = Create(MenuCommands.Down, GestureSet.Create(RogueKey.Down, RogueKey.NumPad2));
-      CommandGesture selectGesture = Create(MenuCommands.Select, GestureSet.Create(RogueKey.Enter, RogueKey.Space));
+      CommandGesture upGesture = CreateGesture(MenuCommands.Up, GestureSet.Create(RogueKey.Up, RogueKey.NumPad8));
+      CommandGesture downGesture = CreateGesture(MenuCommands.Down, GestureSet.Create(RogueKey.Down, RogueKey.NumPad2));
+      CommandGesture selectGesture = CreateGesture(MenuCommands.Select, GestureSet.Create(RogueKey.Enter, RogueKey.Space));
 
-      CommandGesture mouseSelectGesture = Create(MenuCommands.MouseSelect, GestureSet.Create(RogueMouseAction.LeftClick));
-      CommandGesture mousePointGesture = Create(MenuCommands.MousePoint, GestureSet.Create(RogueMouseAction.Movement));
+      CommandGesture mouseSelectGesture = CreateGesture(MenuCommands.MouseSelect, GestureSet.Create(RogueMouseAction.LeftClick));
+      CommandGesture mousePointGesture = CreateGesture(MenuCommands.MousePoint, GestureSet.Create(RogueMouseAction.Movement));
 
       IEnumerable<CommandGesture> Gestures
       {

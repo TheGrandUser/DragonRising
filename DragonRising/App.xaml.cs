@@ -1,6 +1,7 @@
 ﻿using DraconicEngine.GameWorld.Alligences;
 using DraconicEngine.Storage;
 using DragonRising.Libraries;
+using DragonRising.Storage;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -24,10 +25,15 @@ namespace DragonRising
 
       protected override void OnStartup(StartupEventArgs e)
       {
-         TileLibrary.Set(new SimpleTileLibrary());
          AlligenceManager.SetAlligenceManager(new SimpleAlligenceManager());
-         Library.SetItemLibrary(new SimpleItemLibrary());
-         EntityLibrary.SetLibrary(new SimpleEntityLibrary());
+
+         var library = new SimpleLibrary();
+         Library.SetLibrary(library);
+
+         TileLibrary.Set(library.Tiles);
+         EntityLibrary.SetLibrary(library.Entities);
+
+         SaveManager.SetSaveManager(new JsonSaveManager());
 
          base.OnStartup(e);
       }

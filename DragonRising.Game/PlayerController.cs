@@ -24,6 +24,7 @@ using DraconicEngine.GameWorld.Behaviors;
 using System.Threading;
 using System.Diagnostics;
 using DragonRising.GameWorld.Nodes;
+using DragonRising.Storage;
 
 namespace DragonRising
 {
@@ -48,7 +49,10 @@ namespace DragonRising
                if (this.playerCreature != null)
                {
                   var behaviorComponent = this.playerCreature.GetComponent<BehaviorComponent>();
-                  behaviorComponent.PushBehavior(playerControlledBehavior);
+                  if (behaviorComponent.Behaviors.OfType<PlayerControlledBehavior>().IsEmpty())
+                  {
+                     behaviorComponent.PushBehavior(playerControlledBehavior);
+                  }
                }
             }
          }
@@ -93,6 +97,10 @@ namespace DragonRising
       public PlayerController(FocusEntitySceneView sceneView)
       {
          this.playerControlledBehavior = new PlayerControlledBehavior(this);
+         if (!Library.Current.Behaviors.Contains(this.playerControlledBehavior.Name))
+         {
+            Library.Current.Behaviors.Add(this.playerControlledBehavior);
+         }
          this.sceneView = sceneView;
       }
 
@@ -228,9 +236,8 @@ namespace DragonRising
 
             
 
-            return await itemComponent.Usable.Match(
-               Some: onSome,
-               None: onNone);
+            return await (itemComponent.Usable != null ?
+               onSome(itemComponent.Usable) : onNone());
          }
          #endregion
          #region LocationRequirement

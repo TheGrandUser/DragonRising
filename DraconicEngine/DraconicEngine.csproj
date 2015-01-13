@@ -115,6 +115,7 @@
     <Compile Include="Services\TimedEvents.cs" />
     <Compile Include="Services\TurnEffects.cs" />
     <Compile Include="Storage\EntityLibrary.cs" />
+    <Compile Include="Storage\IBehaviorLibrary.cs" />
     <Compile Include="Storage\PowerLibrary.cs" />
     <Compile Include="Storage\TileLibrary.cs" />
     <Compile Include="Terminals\Input\Commands\ActionCommand.cs" />

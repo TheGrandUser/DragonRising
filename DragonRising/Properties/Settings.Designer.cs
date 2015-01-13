@@ -22,5 +22,17 @@ namespace DragonRising.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastSaveGame {
+            get {
+                return ((string)(this["LastSaveGame"]));
+            }
+            set {
+                this["LastSaveGame"] = value;
+            }
+        }
     }
 }

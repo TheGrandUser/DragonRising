@@ -15,7 +15,6 @@ namespace DragonRising.Libraries
       public int BasicClearId => 1;
 
       public int BasicWallId => 2;
-      public int VoidId => 0;
 
       public TileType GetById(int id)
       {
@@ -31,7 +30,7 @@ namespace DragonRising.Libraries
 
          AddTileType(new TileType()
          {
-            Id = VoidId,
+            Id = Tile.VoidId,
             Name = "Void",
             InView = new Character(Glyph.Space, RogueColors.Black),
             Explored = new Character(Glyph.Space, RogueColors.Black),

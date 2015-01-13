@@ -39,7 +39,7 @@ namespace DragonRising.GameStates
 
       static readonly CommandGesture2D moveCursorGesture = CreateMouseKey2D(LookActions.MoveCursor);
 
-      static readonly CommandGesture endGesture = Create(LookActions.End, GestureSet.Create(RogueKey.Escape, RogueKey.Enter, RogueKey.Space));
+      static readonly CommandGesture endGesture = CreateGesture(LookActions.End, GestureSet.Create(RogueKey.Escape, RogueKey.Enter, RogueKey.Space));
 
       Loc lastPoint;
       public async Task<TickResult> Tick()

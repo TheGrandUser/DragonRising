@@ -11,9 +11,10 @@ namespace DraconicEngine.Storage
 {
    public interface ISaveManager
    {
-      Task SaveGame(string filePath, Scene scene);
-      Task<Scene> LoadGAme(string filePath);
+      Task SaveGame(string name, Scene scene);
+      Task<Scene> LoadGame(string name);
       IEnumerable<string> GetSaveGames();
+      string LastSaveGame { get; }
    }
 
    public static class SaveManager

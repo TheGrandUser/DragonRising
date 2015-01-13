@@ -38,9 +38,10 @@ namespace DraconicEngine.Widgets
 
          foreach (var row in Enumerable.Range(rowStart, rowCount))
          {
+            var stride = row * scene.MapWidth;
             foreach (var col in Enumerable.Range(colStart, colCount))
             {
-               var tile = this.scene.Map[col, row];
+               var tile = this.scene.Map[col + stride];
                var tileType = tile.GetTileType();
                if (tile.Visibility == TileVisibility.Explored)
                {

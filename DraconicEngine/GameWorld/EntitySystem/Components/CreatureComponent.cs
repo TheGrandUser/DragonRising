@@ -11,13 +11,13 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
    public sealed class CreatureComponent : Component
    {
       public int VisionRadius { get; set; }
-      public Some<Alligence> Alligence { get; set; } = AlligenceManager.Current.Neutral;
+      public Alligence Alligence { get; set; } = AlligenceManager.Current.Neutral;
 
       public CreatureComponent()
       {
       }
 
-      public CreatureComponent(Some<Alligence> alligence, int visionRadius)
+      public CreatureComponent(Alligence alligence, int visionRadius)
       {
          this.Alligence = alligence;
          this.VisionRadius = visionRadius;

@@ -58,11 +58,11 @@ namespace DragonRising.GameStates
          g => g.Modifiers == RogueModifierKeys.None ? g.Key.ToCycle() : 0,
          GestureSet.Create4WayMove());
 
-      CommandGesture cancel = Create(TargetAction.Cancel, GestureSet.Create(RogueKey.Escape));
+      CommandGesture cancel = CreateGesture(TargetAction.Cancel, GestureSet.Create(RogueKey.Escape));
 
       CommandGesture2D point = CreateMousePointer(TargetAction.Point);
 
-      CommandGesture accept = Create(TargetAction.Accept,
+      CommandGesture accept = CreateGesture(TargetAction.Accept,
          GestureSet.Create(RogueMouseAction.LeftClick, RogueKey.Enter, RogueKey.Space));
 
 

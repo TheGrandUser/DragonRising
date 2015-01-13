@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Math;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace DraconicEngine
 {
@@ -13,6 +14,7 @@ namespace DraconicEngine
    /// feature-rich.
    /// </summary>
    //[Serializable]
+   [JsonObject(MemberSerialization.OptIn)]
    public struct Vector : IEquatable<Vector>
    {
       /// <summary>
@@ -173,7 +175,9 @@ namespace DraconicEngine
          Y = y;
       }
 
+      [JsonProperty]
       public int X;
+      [JsonProperty]
       public int Y;
 
       /// <summary>

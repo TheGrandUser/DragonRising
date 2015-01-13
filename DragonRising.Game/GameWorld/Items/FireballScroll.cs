@@ -13,12 +13,12 @@ using LanguageExt.Prelude;
 
 namespace DragonRising.Items
 {
-   class FireballScroll : IItemUsage
+   class FireballEffect : IItemUsage
    {
       int damage;
       int range;
 
-      public FireballScroll(int damage = 12, int radius = 3)
+      public FireballEffect(int damage = 12, int radius = 3)
       {
          this.damage = damage;
          this.range = radius;

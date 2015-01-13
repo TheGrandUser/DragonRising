@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,9 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
          Location = fresh ? Loc.Zero : original.Location;
       }
 
+      [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
       public bool Blocks { get; set; }
+      [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
       public Loc Location { get; set; }
 
       protected override Component CloneCore(bool fresh)

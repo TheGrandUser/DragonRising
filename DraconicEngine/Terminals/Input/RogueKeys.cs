@@ -18,7 +18,7 @@ namespace DraconicEngine.Input
       //
       // Summary:
       //     The Backspace key.
-      Back = 2,
+      Backspace = 2,
       //
       // Summary:
       //     The Tab key.

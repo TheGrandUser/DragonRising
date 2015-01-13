@@ -3,6 +3,7 @@ using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.Terminals;
 using LanguageExt;
 using LanguageExt.Prelude;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,9 +15,11 @@ using System.Threading.Tasks;
 namespace DraconicEngine.GameWorld.EntitySystem
 {
    [DebuggerDisplay("Entity {Name}")]
+   [JsonObject(MemberSerialization.OptIn)]
    public sealed class Entity
    {
-      Dictionary<Type, Component> components = new Dictionary<Type, Component>();
+      [JsonProperty]
+      Dictionary<string, Component> components = new Dictionary<string, Component>();
 
       [NonSerialized]
       Subject<Component> componentAdded = new Subject<Component>();
@@ -71,49 +74,37 @@ namespace DraconicEngine.GameWorld.EntitySystem
          this.Name = name;
          foreach(var component in components)
          {
-            this.components.Add(component.GetType(), component);
+            this.components.Add(component.GetType().Name, component);
             component.Owner = this;
          }
       }
+      [JsonIgnore]
       public IEnumerable<Component> Components => this.components.Values;
+      [JsonIgnore]
       public IObservable<Component> ComponentAdded => componentAdded;
+      [JsonIgnore]
       public IObservable<Component> ComponentRemoved => componentRemoved;
 
+      [JsonProperty]
       public string Name { get; set; }
 
       public bool IsDisposed { get { return false; } }
-
-      //public void Draw(ITerminal terminal, Vector viewOffset)
-      //{
-      //   var display = Location - viewOffset;
-
-      //   if (display.X >= 0 && display.X < terminal.Size.X &&
-      //       display.Y >= 0 && display.Y < terminal.Size.Y)
-      //   {
-      //      terminal.Set(display, this.Character);
-      //   }
-      //}
-
-      //public Character Character
-      //{
-      //   get { return this.GetComponentOrDefault<DrawnComponent>()?.SeenCharacter ?? new Character(Glyph.Space, RogueColors.White); }
-      //   set { this.As<DrawnComponent>(comp => comp.SeenCharacter = value); }
-      //}
 
       public Loc Location
       {
          get { return this.GetComponentOrDefault<LocationComponent>()?.Location ?? new Loc(-1, -1); }
          set { this.As<LocationComponent>(comp => comp.Location = value); }
       }
+      
       public bool Blocks
       {
          get { return this.GetComponentOrDefault<LocationComponent>()?.Blocks ?? false; }
          set { this.As<LocationComponent>(comp => comp.Blocks = value); }
       }
 
-      public void AddComponent(Type type, Component component)
+      public void AddComponent(Component component)
       {
-         components.Add(type, component);
+         components.Add(component.GetType().Name, component);
          component.Owner = this;
 
          componentAdded.OnNext(component);
@@ -125,7 +116,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          {
             throw new ObjectDisposedException("CompositeObject");
          }
-         return this.components.ContainsKey(type);
+         return this.components.ContainsKey(type.Name);
       }
 
       public Component GetComponent(Type type)
@@ -135,7 +126,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
             throw new ObjectDisposedException("CompositeObject");
          }
          Component component;
-         if (components.TryGetValue(type, out component))
+         if (components.TryGetValue(type.Name, out component))
          {
             Debug.Assert(component.Owner == this, "A component's Owner is not the entity");
             return component;
@@ -152,7 +143,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
             throw new ObjectDisposedException("CompositeObject");
          }
          Component component;
-         if (components.TryGetValue(type, out component))
+         if (components.TryGetValue(type.Name, out component))
          {
             Debug.Assert(component.Owner == this, "A component's Owner is not the entity");
             return component;
@@ -167,11 +158,11 @@ namespace DraconicEngine.GameWorld.EntitySystem
          {
             throw new ObjectDisposedException("CompositeObject");
          }
-         if (components.ContainsKey(type))
+         if (components.ContainsKey(type.Name))
          {
-            var component = components[type];
+            var component = components[type.Name];
 
-            components.Remove(type);
+            components.Remove(type.Name);
             componentRemoved.OnNext(component);
             if (component.Owner == this)
             {
@@ -193,6 +184,11 @@ namespace DraconicEngine.GameWorld.EntitySystem
 
          return newEntity;
       }
+
+      void PostSerialize()
+      {
+
+      }
    }
 
    public static class EntityExtensions
@@ -200,12 +196,6 @@ namespace DraconicEngine.GameWorld.EntitySystem
       public static Vector DistanceTo(this Entity self, Entity other)
       {
          return other.Location - self.Location;
-      }
-
-      public static void AddComponent<TComponent>(this Entity self, TComponent component)
-          where TComponent : Component
-      {
-         self.AddComponent(typeof(TComponent), component);
       }
 
       public static bool HasComponent<T>(this Entity self)

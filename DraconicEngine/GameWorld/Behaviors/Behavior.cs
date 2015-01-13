@@ -20,13 +20,16 @@ namespace DraconicEngine.GameWorld.Behaviors
 
       protected abstract Behavior CloneCore();
 
-      protected Behavior()
+      protected Behavior(string name)
       {
+         this.Name = name;
       }
 
       protected Behavior(Behavior original)
       {
-         // Nothing to copy right now
+         this.Name = original.Name;
       }
+
+      public string Name { get; set; }
    }
 }

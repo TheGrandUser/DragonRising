@@ -14,6 +14,7 @@ namespace DraconicEngine.GameWorld.Behaviors
       IPlayerController playerController;
 
       public PlayerControlledBehavior(IPlayerController playerController)
+         : base("Player Controller")
       {
          this.playerController = playerController;
       }

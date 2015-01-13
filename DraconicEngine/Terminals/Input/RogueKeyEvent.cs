@@ -10,6 +10,7 @@ namespace DraconicEngine.Input
    public class RogueKeyEvent
    {
       public RogueKey Key { get; set; }
+      public char? Char { get; set; }
       public RogueModifierKeys Modifiers { get; set; }
       public bool IsShiftDown { get { return Modifiers.HasFlag(RogueModifierKeys.Shift); } }
       public bool IsControlDown { get { return Modifiers.HasFlag(RogueModifierKeys.Control); } }

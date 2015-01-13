@@ -20,7 +20,6 @@ namespace DraconicEngine.Storage
    {
       TileType GetById(int id);
 
-      int VoidId { get; }
       int BasicClearId { get; }
       int BasicWallId { get; }
    }

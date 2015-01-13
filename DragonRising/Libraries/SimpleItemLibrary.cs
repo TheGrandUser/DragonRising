@@ -13,6 +13,8 @@ namespace DragonRising.Libraries
    {
       Dictionary<string, Entity> templates = new Dictionary<string, Entity>(StringComparer.InvariantCultureIgnoreCase);
 
+      public Dictionary<string, Entity> Templates => templates;
+
       public bool Contains(string name)
       {
          return templates.ContainsKey(name);

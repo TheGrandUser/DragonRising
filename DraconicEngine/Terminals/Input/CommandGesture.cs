@@ -73,7 +73,7 @@ namespace DraconicEngine.Input
          return new CommandGestureSingle(PackageBuilder.Create(value), gestureSet);
       }
 
-      public static CommandGesture Create<TValue>(TValue value, GestureSet gestureSet)
+      public static CommandGesture CreateGesture<TValue>(TValue value, GestureSet gestureSet)
       {
          return new CommandGestureSingle(PackageBuilder.Create(new ValueCommand<TValue>(value)), gestureSet);
       }

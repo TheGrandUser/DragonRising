@@ -11,6 +11,7 @@ using DragonRising.Entities.Items;
 using DraconicEngine.Storage;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DragonRising.TempConstants;
+using DragonRising.Storage;
 
 namespace DragonRising.Generators
 {
@@ -23,24 +24,24 @@ namespace DragonRising.Generators
          Entity item = null;
          var value = random.NextDouble();
 
-         if (value <= 0.7 && Library.Items.Contains(HealingPotion))
+         if (value <= 0.7 && Library.Current.Items.Contains(HealingPotion))
          {
-            var template = Library.Items.Get(HealingPotion);
+            var template = Library.Current.Items.Get(HealingPotion);
             item = template.Clone();
          }
-         else if (value <= 0.85 && Library.Items.Contains(ScrollOfLightningBolt))
+         else if (value <= 0.85 && Library.Current.Items.Contains(ScrollOfLightningBolt))
          {
-            var template = Library.Items.Get(ScrollOfLightningBolt);
+            var template = Library.Current.Items.Get(ScrollOfLightningBolt);
             item = template.Clone();
          }
-         else if (value <= 0.90 && Library.Items.Contains(ScrollOfFireball))
+         else if (value <= 0.90 && Library.Current.Items.Contains(ScrollOfFireball))
          {
-            var template = Library.Items.Get(ScrollOfFireball);
+            var template = Library.Current.Items.Get(ScrollOfFireball);
             item = template.Clone();
          }
-         else if (Library.Items.Contains(ScrollOfConfusion))
+         else if (Library.Current.Items.Contains(ScrollOfConfusion))
          {
-            var template = Library.Items.Get(ScrollOfConfusion);
+            var template = Library.Current.Items.Get(ScrollOfConfusion);
             item = template.Clone();
          }
 

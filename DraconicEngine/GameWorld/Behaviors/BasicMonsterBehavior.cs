@@ -18,6 +18,7 @@ namespace DraconicEngine.GameWorld.Behaviors
    public class BasicMonsterBehavior : Behavior
    {
       public BasicMonsterBehavior()
+         : base("Basic Monster")
       {
 
       }
@@ -77,7 +78,7 @@ namespace DraconicEngine.GameWorld.Behaviors
                {
                   var creatureComp = blocker.GetComponent<CreatureComponent>();
                   var myCreatureComp = owner.GetComponent<CreatureComponent>();
-                     
+
                   if (AlligenceManager.Current.AreEnemies(creatureComp.Alligence, myCreatureComp.Alligence))
                   {
                      dir = moveVec.ToDirection();

@@ -13,32 +13,36 @@ namespace DraconicEngine
    [Serializable]
    public sealed class Scene
    {
-      public static int VoidId;
       Entity focusEntity = null;
-      Tile beyondTheEdge;
+      Tile beyondTheEdge = new Tile(Tile.VoidId);
       bool recomputeFov = true;
+
+      public int MapWidth { get; set; }
+      public int MapHeight { get; set; }
+
+      public Scene(Tile[] map, int width, int height)
+      {
+         this.Map = map;
+         this.MapWidth = width;
+         this.MapHeight = height;
+      }
 
       public Scene(int mapWidth, int mapHeight)
       {
-         this.beyondTheEdge = new Tile(TileLibrary.Current.VoidId);
+         this.MapWidth = mapWidth;
+         this.MapHeight = mapHeight;
          var wallId = TileLibrary.Current.BasicWallId;
 
-         this.Map = new Tile[mapWidth, mapHeight];
-         for (int row = 0; row < mapHeight; row++)
+         this.Map = new Tile[mapWidth * mapHeight];
+         for (int index = 0; index < Map.Length; index++)
          {
-            for (int col = 0; col < mapWidth; col++)
-            {
-               Map[col, row] = new Tile(wallId);
-            }
+            Map[index] = new Tile(wallId);
          }
       }
 
       public IEntityStore EntityStore { get; } = new EntityStore();
 
-      public Tile[,] Map { get; }
-
-      public int MapWidth => Map.GetUpperBound(0) + 1;
-      public int MapHeight => Map.GetUpperBound(1) + 1;
+      public Tile[] Map { get; set; }
 
       private void ResetFoV()
       {
@@ -47,7 +51,7 @@ namespace DraconicEngine
             (x, y) =>
             {
                var tile = GetTileSafe(x, y);
-               if (tile.TileTypeId != VoidId)
+               if (tile.TileTypeId != Tile.VoidId)
                {
                   tile.Visibility = TileVisibility.Seen;
                }
@@ -56,14 +60,14 @@ namespace DraconicEngine
          recomputeFov = false;
       }
 
-      public Tile GetTileSafe(int x, int y)
+      public Tile GetTileSafe(int col, int row)
       {
-         if (x < 0 || y < 0 ||
-            x >= MapWidth || y >= MapHeight)
+         if (col < 0 || row < 0 ||
+            col >= MapWidth || row >= MapHeight)
          {
             return beyondTheEdge;
          }
-         return Map[x, y];
+         return Map[col + row * MapWidth];
       }
 
       public Tile GetTileSafe(Loc location) => GetTileSafe(location.X, location.Y);
@@ -103,11 +107,13 @@ namespace DraconicEngine
          var xEnd = Math.Min(this.FocusEntity.Location.X + radius + 1, this.MapWidth);
          var yEnd = Math.Min(this.FocusEntity.Location.Y + radius + 1, this.MapHeight);
 
-         for (int x = xStart; x < xEnd; x++)
+
+         for (int row = yStart; row < yEnd; row++)
          {
-            for (int y = yStart; y < yEnd; y++)
+            var stride = row * MapWidth;
+            for (int col = xStart; col < xEnd; col++)
             {
-               var tile = Map[x, y];
+               var tile = Map[col + stride];
                if (tile.Visibility == TileVisibility.Seen)
                {
                   tile.Visibility = TileVisibility.Explored;
@@ -120,14 +126,14 @@ namespace DraconicEngine
 
       public Blockage IsBlocked(Loc location, Predicate<Entity> ignoreWhere = null)
       {
-         int x = location.X;
-         int y = location.Y;
+         int col = location.X;
+         int row = location.Y;
 
-         if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight)
+         if (col < 0 || col >= MapWidth || row < 0 || row >= MapHeight)
          {
             return Blockage.OffMap;
          }
-         if (Map[x, y].BlocksMovement)
+         if (Map[col + row * MapWidth].BlocksMovement)
          {
             return Blockage.Tile;
          }
@@ -151,21 +157,6 @@ namespace DraconicEngine
       }
 
       public bool IsVisible(Loc vec) => GetTileSafe(vec).Visibility == TileVisibility.Seen;
-
-      public void ClearMap()
-      {
-         var width = this.MapWidth;
-         var height = this.MapHeight;
-         var wallId = TileLibrary.Current.BasicWallId;
-
-         for (int column = 0; column < width; column++)
-         {
-            for (int row = 0; row < height; row++)
-            {
-               Map[column, row] = new Tile(wallId);
-            }
-         }
-      }
 
       static Stack<Scene> scenes = new Stack<Scene>();
       public static Scene CurrentScene => scenes.Count > 0 ? scenes.Peek() : null;

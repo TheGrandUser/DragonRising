@@ -14,6 +14,7 @@ namespace DraconicEngine.GameWorld.Behaviors
    public class ConfusedBehavior : Behavior
    {
       public ConfusedBehavior()
+         : base("Confused")
       {
       }
 

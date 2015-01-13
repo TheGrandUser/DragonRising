@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace DraconicEngine
    /// feature-rich.
    /// </summary>
    //[Serializable]
+   [JsonObject(MemberSerialization.OptIn)]
    public struct Loc : IEquatable<Loc>
    {
       /// <summary>
@@ -128,7 +130,9 @@ namespace DraconicEngine
          Y = y;
       }
 
+      [JsonProperty]
       public int X;
+      [JsonProperty]
       public int Y;
 
       /// <summary>

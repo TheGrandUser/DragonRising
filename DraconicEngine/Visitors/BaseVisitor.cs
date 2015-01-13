@@ -13,18 +13,19 @@ namespace DraconicEngine.Visitors
       {
          OnScene(scene);
 
-         foreach(var entity in scene.EntityStore.AllEntities)
+         foreach (var entity in scene.EntityStore.AllEntities)
          {
             VisitEntity(entity);
          }
 
-         for (int column = 0; column < scene.MapWidth; column++)
+         for (int row = 0; row < scene.MapHeight; row++)
          {
-            for(int row=0; row<scene.MapHeight; row++)
+            var stride = row * scene.MapWidth;
+            for (int col = 0; col < scene.MapWidth; col++)
             {
-               var tile = scene.Map[column, row];
+               var tile = scene.Map[col + stride];
 
-               VisitTile(tile, column, row);
+               VisitTile(tile, col, row);
             }
          }
       }
@@ -44,7 +45,7 @@ namespace DraconicEngine.Visitors
       {
          OnEntity(entity);
 
-         foreach(var component in entity.Components)
+         foreach (var component in entity.Components)
          {
             VisitEntityComponent(component);
          }

@@ -16,6 +16,7 @@ using LanguageExt;
 using LanguageExt.Prelude;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
+using DragonRising.Storage;
 
 namespace DragonRising.GameStates
 {
@@ -104,12 +105,19 @@ namespace DragonRising.GameStates
       public string Message => "Loading Item...";
       public Task Load()
       {
-         var itemLibrary = Library.Items;
+         var itemUsageLibrary = Library.Current.ItemUsages;
 
-         itemLibrary.Add(Make(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet, RogueColors.Violet, new HealingItem()));
-         itemLibrary.Add(Make(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow, RogueColors.LightYellow, new LightningScroll()));
-         itemLibrary.Add(Make(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow, RogueColors.Yellow, new FireballScroll()));
-         itemLibrary.Add(Make(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet, RogueColors.Violet, BehaviorReplacementItem.CreateConfusionItem()));
+         itemUsageLibrary.Add("Basic Healing", new HealingItem());
+         itemUsageLibrary.Add("Basic Lightning", new LightningScroll());
+         itemUsageLibrary.Add("Basic Fireball", new FireballEffect());
+         itemUsageLibrary.Add("Basic Confusion", BehaviorReplacementItem.CreateConfusionItem());
+
+         var itemLibrary = Library.Current.Items;
+
+         itemLibrary.Add(Make(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet, RogueColors.Violet, itemUsageLibrary.Get("Basic Healing")));
+         itemLibrary.Add(Make(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow, RogueColors.LightYellow, itemUsageLibrary.Get("Basic Lightning")));
+         itemLibrary.Add(Make(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow, RogueColors.Yellow, itemUsageLibrary.Get("Basic Fireball")));
+         itemLibrary.Add(Make(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet, RogueColors.Violet, itemUsageLibrary.Get("Basic Confusion")));
 
          //Library.SetItemLibrary(itemLibrary);
 

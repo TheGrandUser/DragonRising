@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.GameWorld.Behaviors;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
@@ -37,6 +38,7 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
          return new BehaviorComponent(this, fresh);
       }
 
+      [JsonIgnore]
       public Behavior CurrentBehavior => behaviors.Count > 0 ? behaviors.Last.Value : defaultBehavior;
 
       public void PushBehavior(Behavior behavior)

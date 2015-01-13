@@ -12,18 +12,18 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 {
    public class ItemComponent : Component
    {
-      public Option<Usable> Usable { get; set; }
-      public Option<EquipableUse> EquipableUse { get; set; }
-      public Option<WeaponUse> WeaponUse { get; set; }
+      public Usable Usable { get; set; }
+      public EquipableUse EquipableUse { get; set; }
+      public WeaponUse WeaponUse { get; set; }
 
       public ItemComponent() { }
 
       protected ItemComponent(ItemComponent original, bool fresh)
          : base(original, fresh)
       {
-         this.Usable = original.Usable.Bind(cu => (Option<Usable>)cu.Clone(fresh));
-         this.EquipableUse = original.EquipableUse.Bind(cu => (Option<EquipableUse>)cu.Clone(fresh));
-         this.WeaponUse = original.WeaponUse.Bind(cu => (Option<WeaponUse>)cu.Clone(fresh));
+         this.Usable = original.Usable?.Clone(fresh);
+         this.EquipableUse = original.EquipableUse?.Clone(fresh);
+         this.WeaponUse = original.WeaponUse?.Clone(fresh);
       }
 
       protected override Component CloneCore(bool fresh)
@@ -34,6 +34,7 @@ namespace DraconicEngine.GameWorld.EntitySystem.Components
 
    public class Usable
    {
+
       public IItemUsage Usage { get; set; }
       public int MaxCharges { get; set; }
 

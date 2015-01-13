@@ -19,6 +19,9 @@ namespace DraconicEngine
    [Serializable]
    public class Tile
    {
+      public static int VoidId = 0;
+
+
       public TileType GetTileType() { return TileLibrary.Current.GetById(TileTypeId); }
       public int TileTypeId { get; set; }
       public TileVisibility Visibility { get; set; }
