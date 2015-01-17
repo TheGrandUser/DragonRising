@@ -98,7 +98,7 @@
     <Compile Include="GameWorld\Actions\Requirements\OrRequirement.cs" />
     <Compile Include="GameWorld\Alligences\AlligenceManager.cs" />
     <Compile Include="GameWorld\Alligences\Relationship.cs" />
-    <Compile Include="GameWorld\Behaviors\PlayerControlledBehavior.cs" />
+    <Compile Include="GameWorld\Behaviors\ExternallyControlledBehavior.cs" />
     <Compile Include="GameWorld\Effects\MessageEffect.cs" />
     <Compile Include="GameWorld\Effects\RemoveBehaviorEffect.cs" />
     <Compile Include="GameWorld\EntitySystem\Components\DrawnComponent.cs" />

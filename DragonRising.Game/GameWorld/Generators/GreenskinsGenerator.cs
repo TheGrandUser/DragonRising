@@ -17,7 +17,11 @@ namespace DragonRising.Generators
    public class GreenskinsGenerator : IPopulationGenerator
    {
       Random random = new Random();
-      Alligence greenskins = new Alligence() { Name = "Greenskins" };
+      public Alligence GreenskinsAllignce { get; set; }
+      public GreenskinsGenerator()
+      {
+         GreenskinsAllignce = AlligenceManager.Current.GetOrAddByName("Greenskins");
+      }
 
       public List<Entity> GenerarateMonsters(int min, int max)
       {
@@ -46,7 +50,13 @@ namespace DragonRising.Generators
             monsterTemplate = EntityLibrary.Current.Get("Troll");
          }
 
-         return monsterTemplate.Clone();
+         var monster = monsterTemplate.Clone();
+
+         var alligence = 
+
+         monster.AsCreature(c => c.Alligence = GreenskinsAllignce);
+
+         return monster;
       }
    }
 }

@@ -18,6 +18,7 @@ namespace DragonRising.Libraries
          Add(new BasicMonsterBehavior());
          Add(new ConfusedBehavior());
          Add(new JustPassBehavior());
+         Add(new ExternallyControlledBehavior());
       }
 
       public void Add(Behavior template)

@@ -18,6 +18,8 @@ namespace DraconicEngine.GameWorld.Alligences
       bool AreEnemies(Some<Alligence> alligence1, Some<Alligence> alligence2);
       Relationship GetRelationship(Some<Alligence> alligence1, Some<Alligence> alligence2);
       void SetRelationship(Some<Alligence> alligence1, Some<Alligence> alligence2, Relationship relationship);
+
+      IEnumerable<Tuple<Alligence, Alligence, Relationship>> Relationships { get; }
    }
 
    public static class AlligenceManager
@@ -36,6 +38,7 @@ namespace DraconicEngine.GameWorld.Alligences
    public class SimpleAlligenceManager : IAlligenceManager
    {
       Dictionary<string, Alligence> alligences = new Dictionary<string, Alligence>();
+      Dictionary<Tuple<Alligence, Alligence>, Relationship> relationships = new Dictionary<Tuple<Alligence, Alligence>, Relationship>();
 
       static readonly Alligence neutral = new Alligence() { Name = "Neutral" };
 
@@ -76,7 +79,7 @@ namespace DraconicEngine.GameWorld.Alligences
 
       public void SetRelationship(Some<Alligence> alligence1, Some<Alligence> alligence2, Relationship relationship)
       {
-
+         this.relationships[tuple(alligence1.Value, alligence2.Value)] = relationship;
       }
 
       public Some<Alligence> GetOrAddByName(string name)
@@ -92,5 +95,7 @@ namespace DraconicEngine.GameWorld.Alligences
 
          return a;
       }
+
+      public IEnumerable<Tuple<Alligence, Alligence, Relationship>> Relationships => this.relationships.Select(kvp => tuple(kvp.Key.Item1, kvp.Key.Item2, kvp.Value));
    }
 }

@@ -152,10 +152,7 @@ namespace DragonRising.GameStates
       async Task<TickResult> ContinueGame()
       {
          string lastSave = SaveManager.Current.LastSaveGame;
-         var scene = await SaveManager.Current.LoadGame(lastSave);
-         var playingState = new MyPlayingState(scene, lastSave);
-
-         await RogueGame.Current.RunGameState(playingState);
+         await PlayLoadedGame(lastSave);
 
          return TickResult.Continue;
       }
@@ -186,11 +183,7 @@ namespace DragonRising.GameStates
 
          if (!string.IsNullOrEmpty(loadGameScreen.SelectedGame))
          {
-            var scene = await SaveManager.Current.LoadGame(loadGameScreen.SelectedGame);
-
-            var playingState = new MyPlayingState(scene, loadGameScreen.SelectedGame);
-
-            await RogueGame.Current.RunGameState(playingState);
+            await PlayLoadedGame(loadGameScreen.SelectedGame);
          }
 
          return TickResult.Continue;
@@ -199,6 +192,16 @@ namespace DragonRising.GameStates
       bool CanLoadGame() => SaveManager.Current.GetSaveGames().Any();
 
       Task<TickResult> Exit() { return Task.FromResult(TickResult.Finished); }
+
+      async Task PlayLoadedGame(string gameName)
+      {
+         var scene = await SaveManager.Current.LoadGame(gameName);
+         scene.ClearFoV();
+
+         var playingState = new MyPlayingState(scene, gameName);
+
+         await RogueGame.Current.RunGameState(playingState);
+      }
 
       public void Start() { }
 

@@ -24,16 +24,12 @@ namespace DragonRising.Libraries
 
       internal void Initialize(IBehaviorLibrary behaviors)
       {
-         var alligence = AlligenceManager.Current.GetByName("Greenskins").Match(
-            Some: a => a,
-            None: () => { throw new Exception("No Greenskins alligence error!"); });
-
          Add(new Entity("Orc",
             new LocationComponent() { Blocks = true },
             new DrawnComponent() { SeenCharacter = new Character(Glyph.OLower, RogueColors.LightGreen) },
             new CombatantComponent(hp: 10, defense: 0, power: 3),
             new BehaviorComponent(behaviors.Get("Basic Monster")),
-            new CreatureComponent(alligence, 6)));
+            new CreatureComponent(AlligenceManager.Current.Neutral, 6)));
 
 
          Add(new Entity("Troll",
@@ -41,7 +37,7 @@ namespace DragonRising.Libraries
             new DrawnComponent() { SeenCharacter = new Character(Glyph.TUpper, RogueColors.LightGreen) },
             new CombatantComponent(hp: 16, defense: 1, power: 4),
             new BehaviorComponent(behaviors.Get("Basic Monster")),
-            new CreatureComponent(alligence, 5)));
+            new CreatureComponent(AlligenceManager.Current.Neutral, 5)));
       }
 
       private void Add(Entity entityTemplate)

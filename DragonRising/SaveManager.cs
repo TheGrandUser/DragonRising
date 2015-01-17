@@ -1,4 +1,5 @@
 ﻿using DraconicEngine;
+using DraconicEngine.GameWorld.Alligences;
 using DraconicEngine.GameWorld.Behaviors;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
@@ -20,6 +21,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,25 +29,39 @@ namespace DragonRising
 {
    class JsonSaveManager : ISaveManager
    {
-      JsonSerializer serializer = new JsonSerializer()
-      {
-         Formatting = Formatting.Indented,
-         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-         NullValueHandling = NullValueHandling.Ignore,
-         DefaultValueHandling = DefaultValueHandling.Ignore,
-         TypeNameHandling = TypeNameHandling.Auto,
-         PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-         Context = new StreamingContext(StreamingContextStates.Persistence | StreamingContextStates.File, Library.Current),
-         ReferenceResolver = new LibraryReferenceResolver()
-      };
-
       public JsonSaveManager()
       {
+      }
+
+      JsonSerializer MakeSerializer()
+      {
+         JsonSerializer serializer = new JsonSerializer()
+         {
+            Formatting = Formatting.Indented,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+            TypeNameHandling = TypeNameHandling.Auto,
+            TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
+            PreserveReferencesHandling = PreserveReferencesHandling.None,
+            Context = new StreamingContext(StreamingContextStates.Persistence | StreamingContextStates.File,
+            new SerializationContext()
+            {
+               Library = Library.Current,
+               AlligenceManager = AlligenceManager.Current,
+            }),
+            ReferenceResolver = new LibraryReferenceResolver()
+         };
+
          //serializer.Converters.Add(new SomeTypeConverter());
          serializer.Converters.Add(new EntityConverter());
          serializer.Converters.Add(new CharacterConverter());
          serializer.Converters.Add(new UsageConverter());
+         serializer.Converters.Add(new BehaviorComponentConverter());
          serializer.Converters.Add(new BehaviorConverter());
+         serializer.Converters.Add(new AlligenceConverter());
+
+         return serializer;
       }
 
       public string LastSaveGame => File.Exists(ToFile(Settings.Default.LastSaveGame)) ? Settings.Default.LastSaveGame : string.Empty;
@@ -77,6 +93,7 @@ namespace DragonRising
       {
          public int mapWidth { get; set; }
          public int mapHeight { get; set; }
+         public JArray AlligenceRelations { get; set; }
          public Entity[] entities { get; set; }
          public int focusEntityId { get; set; }
       }
@@ -89,14 +106,31 @@ namespace DragonRising
          var mapFilePath = Path.Combine(saveGameDir, name + ".map");
 
          JObject doc;
-         using (var streamReader = File.OpenText(filePath))
+         using (var file = new FileStream(filePath, FileMode.Open))
          {
-            var raw = await streamReader.ReadToEndAsync();
+            //using (var decompressor = new GZipStream(file, CompressionMode.Decompress))
+            {
+               using (var streamReader = new StreamReader(file))
+               {
+                  var raw = await streamReader.ReadToEndAsync();
 
-            doc = JObject.Parse(raw);
+                  doc = JObject.Parse(raw);
+               }
+            }
          }
 
+         var serializer = MakeSerializer();
+         var context = (SerializationContext)serializer.Context.Context;
          var sceneInfo = serializer.Deserialize<SceneInfo>(doc.CreateReader());
+         
+         foreach(var rel in sceneInfo.AlligenceRelations)
+         {
+            var a1 = context.AlligenceManager.GetOrAddByName(rel["Alligence1"].Value<string>());
+            var a2 = context.AlligenceManager.GetOrAddByName(rel["Alligence2"].Value<string>());
+            var relationship = (Relationship)rel["Relationship"].Value<int>();
+
+            context.AlligenceManager.SetRelationship(a1, a2, relationship);
+         }
 
          var width = sceneInfo.mapWidth;
          var height = sceneInfo.mapHeight;
@@ -148,6 +182,19 @@ namespace DragonRising
          var filePath = Path.Combine(saveGamesDir, name + ".sav");
          var mapFilePath = Path.Combine(saveGamesDir, name + ".map");
 
+         var serializer = MakeSerializer();
+         var context = (SerializationContext)serializer.Context.Context;
+
+         var alligenceRelationships = new JArray();
+         foreach(var relationship in context.AlligenceManager.Relationships)
+         {
+            alligenceRelationships.Add(
+               new JObject(
+                  new JProperty("Alligence1", relationship.Item1.Name),
+                  new JProperty("Alligence2", relationship.Item2.Name),
+                  new JProperty("Relationship", (int)relationship.Item3)));
+         }
+
          var entities = scene.EntityStore.AllEntities.ToArray();
 
          var sceneInfo = new SceneInfo()
@@ -156,6 +203,7 @@ namespace DragonRising
             mapHeight = scene.MapHeight,
             entities = entities,
             focusEntityId = Array.IndexOf(entities, scene.FocusEntity),
+            AlligenceRelations = alligenceRelationships,
          };
 
          //var doc = new JObject();
@@ -163,7 +211,7 @@ namespace DragonRising
 
          //serializer.Serialize(writer, sceneInfo);
 
-         using (var mapFile = File.OpenWrite(mapFilePath))
+         using (var mapFile = new FileStream(mapFilePath, FileMode.Create))
          {
             using (var compressor = new GZipStream(mapFile, CompressionLevel.Optimal))
             {
@@ -178,7 +226,7 @@ namespace DragonRising
             }
          }
 
-         using (var file = File.OpenWrite(filePath))
+         using (var file = new FileStream(filePath, FileMode.Create))
          {
             //using (var compact = new GZipStream(file, CompressionLevel.Optimal))
             {
@@ -276,6 +324,12 @@ namespace DragonRising
 
    }
 
+   class SerializationContext
+   {
+      public ILibrary Library { get; set; }
+      public IAlligenceManager AlligenceManager { get; set; }
+   }
+
    class BidirectionalDictionary<TFirst, TSecond>
    {
       private readonly IDictionary<TFirst, TSecond> _firstToSecond;
@@ -364,6 +418,7 @@ namespace DragonRising
 
    class EntityConverter : JsonConverter
    {
+      int nextId = 1;
       public override bool CanConvert(Type objectType)
       {
          return typeof(Entity).IsAssignableFrom(objectType);
@@ -386,6 +441,23 @@ namespace DragonRising
 
             CheckedRead(reader);
 
+            if(propertyName == "$id")
+            {
+               var reference = reader.Value.ToString();
+               serializer.ReferenceResolver.AddReference(serializer.Context, reference, entity);
+            }
+            else if(propertyName == "$ref")
+            {
+               var reference = reader.Value.ToString();
+               entity = (Entity)serializer.ReferenceResolver.ResolveReference(serializer.Context, reference);
+
+               while(reader.TokenType != JsonToken.EndObject)
+               {
+                  CheckedRead(reader);
+               }
+
+               return entity;
+            }
             if (propertyName == "Name")
             {
                entity.Name = reader.Value.ToString();
@@ -453,15 +525,30 @@ namespace DragonRising
          var entity = (Entity)value;
 
          writer.WriteStartObject();
-         writer.WritePropertyName("Name");
-         writer.WriteValue(entity.Name);
-         writer.WritePropertyName("Components");
-         writer.WriteStartArray();
-         foreach (var component in entity.Components)
+         if (serializer.ReferenceResolver.IsReferenced(serializer.Context, entity))
          {
-            serializer.Serialize(writer, component, typeof(Component));
+            var reference = serializer.ReferenceResolver.GetReference(serializer.Context, entity);
+            writer.WritePropertyName("$ref");
+            writer.WriteValue(reference);
          }
-         writer.WriteEndArray();
+         else
+         {
+            string reference = "e" + nextId++;
+            serializer.ReferenceResolver.AddReference(serializer.Context, reference, entity);
+
+            writer.WritePropertyName("$id");
+            writer.WriteValue(reference);
+
+            writer.WritePropertyName("Name");
+            writer.WriteValue(entity.Name);
+            writer.WritePropertyName("Components");
+            writer.WriteStartArray();
+            foreach (var component in entity.Components)
+            {
+               serializer.Serialize(writer, component, typeof(Component));
+            }
+            writer.WriteEndArray();
+         }
          writer.WriteEndObject();
       }
    }
@@ -470,7 +557,7 @@ namespace DragonRising
    {
       public override bool CanConvert(Type objectType)
       {
-         return objectType == typeof(Character);
+         return objectType == typeof(Character) || objectType == typeof(Character?);
       }
 
       public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -496,24 +583,38 @@ namespace DragonRising
             backColor = new RogueColor(color);
          }
 
-         return new Character(glyph, foreColor, backColor);
+         if (objectType == typeof(Character))
+         {
+            return new Character(glyph, foreColor, backColor);
+         }
+         else
+         {
+            return (Character?)new Character(glyph, foreColor, backColor);
+         }
       }
 
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
       {
-         var c = (Character)value;
+         Character? c = null;
+         if (value is Character)
+            c = (Character)value;
+         else if (value is Character?)
+            c = (Character?)value;
 
-         writer.WriteStartObject();
-         writer.WritePropertyName("Glyph");
-         writer.WriteValue((int)c.Glyph);
-         writer.WritePropertyName("Fore");
-         writer.WriteValue(c.ForeColor.ToInt32());
-         if (c.BackColor.HasValue)
+         if (c.HasValue)
          {
-            writer.WritePropertyName("Back");
-            writer.WriteValue(c.BackColor.Value.ToInt32());
+            writer.WriteStartObject();
+            writer.WritePropertyName("Glyph");
+            writer.WriteValue((int)c.Value.Glyph);
+            writer.WritePropertyName("Fore");
+            writer.WriteValue(c.Value.ForeColor.ToInt32());
+            if (c.Value.BackColor.HasValue)
+            {
+               writer.WritePropertyName("Back");
+               writer.WriteValue(c.Value.BackColor.Value.ToInt32());
+            }
+            writer.WriteEndObject();
          }
-         writer.WriteEndObject();
       }
    }
 
@@ -532,16 +633,66 @@ namespace DragonRising
          }
 
          var name = reader.Value.ToString();
-         var library = (ILibrary)serializer.Context.Context;
+         var context = (SerializationContext)serializer.Context.Context;
 
-         return library.ItemUsages.Get(name);
+         return context.Library.ItemUsages.Get(name);
       }
 
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
       {
          var usage = (IItemUsage)value;
-         var library = (ILibrary)serializer.Context.Context;
-         writer.WriteValue(library.ItemUsages.NameForUsage(usage));
+         var context = (SerializationContext)serializer.Context.Context;
+         writer.WriteValue(context.Library.ItemUsages.NameForUsage(usage));
+      }
+   }
+
+   public class BehaviorComponentConverter : JsonConverter
+   {
+      public override bool CanConvert(Type objectType)
+      {
+         return objectType == typeof(BehaviorComponent);
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+         var component = new BehaviorComponent();
+
+         var jobject = JObject.ReadFrom(reader);
+
+         var behaviors = jobject["Behaviors"] as JArray;
+
+         var context = (SerializationContext)serializer.Context.Context;
+
+         foreach (var name in behaviors)
+         {
+            var behavior = context.Library.Behaviors.Get(name.Value<string>());
+
+            component.PushBehavior(behavior);
+         }
+
+         return component;
+      }
+
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+         var behaviorComponent = (BehaviorComponent)value;
+
+         writer.WriteStartObject();
+
+         writer.WritePropertyName("$type");
+
+         var typeName = typeof(BehaviorComponent).FullName + ", " + typeof(BehaviorComponent).Assembly.FullName.Split(',').First();
+         writer.WriteValue(typeName);
+         writer.WritePropertyName("Behaviors");
+         writer.WriteStartArray();
+
+         foreach (var behavior in behaviorComponent.Behaviors)
+         {
+            writer.WriteValue(behavior.Name);
+         }
+
+         writer.WriteEndArray();
+         writer.WriteEndObject();
       }
    }
 
@@ -560,15 +711,43 @@ namespace DragonRising
          }
 
          var name = reader.Value.ToString();
-         var library = (ILibrary)serializer.Context.Context;
+         var context = (SerializationContext)serializer.Context.Context;
 
-         return library.Behaviors.Get(name);
+         return context.Library.Behaviors.Get(name);
       }
 
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
       {
          var behavior = (Behavior)value;
          writer.WriteValue(behavior.Name);
+      }
+   }
+
+
+   public class AlligenceConverter : JsonConverter
+   {
+      public override bool CanConvert(Type objectType)
+      {
+         return typeof(Alligence).IsAssignableFrom(objectType);
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+         if (reader.TokenType != JsonToken.String)
+         {
+            throw new JsonSerializationException("unexpected token type when deserializing an IItemUsage");
+         }
+
+         var name = reader.Value.ToString();
+         var context = (SerializationContext)serializer.Context.Context;
+
+         return context.AlligenceManager.GetOrAddByName(name).Value;
+      }
+
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+         var alligence = (Alligence)value;
+         writer.WriteValue(alligence.Name);
       }
    }
 }

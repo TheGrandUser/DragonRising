@@ -30,7 +30,7 @@ namespace DragonRising
 {
    public class PlayerController : IPlayerController
    {
-      PlayerControlledBehavior playerControlledBehavior;
+      ExternallyControlledBehavior playerControlledBehavior;
       Entity playerCreature;
       public Entity PlayerCreature
       {
@@ -42,17 +42,22 @@ namespace DragonRising
                if (this.playerCreature != null)
                {
                   this.playerCreature.TryGetComponent<BehaviorComponent>()
-                     .ForEach(bc => bc.RemoveBehavior(playerControlledBehavior));
+                     .ForEach(bc => bc.RemoveBehavior(this.playerControlledBehavior));
+
+                  this.playerControlledBehavior = null;
                }
                this.playerCreature = value;
 
                if (this.playerCreature != null)
                {
                   var behaviorComponent = this.playerCreature.GetComponent<BehaviorComponent>();
-                  if (behaviorComponent.Behaviors.OfType<PlayerControlledBehavior>().IsEmpty())
+                  var controlledBehavior = behaviorComponent.Behaviors.OfType<ExternallyControlledBehavior>().FirstOrDefault();
+                  if (controlledBehavior == null)
                   {
-                     behaviorComponent.PushBehavior(playerControlledBehavior);
+                     behaviorComponent.PushBehavior(controlledBehavior = new ExternallyControlledBehavior());
                   }
+
+                  this.playerControlledBehavior = controlledBehavior;
                }
             }
          }
@@ -96,15 +101,8 @@ namespace DragonRising
 
       public PlayerController(FocusEntitySceneView sceneView)
       {
-         this.playerControlledBehavior = new PlayerControlledBehavior(this);
-         if (!Library.Current.Behaviors.Contains(this.playerControlledBehavior.Name))
-         {
-            Library.Current.Behaviors.Add(this.playerControlledBehavior);
-         }
          this.sceneView = sceneView;
       }
-
-      RogueAction actionToDo;
 
       public async Task<PlayerTurnResult> GetInputAsync(TimeSpan timeout)
       {
@@ -151,7 +149,7 @@ namespace DragonRising
                   return PlayerTurnResult.None;
                }
 
-               this.actionToDo = action;
+               this.playerControlledBehavior.SetNextAction(action);
                return PlayerTurnResult.TurnAdvancing;
             }
             else if (inputResult.Command is LookCommand)
@@ -162,7 +160,7 @@ namespace DragonRising
             }
             else if (inputResult.Command == RogueCommands.Wait)
             {
-               this.actionToDo = RogueAction.Idle;
+               this.playerControlledBehavior.SetNextAction(RogueAction.Idle);
                return PlayerTurnResult.TurnAdvancing;
             }
             else if (inputResult.Command == RogueCommands.NoOp)
@@ -177,24 +175,15 @@ namespace DragonRising
             }
             else
             {
-               this.actionToDo = RogueAction.Idle;
+               this.playerControlledBehavior.SetNextAction(RogueAction.Idle);
                return PlayerTurnResult.Idle;
             }
          }
          catch (OperationCanceledException)
          {
-            this.actionToDo = RogueAction.Idle;
+            this.playerControlledBehavior.SetNextAction(RogueAction.Idle);
             return PlayerTurnResult.Idle;
          }
-      }
-
-      public RogueAction GetAction()
-      {
-         Debug.Assert(actionToDo != null);
-
-         var atd = actionToDo;
-         actionToDo = null;
-         return atd;
       }
 
       async Task<RequirementFulfillment> GetFulfillmentAsync(ActionRequirement requirements)

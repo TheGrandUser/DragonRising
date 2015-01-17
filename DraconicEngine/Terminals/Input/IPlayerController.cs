@@ -20,6 +20,5 @@ namespace DraconicEngine.Input
    public interface IPlayerController
    {
       Task<PlayerTurnResult> GetInputAsync(TimeSpan timeout);
-      RogueAction GetAction();
    }
 }
