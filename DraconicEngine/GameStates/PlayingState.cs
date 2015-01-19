@@ -29,6 +29,8 @@ namespace DraconicEngine.GameStates
       protected abstract bool IsUnderPlayerControl();
       protected abstract Task<PlayerTurnResult> GetPlayerTurn(TimeSpan timeout);
 
+      public abstract void AddAsyncInterruption(IAsyncInterruption interruption);
+
       public async Task<TickResult> Tick()
       {
          if (this.IsUnderPlayerControl())
@@ -122,5 +124,41 @@ namespace DraconicEngine.GameStates
       }
 
       public static PlayingState Current { get; private set; }
+   }
+
+   public interface IAsyncInterruption
+   {
+      bool StillApplies();
+      Task Run();
+   }
+
+   public class DelegateAsyncInterruption : IAsyncInterruption
+   {
+      Func<bool> stillApplies;
+      Func<Task> run;
+
+      public DelegateAsyncInterruption(Func<Task> run, Func<bool> stillApplies = null)
+      {
+         this.run = run;
+         this.stillApplies = stillApplies;
+      }
+
+      public Task Run()
+      {
+         return run();
+      }
+
+      public bool StillApplies()
+      {
+         return stillApplies?.Invoke() ?? true;
+      }
+   }
+
+   public static class PlayingStateExtensions
+   {
+      public static void AddAsyncInterruption(this PlayingState playingState, Func<Task> run, Func<bool> stillApplies = null)
+      {
+         playingState.AddAsyncInterruption(new DelegateAsyncInterruption(run, stillApplies));
+      }
    }
 }

@@ -7,13 +7,14 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
+using DragonRising.GameWorld;
 
 namespace DragonRising.Storage
 {
    public interface ISaveManager
    {
-      Task SaveGame(string name, Scene scene);
-      Task<Scene> LoadGame(string name);
+      Task SaveGame(string name, World world);
+      Task<World> LoadGame(string name);
       IEnumerable<string> GetSaveGames();
       string LastSaveGame { get; }
    }

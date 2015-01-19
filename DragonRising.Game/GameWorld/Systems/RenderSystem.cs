@@ -18,13 +18,13 @@ namespace DragonRising.GameWorld.Systems
    {
       ITerminal terminal;
       SceneView sceneView;
-      Scene scene;
+      World world;
 
-      public RenderSystem(ITerminal terminal, SceneView sceneView, Scene scene)
+      public RenderSystem(ITerminal terminal, SceneView sceneView, World world)
       {
          this.terminal = terminal;
          this.sceneView = sceneView;
-         this.scene = scene;
+         this.world = world;
       }
 
       protected override void NodeUpdateFunction(DrawNode node, double time)
@@ -34,7 +34,7 @@ namespace DragonRising.GameWorld.Systems
          if (display.X >= 0 && display.X < terminal.Size.X &&
              display.Y >= 0 && display.Y < terminal.Size.Y)
          {
-            var tile = scene.GetTileSafe(node.Location.Location);
+            var tile = world.Scene.GetTileSafe(node.Location.Location);
             if (tile.Visibility == TileVisibility.Seen)
             {
                terminal.Set(display, node.Drawn.SeenCharacter);
@@ -51,13 +51,13 @@ namespace DragonRising.GameWorld.Systems
    {
       ITerminal terminal;
       SceneView sceneView;
-      Scene scene;
+      World world;
 
-      public ItemRenderSystem(ITerminal terminal, SceneView sceneView, Scene scene)
+      public ItemRenderSystem(ITerminal terminal, SceneView sceneView, World world)
       {
          this.terminal = terminal;
          this.sceneView = sceneView;
-         this.scene = scene;
+         this.world = world;
       }
 
       protected override void NodeUpdateFunction(ItemDrawNode node, double time)
@@ -67,7 +67,7 @@ namespace DragonRising.GameWorld.Systems
          if (display.X >= 0 && display.X < terminal.Size.X &&
              display.Y >= 0 && display.Y < terminal.Size.Y)
          {
-            var tile = scene.GetTileSafe(node.Location.Location);
+            var tile = world.Scene.GetTileSafe(node.Location.Location);
             if (tile.Visibility == TileVisibility.Seen)
             {
                terminal.Set(display, node.Drawn.SeenCharacter);
@@ -84,13 +84,13 @@ namespace DragonRising.GameWorld.Systems
    {
       ITerminal terminal;
       SceneView sceneView;
-      Scene scene;
+      World world;
 
-      public CreatureRenderSystem(ITerminal terminal, SceneView sceneView, Scene scene)
+      public CreatureRenderSystem(ITerminal terminal, SceneView sceneView, World world)
       {
          this.terminal = terminal;
          this.sceneView = sceneView;
-         this.scene = scene;
+         this.world = world;
       }
 
       protected override void NodeUpdateFunction(CreatureDrawNode node, double time)
@@ -100,7 +100,7 @@ namespace DragonRising.GameWorld.Systems
          if (display.X >= 0 && display.X < terminal.Size.X &&
              display.Y >= 0 && display.Y < terminal.Size.Y)
          {
-            var tile = scene.GetTileSafe(node.Location.Location);
+            var tile = world.Scene.GetTileSafe(node.Location.Location);
             if (tile.Visibility == TileVisibility.Seen)
             {
                terminal.Set(display, node.Drawn.SeenCharacter);

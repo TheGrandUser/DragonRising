@@ -27,7 +27,7 @@ namespace DragonRising.GameWorld.Actions
       {
          var locComp = executer.GetComponent<LocationComponent>();
          var newLocation = locComp.Location + Vector.FromDirection(dir);
-         if (Scene.CurrentScene.IsBlocked(newLocation) == Blockage.None)
+         if (World.Current.Scene.IsBlocked(newLocation) == Blockage.None)
          {
             locComp.Location = newLocation;
          }
@@ -44,7 +44,7 @@ namespace DragonRising.GameWorld.Actions
 
       public override void Do(Entity executer)
       {
-         if (Scene.CurrentScene.IsBlocked(newLocation) == Blockage.None)
+         if (World.Current.Scene.IsBlocked(newLocation) == Blockage.None)
          {
             executer.GetComponent<LocationComponent>().Location = newLocation;
          }

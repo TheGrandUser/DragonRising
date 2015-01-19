@@ -39,7 +39,7 @@ namespace DragonRising.GameWorld.Powers
 
          var rangeSquared = 3 * 3;
 
-         var entitiesToDamage = Scene.CurrentScene.EntityStore.AllCreaturesSpecialFirst()
+         var entitiesToDamage = World.Current.Scene.EntityStore.AllCreaturesSpecialFirst()
             .Where(entity => entity.HasComponent<CombatantComponent>() && (entity.GetLocation() - target).LengthSquared <= rangeSquared)
             .ToList();
 

@@ -27,17 +27,17 @@ namespace DragonRising.Libraries
          Add(new Entity("Orc",
             new LocationComponent() { Blocks = true },
             new DrawnComponent() { SeenCharacter = new Character(Glyph.OLower, RogueColors.LightGreen) },
-            new CombatantComponent(hp: 10, defense: 0, power: 3),
+            new CombatantComponent(hp: 10, xp: 35, defense: 0, power: 3),
             new BehaviorComponent(behaviors.Get("Basic Monster")),
-            new CreatureComponent(AlligenceManager.Current.Neutral, 6)));
+            new CreatureComponent(6)));
 
 
          Add(new Entity("Troll",
             new LocationComponent() { Blocks = true },
             new DrawnComponent() { SeenCharacter = new Character(Glyph.TUpper, RogueColors.LightGreen) },
-            new CombatantComponent(hp: 16, defense: 1, power: 4),
+            new CombatantComponent(hp: 16, xp: 100, defense: 1, power: 4),
             new BehaviorComponent(behaviors.Get("Basic Monster")),
-            new CreatureComponent(AlligenceManager.Current.Neutral, 5)));
+            new CreatureComponent(5)));
       }
 
       private void Add(Entity entityTemplate)

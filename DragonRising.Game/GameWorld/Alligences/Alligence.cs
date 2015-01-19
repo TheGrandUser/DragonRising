@@ -9,7 +9,7 @@ namespace DragonRising.GameWorld.Alligences
    [Serializable]
    public class Alligence
    {
-
+      public static readonly Alligence Neutral = new Alligence() { Name = "Neutral" };
       public string Name { get; set; }
    }
 }

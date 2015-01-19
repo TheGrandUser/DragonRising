@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DragonRising.GameWorld;
 
 namespace DragonRising
 {
@@ -36,8 +37,8 @@ namespace DragonRising
             return false;
          }
 
-
-         return AlligenceManager.Current.AreEnemies(meCreature.Alligence, otherCreature.Alligence);
+         
+         return World.Current.Alligences.AreEnemies(meCreature.Alligence, otherCreature.Alligence);
       }
 
       public static T AsCreature<T>(this Entity entity, Func<CreatureComponent, T> isTrue, T otherwise = default(T))

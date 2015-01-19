@@ -163,10 +163,10 @@ namespace DragonRising.GameStates
 
          await RogueGame.Current.RunGameState(newGameScreen);
 
-         if (newGameScreen.Scene != null)
+         if (newGameScreen.World != null)
          {
-            Scene scene = newGameScreen.Scene;
-            var playingState = new MyPlayingState(scene, newGameScreen.GameName);
+            var world = newGameScreen.World;
+            var playingState = new MyPlayingState(world, newGameScreen.GameName);
 
             await RogueGame.Current.RunGameState(playingState);
          }
@@ -193,10 +193,10 @@ namespace DragonRising.GameStates
 
       async Task PlayLoadedGame(string gameName)
       {
-         var scene = await SaveManager.Current.LoadGame(gameName);
-         scene.ClearFoV();
+         var world = await SaveManager.Current.LoadGame(gameName);
+         world.Scene.ClearFoV();
 
-         var playingState = new MyPlayingState(scene, gameName);
+         var playingState = new MyPlayingState(world, gameName);
 
          await RogueGame.Current.RunGameState(playingState);
       }

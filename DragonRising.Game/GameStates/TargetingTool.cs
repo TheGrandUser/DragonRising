@@ -11,6 +11,7 @@ using DraconicEngine.Widgets;
 using LanguageExt;
 using LanguageExt.Prelude;
 using DragonRising.Widgets;
+using DragonRising.GameWorld;
 
 namespace DragonRising.GameStates
 {
@@ -52,7 +53,7 @@ namespace DragonRising.GameStates
          var keyEvent = await InputSystem.Current.GetKeyPressAsync();
          if (keyEvent.Key == RogueKey.Enter || keyEvent.Key == RogueKey.Space)
          {
-            if (!isLimitedToFoV || Scene.CurrentScene.IsVisible(location))
+            if (!isLimitedToFoV || World.Current.Scene.IsVisible(location))
             {
                result = location;
                return TickResult.Finished;

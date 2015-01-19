@@ -27,7 +27,7 @@ namespace DragonRising.GameWorld.Actions
 
       public override void Do(Entity executer)
       {
-         var scene = Scene.CurrentScene;
+         var scene = World.Current.Scene;
 
          executer.GetComponent<InventoryComponent>().Items.Remove(item);
          item.GetComponent<LocationComponent>().Location = executer.GetComponent<LocationComponent>().Location;

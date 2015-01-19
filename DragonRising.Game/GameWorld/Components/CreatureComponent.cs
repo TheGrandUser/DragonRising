@@ -14,10 +14,15 @@ namespace DragonRising.GameWorld.Components
    public sealed class CreatureComponent : Component
    {
       public int VisionRadius { get; set; }
-      public Alligence Alligence { get; set; } = AlligenceManager.Current.Neutral;
+      public Alligence Alligence { get; set; } = Alligence.Neutral;
 
       public CreatureComponent()
       {
+      }
+
+      public CreatureComponent(int visionRadius)
+      {
+         this.VisionRadius = visionRadius;
       }
 
       public CreatureComponent(Alligence alligence, int visionRadius)

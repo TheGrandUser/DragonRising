@@ -19,7 +19,7 @@ namespace DragonRising.GameWorld.Components
       public int MaxHP { get; set; }
       public int Power { get; set; }
       public int Defense { get; set; }
-
+      public int XP { get; set; }
       public bool IsAlive { get; set; } = true;
 
       public CombatantComponent()
@@ -33,15 +33,17 @@ namespace DragonRising.GameWorld.Components
          this.MaxHP = original.MaxHP;
          this.Power = original.Power;
          this.Defense = original.Defense;
+         this.XP = original.XP;
 
          this.HP = fresh ? original.MaxHP : original.HP;
          this.IsAlive = fresh | original.IsAlive;
       }
 
-      public CombatantComponent(int hp, int defense, int power)
+      public CombatantComponent(int hp, int xp, int defense, int power)
       {
          MaxHP = hp;
          HP = hp;
+         XP = xp;
          Defense = defense;
          Power = power;
       }
@@ -56,7 +58,7 @@ namespace DragonRising.GameWorld.Components
             {
                this.IsAlive = false;
                this.Owner.SetBlocks(false);
-               Scene.CurrentScene.EntityStore.KillEntity(this.Owner);
+               World.Current.Scene.EntityStore.KillEntity(this.Owner);
                var eventAggregator = ServiceLocator.Current.GetInstance<IEventAggregator>();
                var creatureKilledEvent = eventAggregator.GetEvent<CreatureKilledEvent>();
                creatureKilledEvent.Publish(this.Owner, "Entity", from);

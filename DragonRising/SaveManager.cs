@@ -24,6 +24,7 @@ using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
 using DragonRising.GameWorld.Items;
+using DragonRising.GameWorld;
 
 namespace DragonRising
 {
@@ -48,7 +49,7 @@ namespace DragonRising
             new SerializationContext()
             {
                Library = Library.Current,
-               AlligenceManager = AlligenceManager.Current,
+               //AlligenceManager = AlligenceManager.Current,
             }),
             ReferenceResolver = new LibraryReferenceResolver()
          };
@@ -96,9 +97,12 @@ namespace DragonRising
          public JArray AlligenceRelations { get; set; }
          public Entity[] entities { get; set; }
          public int focusEntityId { get; set; }
+
+         public int stairsId { get; set; }
+         public int dungeonLevel { get; set; }
       }
 
-      public async Task<Scene> LoadGame(string name)
+      public async Task<World> LoadGame(string name)
       {
          var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
          var saveGameDir = Path.Combine(documents, "My Games", "Dragon Rising", "Saves");
@@ -118,18 +122,20 @@ namespace DragonRising
                }
             }
          }
+         var world = new World();
 
          var serializer = MakeSerializer();
          var context = (SerializationContext)serializer.Context.Context;
+         context.World = world;
          var sceneInfo = serializer.Deserialize<SceneInfo>(doc.CreateReader());
          
          foreach(var rel in sceneInfo.AlligenceRelations)
          {
-            var a1 = context.AlligenceManager.GetOrAddByName(rel["Alligence1"].Value<string>());
-            var a2 = context.AlligenceManager.GetOrAddByName(rel["Alligence2"].Value<string>());
+            var a1 = world.Alligences.GetOrAddByName(rel["Alligence1"].Value<string>());
+            var a2 = world.Alligences.GetOrAddByName(rel["Alligence2"].Value<string>());
             var relationship = (Relationship)rel["Relationship"].Value<int>();
 
-            context.AlligenceManager.SetRelationship(a1, a2, relationship);
+            world.Alligences.SetRelationship(a1, a2, relationship);
          }
 
          var width = sceneInfo.mapWidth;
@@ -165,11 +171,13 @@ namespace DragonRising
          }
 
          scene.FocusEntity = sceneInfo.entities[sceneInfo.focusEntityId];
-
-         return scene;
+         scene.Stairs = sceneInfo.entities[sceneInfo.stairsId];
+         world.DungeonLevel = sceneInfo.dungeonLevel;
+         world.PushScene(scene);
+         return world;
       }
 
-      public Task SaveGame(string name, Scene scene)
+      public Task SaveGame(string name, World world)
       {
          var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
          var saveGamesDir = Path.Combine(documents, "My Games", "Dragon Rising", "Saves");
@@ -179,6 +187,7 @@ namespace DragonRising
             Directory.CreateDirectory(saveGamesDir);
          }
 
+         var scene = world.Scene;
          var filePath = Path.Combine(saveGamesDir, name + ".sav");
          var mapFilePath = Path.Combine(saveGamesDir, name + ".map");
 
@@ -186,7 +195,7 @@ namespace DragonRising
          var context = (SerializationContext)serializer.Context.Context;
 
          var alligenceRelationships = new JArray();
-         foreach(var relationship in context.AlligenceManager.Relationships)
+         foreach(var relationship in world.Alligences.Relationships)
          {
             alligenceRelationships.Add(
                new JObject(
@@ -203,6 +212,8 @@ namespace DragonRising
             mapHeight = scene.MapHeight,
             entities = entities,
             focusEntityId = Array.IndexOf(entities, scene.FocusEntity),
+            stairsId = Array.IndexOf(entities, scene.Stairs),
+            dungeonLevel = world.DungeonLevel,
             AlligenceRelations = alligenceRelationships,
          };
 
@@ -327,7 +338,8 @@ namespace DragonRising
    class SerializationContext
    {
       public ILibrary Library { get; set; }
-      public IAlligenceManager AlligenceManager { get; set; }
+      public World World { get; set; }
+      //public IAlligenceManager AlligenceManager { get; set; }
    }
 
    class BidirectionalDictionary<TFirst, TSecond>
@@ -741,7 +753,7 @@ namespace DragonRising
          var name = reader.Value.ToString();
          var context = (SerializationContext)serializer.Context.Context;
 
-         return context.AlligenceManager.GetOrAddByName(name).Value;
+         return context.World.Alligences.GetOrAddByName(name).Value;
       }
 
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

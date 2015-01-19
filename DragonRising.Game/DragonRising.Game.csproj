@@ -107,6 +107,7 @@
     <Compile Include="EntityStoreExtensions.cs" />
     <Compile Include="GameStates\LoadGeneralDataScreen.cs" />
     <Compile Include="GameStates\NewGameScreen.cs" />
+    <Compile Include="GameStates\SelectBenefitScreen.cs" />
     <Compile Include="GameWorld\Actions\AttackEntityAction.cs" />
     <Compile Include="GameWorld\Actions\DropItemAction.cs" />
     <Compile Include="GameWorld\Actions\ManipulateEntityAction.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="GameWorld\Components\GameActionsComponent.cs" />
     <Compile Include="GameWorld\Components\InventoryComponent.cs" />
     <Compile Include="GameWorld\Components\ItemComponent.cs" />
+    <Compile Include="GameWorld\Components\LevelComponent.cs" />
     <Compile Include="GameWorld\Components\LocationComponent.cs" />
     <Compile Include="GameWorld\Components\ManipulatableComponent.cs" />
     <Compile Include="GameWorld\Effects\BehaviorReplacementEffect.cs" />
@@ -175,6 +177,7 @@
     <Compile Include="GameWorld\Systems\CreatureActionSystem.cs" />
     <Compile Include="GameWorld\Systems\RenderSystem.cs" />
     <Compile Include="GameWorld\Tile.cs" />
+    <Compile Include="GameWorld\World.cs" />
     <Compile Include="Generators\IItemGenerator.cs" />
     <Compile Include="Generators\IMapGenerator.cs" />
     <Compile Include="Generators\IPopulationGenerator.cs" />

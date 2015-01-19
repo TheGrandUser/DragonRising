@@ -53,7 +53,7 @@ namespace DragonRising.GameWorld.Items
 
       public bool Use(Entity user, Some<RequirementFulfillment> fulfillment)
       {
-         var closestMonster = Scene.CurrentScene.ClosestEnemy(user, range);
+         var closestMonster = World.Current.Scene.ClosestEnemy(user, range);
 
          return closestMonster.Match(
             Some: target =>

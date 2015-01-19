@@ -11,6 +11,7 @@ using DraconicEngine.GameWorld.Actions;
 using DraconicEngine.Terminals.Input;
 using DraconicEngine;
 using DragonRising.GameWorld.Actions;
+using DragonRising.GameWorld;
 
 namespace DragonRising.Commands
 {
@@ -27,7 +28,7 @@ namespace DragonRising.Commands
       {
          var destFulfillment = (LocationFulfillment)fulfillment;
          var destination = destFulfillment.Location;
-         var scene = Scene.CurrentScene;
+         var scene = World.Current.Scene;
 
          var blockage = scene.IsBlocked(destination, ignoreWhere: entity => entity == executer);
 

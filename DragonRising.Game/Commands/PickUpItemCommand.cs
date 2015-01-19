@@ -4,6 +4,7 @@ using DraconicEngine.GameWorld.Actions.Requirements;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.Terminals.Input;
+using DragonRising.GameWorld;
 using DragonRising.GameWorld.Actions;
 using DragonRising.GameWorld.Components;
 using LanguageExt;
@@ -25,9 +26,9 @@ namespace DragonRising.Commands
 
       public override Either<RogueAction, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment)
       {
-         var scene = Scene.CurrentScene;
+         var scene = World.Current.Scene;
 
-         var itemToPick = Scene.CurrentScene.EntityStore
+         var itemToPick = World.Current.Scene.EntityStore
             .GetItemsAt(executer.GetLocation())
             .FirstOrDefault();
 

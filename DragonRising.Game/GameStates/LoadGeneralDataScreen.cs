@@ -31,7 +31,7 @@ namespace DragonRising.GameStates
          loaders.Enqueue(new TileLoader());
          loaders.Enqueue(new PowersLoader());
          loaders.Enqueue(new ItemsLoader());
-         loaders.Enqueue(new AlligencesLoader());
+         //loaders.Enqueue(new AlligencesLoader());
          loaders.Enqueue(new CreaturesLoader());
 
          var height = 7;
@@ -138,20 +138,20 @@ namespace DragonRising.GameStates
       }
    }
 
-   class AlligencesLoader : ILoader
-   {
-      public string Message => "Loading Alligences...";
-      public Task Load()
-      {
-         var manager = AlligenceManager.Current;//new SimpleAlligenceManager();
-         manager.Add(new Alligence() { Name = "Player" });
-         //manager.Add(new Alligence() { Name = "Greenskins" });
+   //class AlligencesLoader : ILoader
+   //{
+   //   public string Message => "Loading Alligences...";
+   //   public Task Load()
+   //   {
+   //      var manager = AlligenceManager.Current;//new SimpleAlligenceManager();
+   //      manager.Add(new Alligence() { Name = "Player" });
+   //      //manager.Add(new Alligence() { Name = "Greenskins" });
 
-         //AlligenceManager.SetAlligenceManager(manager);
+   //      //AlligenceManager.SetAlligenceManager(manager);
 
-         return Task.Delay(TimeSpan.FromSeconds(0.5));
-      }
-   }
+   //      return Task.Delay(TimeSpan.FromSeconds(0.5));
+   //   }
+   //}
 
    class CreaturesLoader : ILoader
    {

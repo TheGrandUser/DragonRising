@@ -96,7 +96,6 @@
     <Compile Include="GameWorld\Actions\Requirements\OrRequirement.cs" />
     <Compile Include="GameWorld\Behaviors\ExternallyControlledBehavior.cs" />
     <Compile Include="GameWorld\EntitySystem\DoesNotHaveAttribute.cs" />
-    <Compile Include="GameWorld\GameState.cs" />
     <Compile Include="Services\TimedEvents.cs" />
     <Compile Include="Services\TurnEffects.cs" />
     <Compile Include="Terminals\Input\RogueCommand.cs" />

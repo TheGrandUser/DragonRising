@@ -7,22 +7,23 @@ using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.Terminals;
 using DraconicEngine;
 using DraconicEngine.Widgets;
+using DragonRising.GameWorld;
 
 namespace DragonRising.Widgets
 {
    public abstract class SceneView
    {
-      private Scene scene;
-      protected Scene Scene { get { return scene; } }
+      private World world;
+      protected World World { get { return world; } }
 
       private ITerminal panel;
       protected ITerminal Panel { get { return panel; } }
 
       Vector viewOffset = new Vector();
 
-      public SceneView(Scene scene, ITerminal panel)
+      public SceneView(World world, ITerminal panel)
       {
-         this.scene = scene;
+         this.world = world;
          this.panel = panel;
       }
 
@@ -40,8 +41,8 @@ namespace DragonRising.Widgets
       Entity entity;
       private Loc lastLocation;
 
-      public FocusEntitySceneView(Scene scene, ITerminal panel, Entity entity)
-         : base(scene, panel)
+      public FocusEntitySceneView(World world, ITerminal panel, Entity entity)
+         : base(world, panel)
       {
          this.entity = entity;
          this.lastLocation = this.entity.GetLocation();
@@ -51,14 +52,14 @@ namespace DragonRising.Widgets
       {
          if (this.lastLocation != entity.GetLocation())
          {
-            this.Scene.ClearFoV();
-            this.Scene.UpdateFoV();
+            this.World.Scene.ClearFoV();
+            this.World.Scene.UpdateFoV();
          }
 
          var offsetSize = this.Panel.Size / 2;
          this.ViewOffset = new Vector(
-            Math.Min(Math.Max(this.Scene.FocusEntity.GetLocation().X - offsetSize.X, 0), this.Scene.MapWidth - this.Panel.Size.X),
-            Math.Min(Math.Max(this.Scene.FocusEntity.GetLocation().Y - offsetSize.Y, 0), this.Scene.MapHeight - this.Panel.Size.Y));
+            Math.Min(Math.Max(this.World.Scene.FocusEntity.GetLocation().X - offsetSize.X, 0), this.World.Scene.MapWidth - this.Panel.Size.X),
+            Math.Min(Math.Max(this.World.Scene.FocusEntity.GetLocation().Y - offsetSize.Y, 0), this.World.Scene.MapHeight - this.Panel.Size.Y));
       }
    }
 }

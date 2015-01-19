@@ -36,9 +36,9 @@ namespace DragonRising.GameWorld.Behaviors
       public override RogueAction PlanTurn(Entity owner)
       {
          RogueAction action = null;
-         if (Scene.CurrentScene.IsVisible(owner.GetComponent<LocationComponent>().Location))
+         if (World.Current.Scene.IsVisible(owner.GetComponent<LocationComponent>().Location))
          {
-            var player = Scene.CurrentScene.FocusEntity;
+            var player = World.Current.Scene.FocusEntity;
             if (player != null)
             {
                if (owner.IsAdjacent(player))
@@ -69,7 +69,7 @@ namespace DragonRising.GameWorld.Behaviors
          foreach (var moveVec in moveAttempts)
          {
             var newLoc = locComp.Location + moveVec;
-            var blockage = Scene.CurrentScene.IsBlocked(newLoc);
+            var blockage = World.Current.Scene.IsBlocked(newLoc);
 
             if (blockage == Blockage.None)
             {
@@ -77,7 +77,7 @@ namespace DragonRising.GameWorld.Behaviors
             }
             else if (blockage == Blockage.Entity)
             {
-               var others = Scene.CurrentScene.EntityStore.GetEntitiesAt(newLoc);
+               var others = World.Current.Scene.EntityStore.GetEntitiesAt(newLoc);
                var blocker = others.SingleOrDefault(o => o.HasComponent<CreatureComponent>());
                if (blocker != null)
                {

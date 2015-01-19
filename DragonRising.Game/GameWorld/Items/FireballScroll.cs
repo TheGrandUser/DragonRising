@@ -33,7 +33,7 @@ namespace DragonRising.GameWorld.Items
             var target = locationFulfillment.Location;
             var rangeSquared = range * range;
 
-            var entitiesToDamage = Scene.CurrentScene.EntityStore.AllCreaturesSpecialFirst()
+            var entitiesToDamage = World.Current.Scene.EntityStore.AllCreaturesSpecialFirst()
                .Where(entity => entity.HasComponent<CombatantComponent>() && (entity.GetLocation() - target).LengthSquared <= rangeSquared)
                .ToList();
 

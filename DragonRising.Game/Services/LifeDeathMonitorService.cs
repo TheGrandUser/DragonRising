@@ -8,6 +8,7 @@ using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using System.Reactive.Linq;
 using DragonRising.GameWorld.Components;
+using DragonRising.GameWorld;
 
 namespace DragonRising.Services
 {
@@ -22,7 +23,7 @@ namespace DragonRising.Services
 
       private void OnKilled(Entity entity)
       {
-         if (entity == Scene.CurrentScene.FocusEntity)
+         if (entity == World.Current.Player)
          {
             PlayerDeath(entity);
          }
@@ -59,7 +60,7 @@ namespace DragonRising.Services
          npc.RemoveComponent<BehaviorComponent>();
          npc.RemoveComponent<CreatureComponent>();
 
-         Scene.CurrentScene.EntityStore.SendToBack(npc);
+         World.Current.Scene.EntityStore.SendToBack(npc);
       }
    }
 }

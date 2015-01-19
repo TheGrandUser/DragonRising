@@ -18,6 +18,7 @@ namespace DragonRising
       Entity focusEntity = null;
       Tile beyondTheEdge = new Tile(Tile.VoidId);
       bool recomputeFov = true;
+      public Entity Stairs { get; set; }
 
       public int MapWidth { get; set; }
       public int MapHeight { get; set; }
@@ -40,6 +41,15 @@ namespace DragonRising
          {
             Map[index] = new Tile(wallId);
          }
+         this.Stairs = new Entity("Stairs",
+            new DrawnComponent()
+            {
+               SeenCharacter = new Character(Glyph.LessThan, RogueColors.White),
+               ExploredCharacter = new Character(Glyph.LessThan, RogueColors.LightGray)
+            },
+            new LocationComponent());
+         this.EntityStore.Add(this.Stairs);
+         this.EntityStore.SendToBack(this.Stairs);
       }
 
       public IEntityStore EntityStore { get; } = new EntityStore();
@@ -162,13 +172,6 @@ namespace DragonRising
       }
 
       public bool IsVisible(Loc vec) => GetTileSafe(vec).Visibility == TileVisibility.Seen;
-
-      static Stack<Scene> scenes = new Stack<Scene>();
-      public static Scene CurrentScene => scenes.Count > 0 ? scenes.Peek() : null;
-
-      public static void PushScene(Scene scene) => scenes.Push(scene);
-
-      public static void PopScene() => scenes.Pop();
    }
 
    public enum Blockage

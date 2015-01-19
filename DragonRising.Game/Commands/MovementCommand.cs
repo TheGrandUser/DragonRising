@@ -12,6 +12,7 @@ using DraconicEngine.Terminals.Input;
 using DraconicEngine;
 using DragonRising.GameWorld.Actions;
 using DragonRising.GameWorld.Components;
+using DragonRising.GameWorld;
 
 namespace DragonRising.Commands
 {
@@ -36,7 +37,7 @@ namespace DragonRising.Commands
             return RogueAction.Abort;
          }
 
-         var scene = Scene.CurrentScene;
+         var scene = World.Current.Scene;
 
          var delta = Vector.FromDirection(direction);
 

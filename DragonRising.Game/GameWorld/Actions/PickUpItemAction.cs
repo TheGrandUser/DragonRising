@@ -31,7 +31,7 @@ namespace DragonRising.GameWorld.Actions
       public override void Do(Entity executer)
       {
          var inventory = executer.GetComponent<InventoryComponent>();
-         var scene = Scene.CurrentScene;
+         var scene = World.Current.Scene;
 
          var itemComponent = itemToPick.GetComponent<ItemComponent>();
 

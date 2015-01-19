@@ -36,7 +36,7 @@ namespace DragonRising.GameWorld.Behaviors
          {
             var direction = (Direction)RogueGame.Current.GameRandom.Next(9);
             var loc = owner.GetComponent<LocationComponent>().Location + Vector.FromDirection(direction);
-            if (Scene.CurrentScene.IsBlocked(loc) == Blockage.None)
+            if (World.Current.Scene.IsBlocked(loc) == Blockage.None)
             {
                return new MoveToAction(loc);
             }

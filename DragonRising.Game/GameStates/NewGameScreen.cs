@@ -17,15 +17,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DragonRising.GameWorld;
 
 namespace DragonRising.GameStates
 {
    class NewGameScreen : IGameState
    {
-      static readonly int MapWidth = 160;
-      static readonly int MapHeight = 80;
-
       public GameStateType Type => GameStateType.Screen;
 
       string nameInProgress;
@@ -105,35 +102,30 @@ namespace DragonRising.GameStates
          return TickResult.Continue;
       }
 
-      public Scene Scene { get; set; }
+      public World World { get; set; }
       public string GameName { get; set; }
 
 
       void CreateNew(string name)
       {
-         Scene scene = new Scene(MapWidth, MapHeight);
-         var dragonAlligence = AlligenceManager.Current.GetOrAddByName("Dragon");
-         var greenskins = new GreenskinsGenerator();
-         AlligenceManager.Current.SetRelationship(dragonAlligence, greenskins.GreenskinsAllignce, Relationship.Enemy);
-         var generator = new DungeonGenerator(greenskins, new StandardItemGenerator());
-         var startPoint = generator.MakeMap(scene);
-
          var player = new Entity(name,
             new DrawnComponent() { SeenCharacter = new Character(Glyph.At, RogueColors.White) },
-            new LocationComponent() { Blocks = true, Location = startPoint },
-            new CombatantComponent(hp: 30, defense: 2, power: 5),
-            new CreatureComponent(dragonAlligence, 6),
+            new LocationComponent() { Blocks = true },
+            new CombatantComponent(hp: 30, xp: 0, defense: 2, power: 5),
+            new CreatureComponent(6),
             new InventoryComponent() { Capacity = 26 },
-            new BehaviorComponent());
+            new BehaviorComponent(),
+            new LevelComponent() { Level = 1 });
 
          var inventory = player.GetComponent<InventoryComponent>();
 
          inventory.Items.Add(Library.Current.Items.Get(TempConstants.ScrollOfLightningBolt).Clone());
          inventory.Items.Add(Library.Current.Items.Get(TempConstants.ScrollOfFireball).Clone());
          inventory.Items.Add(Library.Current.Items.Get(TempConstants.ScrollOfConfusion).Clone());
-         scene.FocusEntity = player;
 
-         this.Scene = scene;
+         var world = new World(player);
+
+         this.World = world;
          this.GameName = name;
       }
    }

@@ -27,6 +27,7 @@ using DragonRising.Storage;
 using DragonRising.GameWorld.Components;
 using DragonRising.Widgets;
 using DragonRising.GameWorld.Actions.Requirements;
+using DragonRising.GameWorld;
 
 namespace DragonRising
 {
@@ -159,6 +160,14 @@ namespace DragonRising
             else if (inputResult.Command is GoDownCommand)
             {
                // new level
+               if(World.Current.Player.GetLocation() ==
+                  World.Current.Scene.Stairs.GetLocation())
+               {
+                  MessageService.Current.PostMessage("You take a moment to rest, and recover your strength.", RogueColors.LightViolet);
+                  World.Current.Player.As<CombatantComponent>(cc => cc.Heal(cc.MaxHP / 2));
+                  MessageService.Current.PostMessage("After a rare moment of peace, you descend deeper into the heart of the dungeon...", RogueColors.Red);
+                  World.Current.NextLevel();
+               }
 
                return PlayerTurnResult.TurnAdvancing;
             }
@@ -360,12 +369,12 @@ namespace DragonRising
          if (lookCursor.HasValue)
          {
             var scenePoint = this.sceneView.ViewOffset + lookCursor.GetValueOrDefault();
-
-            if (MyPlayingState.Current.Scene.IsVisible(scenePoint))
+            
+            if (World.Current.Scene.IsVisible(scenePoint))
             {
                MyPlayingState.Current.SetHighlight(lookCursor.Value);
 
-               foreach (var entity in MyPlayingState.Current.Scene.EntityStore.AllEntities.Where(en => en.GetLocation() == scenePoint))
+               foreach (var entity in World.Current.Scene.EntityStore.AllEntities.Where(en => en.GetLocation() == scenePoint))
                {
                   MyPlayingState.Current.AddInfoMessage(new RogueMessage(entity.Name, RogueColors.White));
                }
@@ -410,11 +419,11 @@ namespace DragonRising
          var rangeSquared = range * range;
 
 
-         var entitiesInRange = Scene.CurrentScene.EntityStore.AllCreaturesExceptSpecial()
+         var entitiesInRange = World.Current.Scene.EntityStore.AllCreaturesExceptSpecial()
             .Where(c =>
             c.HasComponent<DrawnComponent>() && c.HasComponent<LocationComponent>() &&
             requirement.DoesEntityMatch(c) &&
-            Scene.CurrentScene.IsVisible(c.GetComponent<LocationComponent>().Location) &&
+            World.Current.Scene.IsVisible(c.GetComponent<LocationComponent>().Location) &&
             (range == null || (c.GetComponent<LocationComponent>().Location - this.PlayerCreature.GetComponent<LocationComponent>().Location).LengthSquared <= rangeSquared))
             .Select(e => new SeeableNode() { Entity = e, Drawn = e.GetComponent<DrawnComponent>(), Loc = e.GetComponent<LocationComponent>() })
             .ToArray();

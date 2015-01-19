@@ -26,7 +26,7 @@ namespace DragonRising.Commands
       {
          MyPlayingState playingState = MyPlayingState.Current;
 
-         var lookTool = new LookTool(playingState.Scene.FocusEntity.GetLocation(), playingState.PlayerController);
+         var lookTool = new LookTool(playingState.World.Scene.FocusEntity.GetLocation(), playingState.PlayerController);
          
          await RogueGame.Current.RunGameState(lookTool);
       }

@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using DragonRising.GameWorld.Components;
 using DragonRising.Widgets;
 using DragonRising.Storage;
+using DragonRising.GameWorld;
 
 namespace DragonRising.GameStates
 {
@@ -42,7 +43,9 @@ namespace DragonRising.GameStates
       FocusEntitySceneView sceneView;
       LifeDeathMonitorService lifeDeathMonitorService;
 
-      public Scene Scene { get; set; }
+      Queue<IAsyncInterruption> interruptions = new Queue<IAsyncInterruption>();
+
+      public World World { get; set; }
 
       public ITerminal ScenePanel { get { return sceneWidget.Panel; } }
 
@@ -55,21 +58,21 @@ namespace DragonRising.GameStates
 
       public PlayerController PlayerController { get; set; }
 
-      public MyPlayingState(Scene scene, string gameName)
+      public MyPlayingState(World world, string gameName)
       {
-         this.Scene = scene;
+         this.World = world;
 
-         var player = scene.FocusEntity;
+         var player = world.Player;
          this.gameName = gameName;
 
          this.messageService = MessageService.Current;
          this.rootTerminal = DragonRisingGame.Current.RootTerminal;
 
          var scenePanel = rootTerminal[1, 1, DragonRisingGame.ScreenWidth - 2, SceneHeight];
-         this.sceneView = new FocusEntitySceneView(this.Scene, scenePanel, player);
+         this.sceneView = new FocusEntitySceneView(this.World, scenePanel, player);
 
          this.statsPanel = rootTerminal[0, PanelY, DragonRisingGame.ScreenWidth, PanelHeight];
-         this.sceneWidget = new SceneWidget(scene, this.sceneView, scenePanel);
+         this.sceneWidget = new SceneWidget(world, this.sceneView, scenePanel);
 
          this.hpBarWidget = new BarWidget(this.statsPanel[1, 1, BarWidth, 1], "HP",
             () => player.GetComponent<CombatantComponent>().HP,
@@ -93,9 +96,9 @@ namespace DragonRising.GameStates
          this.Engine.AddSystem(new AIDecisionSystem(), 1, SystemTrack.Game);
          this.Engine.AddSystem(new CreatureActionSystem(), 2, SystemTrack.Game);
 
-         this.Engine.AddSystem(new RenderSystem(scenePanel, sceneView, scene), 4, SystemTrack.Render);
-         this.Engine.AddSystem(new ItemRenderSystem(scenePanel, sceneView, scene), 5, SystemTrack.Render);
-         this.Engine.AddSystem(new CreatureRenderSystem(scenePanel, sceneView, scene), 6, SystemTrack.Render);
+         this.Engine.AddSystem(new RenderSystem(scenePanel, sceneView, world), 4, SystemTrack.Render);
+         this.Engine.AddSystem(new ItemRenderSystem(scenePanel, sceneView, world), 5, SystemTrack.Render);
+         this.Engine.AddSystem(new CreatureRenderSystem(scenePanel, sceneView, world), 6, SystemTrack.Render);
 
          this.Widgets.Add(sceneWidget);
          this.Widgets.Add(hpBarWidget);
@@ -104,9 +107,9 @@ namespace DragonRising.GameStates
          this.Widgets.Add(infoWidget);
 
          this.PlayerController = new PlayerController(sceneView) { PlayerCreature = player };
-         this.lifeDeathMonitorService = new LifeDeathMonitorService(scene.EntityStore);
+         this.lifeDeathMonitorService = new LifeDeathMonitorService(world.Scene.EntityStore);
 
-         this.subscriptions = this.Engine.ObserveStore(this.Scene.EntityStore);
+         this.subscriptions = this.Engine.ObserveStore(this.World.Scene.EntityStore);
       }
 
       protected override void PreSceneDraw()
@@ -125,8 +128,7 @@ namespace DragonRising.GameStates
       {
          base.Start();
          MyPlayingState.Current = this;
-
-         Scene.PushScene(this.Scene);
+         World.Current = World;
 
          this.messageService.PostMessage("Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.", RogueColors.Red);
       }
@@ -135,10 +137,10 @@ namespace DragonRising.GameStates
       {
          this.subscriptions.Dispose();
 
-         SaveManager.Current.SaveGame(this.gameName, this.Scene);
+         SaveManager.Current.SaveGame(this.gameName, this.World);
 
-         Scene.PopScene();
          MyPlayingState.Current = null;
+         World.Current = null;
 
          return None;
       }
@@ -176,9 +178,22 @@ namespace DragonRising.GameStates
          return this.PlayerController != null;
       }
 
-      protected override Task<PlayerTurnResult> GetPlayerTurn(TimeSpan timeout)
+      protected override async Task<PlayerTurnResult> GetPlayerTurn(TimeSpan timeout)
       {
-         return this.PlayerController.GetInputAsync(timeout);
+         while(interruptions.Count > 0)
+         {
+            var interruption = interruptions.Dequeue();
+            if (interruption.StillApplies())
+            {
+               await interruption.Run();
+            }
+         }
+         return await this.PlayerController.GetInputAsync(timeout);
+      }
+
+      public override void AddAsyncInterruption(IAsyncInterruption interruption)
+      {
+         this.interruptions.Enqueue(interruption);
       }
    }
 }
