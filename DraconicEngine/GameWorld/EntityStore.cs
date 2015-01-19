@@ -1,6 +1,5 @@
 ﻿using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +14,8 @@ namespace DraconicEngine
    public interface IEntityStore
    {
       IEnumerable<Entity> AllEntities { get; }
-      IEnumerable<Entity> AllItems { get; }
-      IEnumerable<Entity> AllNonCreatures { get; }
-
-      IEnumerable<Entity> AllCreaturesSpecialFirst { get; }
-      IEnumerable<Entity> AllCreaturesSpecialLast { get; }
-      IEnumerable<Entity> AllCreaturesExceptSpecial { get; }
-      IEnumerable<Entity> AllSpecialCreatures { get; }
+      IEnumerable<Entity> RegularEntities { get; }
+      IEnumerable<Entity> SpecialEntities { get; }
 
 
       void Add(Entity entity);
@@ -51,76 +45,28 @@ namespace DraconicEngine
       Subject<Entity> killed = new Subject<Entity>();
 
       HashSet<Entity> entities = new HashSet<Entity>();
-      HashSet<Entity> specialCreatures = new HashSet<Entity>();
-      
+      HashSet<Entity> specialEntities = new HashSet<Entity>();
+
       public IObservable<Entity> Added => added.AsObservable();
-      
+
       public IObservable<Entity> Removed => removed.AsObservable();
       public IObservable<Entity> Killed => killed.AsObservable();
 
+      public IEnumerable<Entity> RegularEntities => this.entities.AsEnumerable();
+      public IEnumerable<Entity> SpecialEntities => this.specialEntities.AsEnumerable();
       public IEnumerable<Entity> AllEntities
       {
          get
          {
-            foreach (var specialCreature in this.specialCreatures)
+            foreach (var specialEntity in this.specialEntities)
             {
-               yield return specialCreature;
+               yield return specialEntity;
             }
             foreach (var entity in this.entities)
             {
                yield return entity;
             }
          }
-      }
-
-      public IEnumerable<Entity> AllItems
-      {
-         get { return entities.Where(e => e.HasComponent<ItemComponent>()); }
-      }
-
-      public IEnumerable<Entity> AllNonCreatures
-      {
-         get { return entities.Where(e => !e.HasComponent<CreatureComponent>()); }
-      }
-
-      public IEnumerable<Entity> AllCreaturesSpecialFirst
-      {
-         get
-         {
-            foreach (var specialCreature in this.specialCreatures)
-            {
-               yield return specialCreature;
-            }
-            foreach (var creature in this.entities.Where(e => e.HasComponent<CreatureComponent>()))
-            {
-               yield return creature;
-            }
-         }
-      }
-
-      public IEnumerable<Entity> AllCreaturesSpecialLast
-      {
-         get
-         {
-            foreach (var creature in this.entities.Where(e => e.HasComponent<CreatureComponent>()))
-            {
-               yield return creature;
-            }
-            foreach (var specialCreature in this.specialCreatures)
-            {
-               yield return specialCreature;
-            }
-         }
-      }
-
-      public IEnumerable<Entity> AllCreaturesExceptSpecial
-      {
-         get { return entities.Where(e => e.HasComponent<CreatureComponent>()); }
-      }
-
-      public IEnumerable<Entity> AllSpecialCreatures
-      {
-         get { return this.specialCreatures.AsEnumerable(); }
       }
 
       public void Add(Entity entity)
@@ -134,9 +80,9 @@ namespace DraconicEngine
       public bool Remove(Entity entity)
       {
          var wasRemoved = this.entities.Remove(entity);
-         if (!wasRemoved && entity.HasComponent<CreatureComponent>())
+         if (!wasRemoved)
          {
-            wasRemoved = this.specialCreatures.Remove(entity);
+            wasRemoved = this.specialEntities.Remove(entity);
          }
 
          if (wasRemoved)
@@ -155,13 +101,13 @@ namespace DraconicEngine
             {
                this.entities.Remove(creature);
             }
-            this.specialCreatures.Add(creature);
+            this.specialEntities.Add(creature);
          }
          else
          {
-            if (this.specialCreatures.Contains(creature))
+            if (this.specialEntities.Contains(creature))
             {
-               this.specialCreatures.Remove(creature);
+               this.specialEntities.Remove(creature);
             }
             this.entities.Add(creature);
          }
@@ -174,50 +120,21 @@ namespace DraconicEngine
             this.entities.Remove(entity);
             this.entities.Add(entity);
          }
-         else if (entity.HasComponent<CreatureComponent>())
+         else if (this.specialEntities.Contains(entity))
          {
-            if (this.specialCreatures.Contains(entity))
-            {
-               this.specialCreatures.Remove(entity);
-               this.specialCreatures.Add(entity);
-            }
+            this.specialEntities.Remove(entity);
+            this.specialEntities.Add(entity);
          }
       }
 
       public void KillEntity(Entity entity)
       {
-         if (!entity.HasComponent<CombatantComponent>() || !entity.HasComponent<CreatureComponent>())
-         {
-            return;
-         }
+         //if (!entity.HasComponent<CombatantComponent>() || !entity.HasComponent<CreatureComponent>())
+         //{
+         //   return;
+         //}
 
          killed.OnNext(entity);
-      }
-   }
-
-   public static class EntityStoreExtensions
-   {
-      public static IEnumerable<Entity> GetEntitiesAt(this IEntityStore store, Loc location)
-      {
-         return store.AllEntities.Where(e => e.GetComponentOrDefault<LocationComponent>()?.Location == location);
-      }
-
-      public static Entity GetCreatureAt(this IEntityStore store, Loc location)
-      {
-         var creature = store.AllCreaturesSpecialFirst.FirstOrDefault(c => c.GetComponentOrDefault<LocationComponent>()?.Location == location);
-
-         return creature;
-      }
-
-      public static IEnumerable<Entity> GetItemsAt(this IEntityStore store, Loc location)
-      {
-         foreach (var entity in store.AllItems)
-         {
-            if (entity.GetComponentOrDefault<LocationComponent>()?.Location == location)
-            {
-               yield return entity;
-            }
-         }
       }
    }
 }

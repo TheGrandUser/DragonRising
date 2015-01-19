@@ -1,10 +1,9 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameWorld.Alligences;
+using DragonRising.GameWorld.Alligences;
 using DraconicEngine.GameWorld.Behaviors;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.Items;
-using DraconicEngine.Storage;
+using DragonRising.GameWorld.Components;
 using DragonRising.Properties;
 using DragonRising.Storage;
 using LanguageExt;
@@ -24,6 +23,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
+using DragonRising.GameWorld.Items;
 
 namespace DragonRising
 {

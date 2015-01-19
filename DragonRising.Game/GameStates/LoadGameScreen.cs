@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.Terminals;
-using DraconicEngine.Storage;
-using DraconicEngine.Items;
+using DragonRising.Storage;
+using DragonRising.GameWorld.Items;
 using LanguageExt;
 using LanguageExt.Prelude;
 using DraconicEngine.Input;
-using DraconicEngine.Terminals.Input.Commands;
+using DraconicEngine.Terminals.Input;
 using System.Threading;
 using DraconicEngine.Input.CommandGestureFactory;
 

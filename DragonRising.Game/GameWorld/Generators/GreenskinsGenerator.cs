@@ -6,11 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.Generators;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.GameWorld.Behaviors;
-using DraconicEngine.GameWorld.Alligences;
-using DraconicEngine.Storage;
+using DragonRising.GameWorld.Alligences;
+using DragonRising.Storage;
 
 namespace DragonRising.Generators
 {
@@ -43,11 +42,11 @@ namespace DragonRising.Generators
          var value = random.NextDouble();
          if (value < 0.8)
          {
-            monsterTemplate = EntityLibrary.Current.Get("Orc");
+            monsterTemplate = Library.Current.Entities.Get("Orc");
          }
          else
          {
-            monsterTemplate = EntityLibrary.Current.Get("Troll");
+            monsterTemplate = Library.Current.Entities.Get("Troll");
          }
 
          var monster = monsterTemplate.Clone();

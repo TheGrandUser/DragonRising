@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.Items;
+using DragonRising.GameWorld.Items;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.GameWorld.Behaviors;
 using DraconicEngine.GameWorld.Actions.Requirements;
@@ -14,8 +14,9 @@ using LanguageExt.Prelude;
 using DraconicEngine.GameWorld.Effects;
 using DraconicEngine.Services;
 using DragonRising.Storage;
+using DragonRising.GameWorld.Effects;
 
-namespace DragonRising.Entities.Items
+namespace DragonRising.GameWorld.Items
 {
    public class BehaviorReplacementItem : IItemUsage
    {

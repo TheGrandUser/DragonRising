@@ -1,6 +1,6 @@
 ﻿using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.Items;
+using DragonRising.GameWorld.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using LanguageExt;
 using LanguageExt.Prelude;
+using DragonRising.GameWorld.Components;
 
-namespace DragonRising.Entities.Items
+namespace DragonRising.GameWorld.Items
 {
    public class HealingItem : IItemUsage
    {

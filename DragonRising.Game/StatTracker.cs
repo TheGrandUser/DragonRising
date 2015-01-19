@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.Events;
 using Microsoft.Practices.Prism.PubSubEvents;
+using DragonRising.GameWorld.Events;
 
 namespace DragonRising
 {

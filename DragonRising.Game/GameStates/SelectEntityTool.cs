@@ -12,11 +12,11 @@ using DraconicEngine.Widgets;
 using DraconicEngine.Terminals;
 using DraconicEngine.Input.CommandGestureFactory;
 using DraconicEngine.Terminals.Input;
-using DraconicEngine.Terminals.Input.Commands;
 using LanguageExt;
 using LanguageExt.Prelude;
 using System.Threading;
 using DragonRising.GameWorld.Nodes;
+using DragonRising.Widgets;
 
 namespace DragonRising.GameStates
 {

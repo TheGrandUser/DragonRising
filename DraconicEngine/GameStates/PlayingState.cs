@@ -1,7 +1,6 @@
 ﻿using DraconicEngine.GameWorld.Actions;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.GameWorld.EntitySystem.Systems;
 using DraconicEngine.Input;
 using DraconicEngine.Widgets;
 using LanguageExt;
@@ -16,20 +15,12 @@ namespace DraconicEngine.GameStates
 {
    public abstract class PlayingState : IGameState
    {
-      private IDisposable subscriptions;
-
-      public Scene Scene { get; set; }
-
       protected Engine Engine { get; } = new Engine();
 
       public List<Widget> Widgets { get; } = new List<Widget>();
 
-      public PlayingState(Scene scene)
+      public PlayingState()
       {
-         this.Scene = scene;
-
-         
-         this.subscriptions = this.Engine.ObserveStore(this.Scene.EntityStore);
       }
 
       public TimeSpan IdleUpdate { get; set; } = TimeSpan.FromSeconds(0.3);
@@ -120,7 +111,6 @@ namespace DraconicEngine.GameStates
 
       public Option<IGameState> Finish()
       {
-         this.subscriptions.Dispose();
          Current = null;
 
          return OnFinished();

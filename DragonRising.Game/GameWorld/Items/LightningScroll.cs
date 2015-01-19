@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.Items;
+using DragonRising.GameWorld.Items;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using LanguageExt;
 using LanguageExt.Prelude;
+using DragonRising.GameWorld.Components;
 
-namespace DragonRising.Entities.Items
+namespace DragonRising.GameWorld.Items
 {
    public class LightningScroll : IItemUsage
    {

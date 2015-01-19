@@ -1,13 +1,12 @@
 ﻿using DraconicEngine;
 using DraconicEngine.GameStates;
-using DraconicEngine.GameWorld.Alligences;
+using DragonRising.GameWorld.Alligences;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.GameWorld.EntitySystem.Systems;
 using DraconicEngine.Input;
-using DraconicEngine.Storage;
 using DraconicEngine.Terminals;
 using DraconicEngine.Widgets;
+using DragonRising.GameWorld.Systems;
 using DragonRising.Services;
 using LanguageExt;
 using LanguageExt.Prelude;
@@ -16,6 +15,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DragonRising.GameWorld.Components;
+using DragonRising.Widgets;
+using DragonRising.Storage;
 
 namespace DragonRising.GameStates
 {
@@ -40,19 +42,23 @@ namespace DragonRising.GameStates
       FocusEntitySceneView sceneView;
       LifeDeathMonitorService lifeDeathMonitorService;
 
+      public Scene Scene { get; set; }
+
       public ITerminal ScenePanel { get { return sceneWidget.Panel; } }
 
       IMessageService messageService;
       List<RogueMessage> infoMessages = new List<RogueMessage>();
       private Terminal rootTerminal;
 
+      private IDisposable subscriptions;
       string gameName;
 
       public PlayerController PlayerController { get; set; }
 
       public MyPlayingState(Scene scene, string gameName)
-         : base(scene)
       {
+         this.Scene = scene;
+
          var player = scene.FocusEntity;
          this.gameName = gameName;
 
@@ -99,6 +105,8 @@ namespace DragonRising.GameStates
 
          this.PlayerController = new PlayerController(sceneView) { PlayerCreature = player };
          this.lifeDeathMonitorService = new LifeDeathMonitorService(scene.EntityStore);
+
+         this.subscriptions = this.Engine.ObserveStore(this.Scene.EntityStore);
       }
 
       protected override void PreSceneDraw()
@@ -125,6 +133,8 @@ namespace DragonRising.GameStates
 
       protected override Option<IGameState> OnFinished()
       {
+         this.subscriptions.Dispose();
+
          SaveManager.Current.SaveGame(this.gameName, this.Scene);
 
          Scene.PopScene();

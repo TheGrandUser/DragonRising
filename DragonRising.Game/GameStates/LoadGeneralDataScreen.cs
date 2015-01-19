@@ -6,17 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.Terminals;
-using DraconicEngine.Storage;
-using DraconicEngine.Items;
-using DragonRising.Entities.Items;
-using DragonRising.Items;
-using DraconicEngine.GameWorld.Alligences;
+using DragonRising.GameWorld.Items;
+using DragonRising.GameWorld.Alligences;
 using DragonRising.TempConstants;
 using LanguageExt;
 using LanguageExt.Prelude;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DragonRising.Storage;
+using DragonRising.GameWorld.Components;
 
 namespace DragonRising.GameStates
 {

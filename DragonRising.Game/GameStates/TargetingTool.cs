@@ -10,6 +10,7 @@ using DraconicEngine.Terminals;
 using DraconicEngine.Widgets;
 using LanguageExt;
 using LanguageExt.Prelude;
+using DragonRising.Widgets;
 
 namespace DragonRising.GameStates
 {

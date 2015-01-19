@@ -1,6 +1,4 @@
 ﻿using DraconicEngine.GameWorld.Effects;
-using DraconicEngine.Powers;
-using DraconicEngine.Powers.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +9,11 @@ using System.Collections.Immutable;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.GameWorld.Actions.Requirements;
+using DragonRising.GameWorld.Effects;
+using DragonRising.GameWorld.Components;
+using DragonRising.GameWorld.Powers.Nodes;
 
-namespace DragonRising.Powers
+namespace DragonRising.GameWorld.Powers
 {
    class FireballPower : Power
    {
@@ -38,8 +39,8 @@ namespace DragonRising.Powers
 
          var rangeSquared = 3 * 3;
 
-         var entitiesToDamage = Scene.CurrentScene.EntityStore.AllCreaturesSpecialFirst
-            .Where(entity => entity.HasComponent<CombatantComponent>() && (entity.Location - target).LengthSquared <= rangeSquared)
+         var entitiesToDamage = Scene.CurrentScene.EntityStore.AllCreaturesSpecialFirst()
+            .Where(entity => entity.HasComponent<CombatantComponent>() && (entity.GetLocation() - target).LengthSquared <= rangeSquared)
             .ToList();
 
          foreach(var entity in entitiesToDamage)

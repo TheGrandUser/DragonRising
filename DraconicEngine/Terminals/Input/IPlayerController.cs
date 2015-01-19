@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.GameWorld.Actions;
-using DraconicEngine.Items;
 
 namespace DraconicEngine.Input
 {

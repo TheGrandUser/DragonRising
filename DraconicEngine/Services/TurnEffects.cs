@@ -14,7 +14,7 @@ namespace DraconicEngine.Services
       void DoAllEffects();
    }
 
-   class TurnEffects
+   public class TurnEffects
    {
       static ITurnEffects currentService;
 

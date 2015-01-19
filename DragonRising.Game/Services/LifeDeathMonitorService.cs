@@ -7,6 +7,7 @@ using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using System.Reactive.Linq;
+using DragonRising.GameWorld.Components;
 
 namespace DragonRising.Services
 {

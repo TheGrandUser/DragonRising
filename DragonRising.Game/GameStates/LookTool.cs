@@ -5,7 +5,7 @@ using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.Input;
 using DraconicEngine.Input.CommandGestureFactory;
 using DraconicEngine.Terminals;
-using DraconicEngine.Terminals.Input.Commands;
+using DraconicEngine.Terminals.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;

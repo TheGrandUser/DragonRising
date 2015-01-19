@@ -91,14 +91,55 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ActionCommand.cs" />
+    <Compile Include="Commands\AttackEntityCommand.cs" />
+    <Compile Include="Commands\DropItemCommand.cs" />
+    <Compile Include="Commands\GoDownCommand.cs" />
+    <Compile Include="Commands\InteractWithCreatureCommand.cs" />
+    <Compile Include="Commands\ManipulateEntityCommand.cs" />
+    <Compile Include="Commands\MovementCommand.cs" />
+    <Compile Include="Commands\PickUpItemCommand.cs" />
+    <Compile Include="Commands\TeleportCommand.cs" />
+    <Compile Include="Commands\UseItemCommand.cs" />
     <Compile Include="DragonRisingGame.cs" />
     <Compile Include="Commands\LookCommand.cs" />
+    <Compile Include="EntityExtensions.cs" />
+    <Compile Include="EntityStoreExtensions.cs" />
     <Compile Include="GameStates\LoadGeneralDataScreen.cs" />
     <Compile Include="GameStates\NewGameScreen.cs" />
-    <Compile Include="GameWorld\EntityTemplates\OrcTemplate.cs" />
+    <Compile Include="GameWorld\Actions\AttackEntityAction.cs" />
+    <Compile Include="GameWorld\Actions\DropItemAction.cs" />
+    <Compile Include="GameWorld\Actions\ManipulateEntityAction.cs" />
+    <Compile Include="GameWorld\Actions\MovementAction.cs" />
+    <Compile Include="GameWorld\Actions\PickUpItemAction.cs" />
+    <Compile Include="GameWorld\Actions\Requirements\ItemRequirement.cs" />
+    <Compile Include="GameWorld\Actions\TeleportAction.cs" />
+    <Compile Include="GameWorld\Actions\UseItemAction.cs" />
+    <Compile Include="GameWorld\Actions\UsePortalAction.cs" />
+    <Compile Include="GameWorld\Alligences\Alligence.cs" />
+    <Compile Include="GameWorld\Alligences\AlligenceManager.cs" />
+    <Compile Include="GameWorld\Alligences\Relationship.cs" />
+    <Compile Include="GameWorld\Behaviors\BasicMonsterBehavior.cs" />
+    <Compile Include="GameWorld\Behaviors\ConfusedBehavior.cs" />
+    <Compile Include="GameWorld\Components\BehaviorComponent.cs" />
+    <Compile Include="GameWorld\Components\CombatantComponent.cs" />
+    <Compile Include="GameWorld\Components\CreatureComponent.cs" />
+    <Compile Include="GameWorld\Components\DrawnComponent.cs" />
+    <Compile Include="GameWorld\Components\EquipmentComponent.cs" />
+    <Compile Include="GameWorld\Components\GameActionsComponent.cs" />
+    <Compile Include="GameWorld\Components\InventoryComponent.cs" />
+    <Compile Include="GameWorld\Components\ItemComponent.cs" />
+    <Compile Include="GameWorld\Components\LocationComponent.cs" />
+    <Compile Include="GameWorld\Components\ManipulatableComponent.cs" />
+    <Compile Include="GameWorld\Effects\BehaviorReplacementEffect.cs" />
+    <Compile Include="GameWorld\Effects\DamageEffect.cs" />
+    <Compile Include="GameWorld\Effects\MessageEffect.cs" />
+    <Compile Include="GameWorld\Effects\RemoveBehaviorEffect.cs" />
+    <Compile Include="GameWorld\Events\CreatureKilledEvent.cs" />
     <Compile Include="GameWorld\Items\BehaviorReplacementItem.cs" />
     <Compile Include="GameWorld\Items\FireballScroll.cs" />
     <Compile Include="GameWorld\Items\HealingItem.cs" />
+    <Compile Include="GameWorld\Items\IItemUsage.cs" />
     <Compile Include="GameWorld\Items\LightningScroll.cs" />
     <Compile Include="GameStates\GameEndScreen.cs" />
     <Compile Include="GameStates\InventoryScreen.cs" />
@@ -111,7 +152,36 @@
     <Compile Include="GameWorld\Generators\DungeonGenerator.cs" />
     <Compile Include="GameWorld\Generators\GreenskinsGenerator.cs" />
     <Compile Include="GameWorld\Generators\StandardItemGenerator.cs" />
+    <Compile Include="GameWorld\Items\PowerItemUsageTemplate.cs" />
+    <Compile Include="GameWorld\Nodes\ActionManagementNode.cs" />
+    <Compile Include="GameWorld\Nodes\BehaviorNode.cs" />
+    <Compile Include="GameWorld\Nodes\CreatureDrawNode.cs" />
+    <Compile Include="GameWorld\Nodes\DrawNode.cs" />
+    <Compile Include="GameWorld\Nodes\ItemDrawNode.cs" />
     <Compile Include="GameWorld\Nodes\SeeableNode.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\ChooseTarget.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\ConstantNodes.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\GetEntitiesWithinNode.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\LocationOfNode.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\NodeConnection.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\NodeInput.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\NodeOutput.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\PowerNode.cs" />
+    <Compile Include="GameWorld\Powers\Nodes\TargetSelf.cs" />
+    <Compile Include="GameWorld\Powers\Power.cs" />
+    <Compile Include="GameWorld\Powers\PowerException.cs" />
+    <Compile Include="GameWorld\Scene.cs" />
+    <Compile Include="GameWorld\Systems\AIDecisionSystem.cs" />
+    <Compile Include="GameWorld\Systems\CreatureActionSystem.cs" />
+    <Compile Include="GameWorld\Systems\RenderSystem.cs" />
+    <Compile Include="GameWorld\Tile.cs" />
+    <Compile Include="Generators\IItemGenerator.cs" />
+    <Compile Include="Generators\IMapGenerator.cs" />
+    <Compile Include="Generators\IPopulationGenerator.cs" />
+    <Compile Include="Generators\MapBuilder.cs" />
+    <Compile Include="Storage\EntityLibrary.cs" />
+    <Compile Include="Storage\IBehaviorLibrary.cs" />
+    <Compile Include="Storage\ItemLibrary.cs" />
     <Compile Include="Storage\Library.cs" />
     <Compile Include="PlayerController.cs" />
     <Compile Include="GameWorld\Powers\FireballPower.cs" />
@@ -119,7 +189,16 @@
     <Compile Include="Services\LifeDeathMonitorService.cs" />
     <Compile Include="SimpleMessageService.cs" />
     <Compile Include="StatTracker.cs" />
+    <Compile Include="Storage\PowerLibrary.cs" />
+    <Compile Include="Storage\SaveManager.cs" />
+    <Compile Include="Storage\TileLibrary.cs" />
     <Compile Include="TempConstants.cs" />
+    <Compile Include="Widgets\BarWidget.cs" />
+    <Compile Include="Widgets\HighlightWidget.cs" />
+    <Compile Include="Widgets\InfoWidget.cs" />
+    <Compile Include="Widgets\MessagesWidget.cs" />
+    <Compile Include="Widgets\SceneView.cs" />
+    <Compile Include="Widgets\SceneWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DraconicEngine\DraconicEngine.csproj">
@@ -134,10 +213,7 @@
   <ItemGroup>
     <Content Include="ConcurrentHashtable.License.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GameWorld\Systems\" />
-    <Folder Include="Generators\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

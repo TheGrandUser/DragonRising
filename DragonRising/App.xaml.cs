@@ -1,5 +1,4 @@
-﻿using DraconicEngine.GameWorld.Alligences;
-using DraconicEngine.Storage;
+﻿using DragonRising.GameWorld.Alligences;
 using DragonRising.Libraries;
 using DragonRising.Storage;
 using System;
@@ -31,7 +30,6 @@ namespace DragonRising
          Library.SetLibrary(library);
 
          TileLibrary.Set(library.Tiles);
-         EntityLibrary.SetLibrary(library.Entities);
 
          SaveManager.SetSaveManager(new JsonSaveManager());
 

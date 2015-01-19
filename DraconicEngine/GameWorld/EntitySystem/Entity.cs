@@ -90,18 +90,6 @@ namespace DraconicEngine.GameWorld.EntitySystem
 
       public bool IsDisposed { get { return false; } }
 
-      public Loc Location
-      {
-         get { return this.GetComponentOrDefault<LocationComponent>()?.Location ?? new Loc(-1, -1); }
-         set { this.As<LocationComponent>(comp => comp.Location = value); }
-      }
-      
-      public bool Blocks
-      {
-         get { return this.GetComponentOrDefault<LocationComponent>()?.Blocks ?? false; }
-         set { this.As<LocationComponent>(comp => comp.Blocks = value); }
-      }
-
       public void AddComponent(Component component)
       {
          components.Add(component.GetType().Name, component);
@@ -193,11 +181,6 @@ namespace DraconicEngine.GameWorld.EntitySystem
 
    public static class EntityExtensions
    {
-      public static Vector DistanceTo(this Entity self, Entity other)
-      {
-         return other.Location - self.Location;
-      }
-
       public static bool HasComponent<T>(this Entity self)
          where T : Component
       {

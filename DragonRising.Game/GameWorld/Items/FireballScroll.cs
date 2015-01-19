@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.Items;
+using DragonRising.GameWorld.Items;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using LanguageExt;
 using LanguageExt.Prelude;
+using DragonRising.GameWorld.Components;
 
-namespace DragonRising.Items
+namespace DragonRising.GameWorld.Items
 {
    class FireballEffect : IItemUsage
    {
@@ -32,8 +33,8 @@ namespace DragonRising.Items
             var target = locationFulfillment.Location;
             var rangeSquared = range * range;
 
-            var entitiesToDamage = Scene.CurrentScene.EntityStore.AllCreaturesSpecialFirst
-               .Where(entity => entity.HasComponent<CombatantComponent>() && (entity.Location - target).LengthSquared <= rangeSquared)
+            var entitiesToDamage = Scene.CurrentScene.EntityStore.AllCreaturesSpecialFirst()
+               .Where(entity => entity.HasComponent<CombatantComponent>() && (entity.GetLocation() - target).LengthSquared <= rangeSquared)
                .ToList();
 
             foreach (var entity in entitiesToDamage)

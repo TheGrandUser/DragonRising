@@ -1,10 +1,10 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameWorld.Alligences;
 using DraconicEngine.GameWorld.Behaviors;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.Generators;
-using DraconicEngine.Storage;
+using DragonRising.Storage;
+using DragonRising.GameWorld.Alligences;
+using DragonRising.GameWorld.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;

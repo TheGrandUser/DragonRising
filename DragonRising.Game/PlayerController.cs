@@ -1,7 +1,7 @@
 ﻿using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.Items;
+using DragonRising.GameWorld.Items;
 using DraconicEngine.GameWorld.Actions;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using DraconicEngine.Input;
@@ -17,7 +17,6 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.Input.CommandGestureFactory;
 using DraconicEngine.GameStates;
-using DraconicEngine.Terminals.Input.Commands;
 using DraconicEngine.Terminals.Input;
 using DragonRising.Commands;
 using DraconicEngine.GameWorld.Behaviors;
@@ -25,6 +24,9 @@ using System.Threading;
 using System.Diagnostics;
 using DragonRising.GameWorld.Nodes;
 using DragonRising.Storage;
+using DragonRising.GameWorld.Components;
+using DragonRising.Widgets;
+using DragonRising.GameWorld.Actions.Requirements;
 
 namespace DragonRising
 {
@@ -97,6 +99,8 @@ namespace DragonRising
       static readonly CommandGesture lookCommandGesture = Create(new LookCommand(), RogueKey.L);
       static readonly CommandGesture2D mouseLookCommandGesture = CreateMousePointer((loc, delta) => new LookAtCommand(loc));
 
+      static readonly CommandGesture goDownGesture = Create(new GoDownCommand(), GestureSet.Create(RogueKey.OemComma, RogueKey.LeftShift));
+
       static readonly CommandGesture quitCommandGesture = Create(RogueCommands.Quit, GestureSet.Create(RogueKey.Escape));
 
       public PlayerController(FocusEntitySceneView sceneView)
@@ -150,6 +154,12 @@ namespace DragonRising
                }
 
                this.playerControlledBehavior.SetNextAction(action);
+               return PlayerTurnResult.TurnAdvancing;
+            }
+            else if (inputResult.Command is GoDownCommand)
+            {
+               // new level
+
                return PlayerTurnResult.TurnAdvancing;
             }
             else if (inputResult.Command is LookCommand)
@@ -355,7 +365,7 @@ namespace DragonRising
             {
                MyPlayingState.Current.SetHighlight(lookCursor.Value);
 
-               foreach (var entity in MyPlayingState.Current.Scene.EntityStore.AllEntities.Where(en => en.Location == scenePoint))
+               foreach (var entity in MyPlayingState.Current.Scene.EntityStore.AllEntities.Where(en => en.GetLocation() == scenePoint))
                {
                   MyPlayingState.Current.AddInfoMessage(new RogueMessage(entity.Name, RogueColors.White));
                }
@@ -386,7 +396,7 @@ namespace DragonRising
          //string message, bool isLimitedToFoV = true, int? maxRange = null
 
          MyPlayingState playingState = MyPlayingState.Current;
-         var targetTool = new LocationTargetingTool(this.PlayerCreature.Location, this.sceneView, playingState.ScenePanel, requirement.Message, requirement.IsLimitedToFoV, requirement.MaxRange);
+         var targetTool = new LocationTargetingTool(this.PlayerCreature.GetLocation(), this.sceneView, playingState.ScenePanel, requirement.Message, requirement.IsLimitedToFoV, requirement.MaxRange);
 
          await RogueGame.Current.RunGameState(targetTool);
 
@@ -400,7 +410,7 @@ namespace DragonRising
          var rangeSquared = range * range;
 
 
-         var entitiesInRange = Scene.CurrentScene.EntityStore.AllCreaturesExceptSpecial
+         var entitiesInRange = Scene.CurrentScene.EntityStore.AllCreaturesExceptSpecial()
             .Where(c =>
             c.HasComponent<DrawnComponent>() && c.HasComponent<LocationComponent>() &&
             requirement.DoesEntityMatch(c) &&

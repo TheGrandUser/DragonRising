@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.Generators;
 
 namespace DragonRising.Generators
 {
@@ -94,7 +93,7 @@ namespace DragonRising.Generators
             {
                var entity = generator();
 
-               entity.Location = location;
+               entity.SetLocation(location);
 
                scene.EntityStore.Add(entity);
             }

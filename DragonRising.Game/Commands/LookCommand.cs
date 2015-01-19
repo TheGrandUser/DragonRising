@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.Terminals.Input.Commands;
+using DraconicEngine.Terminals.Input;
 
 namespace DragonRising.Commands
 {
@@ -26,7 +26,7 @@ namespace DragonRising.Commands
       {
          MyPlayingState playingState = MyPlayingState.Current;
 
-         var lookTool = new LookTool(playingState.Scene.FocusEntity.Location, playingState.PlayerController);
+         var lookTool = new LookTool(playingState.Scene.FocusEntity.GetLocation(), playingState.PlayerController);
          
          await RogueGame.Current.RunGameState(lookTool);
       }
