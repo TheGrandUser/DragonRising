@@ -9,7 +9,7 @@ using System.Diagnostics;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using DraconicEngine.GameWorld.Actions;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using DraconicEngine.Terminals.Input;
 using DraconicEngine;
 using DragonRising.GameWorld.Actions;
@@ -27,7 +27,7 @@ namespace DragonRising.Commands
          var range = user.GetComponentOrDefault<EquipmentComponent>();
 
          return new OrRequirement(
-            new EntityRequirement(1, typeof(CombatantComponent)),
+            new EntityRequirement(1, true, typeof(CombatantComponent)),
             new DirectionRequirement());
       }
 

@@ -8,7 +8,7 @@ using DragonRising.GameWorld.Actions;
 using DragonRising.GameWorld.Actions.Requirements;
 using DragonRising.GameWorld.Components;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +28,7 @@ namespace DragonRising.Commands
    public class ManipulateEntityCommand : ActionCommand
    {
       ActionRequirement requirement = new AndMaybeRequirement<EntityFulfillment>(
-         new EntityRequirement(1, typeof(ManipulatableComponent)),
+         new EntityRequirement(1, true, typeof(ManipulatableComponent)),
          new ItemRequirement("Select an item to use on the object", needsItemsFulfillment: false),
          new RequiresItemCheck());
       public override string Name => "Manipulate Entity";

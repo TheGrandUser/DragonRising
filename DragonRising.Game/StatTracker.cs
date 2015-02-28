@@ -13,17 +13,14 @@ using DragonRising.GameStates;
 using DraconicEngine.GameWorld;
 using DraconicEngine.GameStates;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 
 namespace DragonRising
 {
-   class StatTracker
+   public sealed class StatTracker : IDisposable
    {
       SubscriptionToken subscription;
-
-      int levelUpBase = 200;
-      int levelUpFactor = 150;
-
+      
       int monstersKilled = 0;
       public int MonstersKilled { get { return monstersKilled; } }
 
@@ -45,33 +42,54 @@ namespace DragonRising
 
             var playerLevel = args.KillingEntity.GetComponent<LevelComponent>();
 
-            var levelUpXp = levelUpBase + levelUpFactor * playerLevel.Level;
+            var levelUpXp = LevelingPolicy.XpForNextLevel(playerLevel.Level);
             if (playerCombat.XP >= levelUpXp)
             {
                playerLevel.Level += 1;
                playerCombat.XP -= levelUpXp;
+               
 
                MessageService.Current.PostMessage("Your battle skills grow stronger! You reached level " + playerLevel.Level, RogueColors.Yellow);
 
                MyPlayingState.Current.AddAsyncInterruption(
                   ChooseLevelUpBenefit,
-                  StillApplies);
+                  ChooseLevelUpBenefitStillApplies);
             }
          }
       }
 
-      bool StillApplies()
+      bool ChooseLevelUpBenefitStillApplies()
       {
          return World.Current.Player.GetComponentOrDefault<CombatantComponent>()?.IsAlive ?? false;
       }
 
       async Task ChooseLevelUpBenefit()
       {
-         var selectBenefitScreen = new SelectBenefitScreen();
+         var selectBenefitScreen = new LevelUpScreen();
 
          await RogueGame.Current.RunGameState(selectBenefitScreen);
 
+         var combatantComponent = World.Current.Player.GetComponent<CombatantComponent>();
 
+         switch (selectBenefitScreen.Benefit)
+         {
+            case Benefit.Constitution:
+               combatantComponent.MaxHP += 20;
+               break;
+            case Benefit.Strength:
+               combatantComponent.Power += 1;
+               break;
+            case Benefit.Agility:
+               combatantComponent.Defense += 1;
+               break;
+         }
+
+         combatantComponent.Heal(combatantComponent.MaxHP);
+      }
+
+      public void Dispose()
+      {
+         this.subscription.Dispose();
       }
    }
 }

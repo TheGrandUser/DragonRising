@@ -3,7 +3,7 @@ using DraconicEngine.GameStates;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.Input;
-using DraconicEngine.Input.CommandGestureFactory;
+using static DraconicEngine.Input.CommandGestureFactory;
 using DraconicEngine.Terminals;
 using DraconicEngine.Terminals.Input;
 using System;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using System.Threading;
 
 namespace DragonRising.GameStates

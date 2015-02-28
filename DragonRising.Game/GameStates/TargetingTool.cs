@@ -9,7 +9,7 @@ using DraconicEngine.Input;
 using DraconicEngine.Terminals;
 using DraconicEngine.Widgets;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using DragonRising.Widgets;
 using DragonRising.GameWorld;
 

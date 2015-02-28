@@ -55,6 +55,7 @@ namespace DragonRising.GameWorld
          var generator = new DungeonGenerator(greenskins, new StandardItemGenerator());
 
          Scene scene = new Scene(MapWidth, MapHeight);
+         scene.FocusEntity = this.Player;
 
          var startPoint = generator.MakeMap(scene);
 

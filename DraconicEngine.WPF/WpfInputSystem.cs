@@ -14,7 +14,7 @@ using KeyGesture = DraconicEngine.Input.RogueKeyGesture;
 using System.Collections.Immutable;
 using System.Threading;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 
 namespace DraconicEngine.WPF
 {

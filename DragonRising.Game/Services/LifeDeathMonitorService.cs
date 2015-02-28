@@ -12,7 +12,7 @@ using DragonRising.GameWorld;
 
 namespace DragonRising.Services
 {
-   class LifeDeathMonitorService
+   class LifeDeathMonitorService : IDisposable
    {
       IDisposable subscriptions;
 
@@ -50,7 +50,9 @@ namespace DragonRising.Services
       }
       public void NpcDeath(Entity npc)
       {
-         MessageService.Current.PostMessage(npc.Name + " is dead!", RogueColors.Orange);
+         var npcCombat = npc.GetComponent<CombatantComponent>();
+
+         MessageService.Current.PostMessage($"{npc.Name} is dead! You gain {npcCombat.XP} experience points", RogueColors.Orange);
          
          npc.As<DrawnComponent>(dc => dc.SeenCharacter = new Character(Glyph.Percent, RogueColors.DarkRed));
          npc.As<LocationComponent>(lc => lc.Blocks = false);
@@ -61,6 +63,11 @@ namespace DragonRising.Services
          npc.RemoveComponent<CreatureComponent>();
 
          World.Current.Scene.EntityStore.SendToBack(npc);
+      }
+
+      public void Dispose()
+      {
+         this.subscriptions.Dispose();
       }
    }
 }

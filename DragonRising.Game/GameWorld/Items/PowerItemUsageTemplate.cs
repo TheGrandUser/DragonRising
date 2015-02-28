@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using DraconicEngine.GameWorld.EntitySystem;
 using DragonRising.GameWorld.Powers;
 

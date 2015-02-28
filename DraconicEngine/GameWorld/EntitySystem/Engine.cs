@@ -50,7 +50,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       {
          if (entityList.ContainsKey(entity))
          {
-            throw new ArgumentException("The entity \{entity.Name} is already added.");
+            throw new ArgumentException($"The entity {entity.Name} is already added.");
          }
 
          var subscriptions = new CompositeDisposable(

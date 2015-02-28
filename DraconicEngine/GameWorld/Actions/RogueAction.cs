@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.GameStates;
 using DraconicEngine.GameWorld.EntitySystem;

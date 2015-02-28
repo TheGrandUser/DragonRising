@@ -8,14 +8,14 @@ using DraconicEngine.Input;
 using DraconicEngine.Widgets;
 using DragonRising.GameStates;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.Input.CommandGestureFactory;
+using static DraconicEngine.Input.CommandGestureFactory;
 using DraconicEngine.GameStates;
 using DraconicEngine.Terminals.Input;
 using DragonRising.Commands;
@@ -416,15 +416,16 @@ namespace DragonRising
       {
          MyPlayingState playingState = MyPlayingState.Current;
          var range = requirement.MaxRange;
+         var excludeSelf = requirement.ExcludeSelf;
          var rangeSquared = range * range;
 
 
          var entitiesInRange = World.Current.Scene.EntityStore.AllCreaturesExceptSpecial()
-            .Where(c =>
-            c.HasComponent<DrawnComponent>() && c.HasComponent<LocationComponent>() &&
-            requirement.DoesEntityMatch(c) &&
-            World.Current.Scene.IsVisible(c.GetComponent<LocationComponent>().Location) &&
-            (range == null || (c.GetComponent<LocationComponent>().Location - this.PlayerCreature.GetComponent<LocationComponent>().Location).LengthSquared <= rangeSquared))
+            .Where(c => (!excludeSelf || c != this.playerCreature) &&
+               c.HasComponent<DrawnComponent>() && c.HasComponent<LocationComponent>() &&
+               requirement.DoesEntityMatch(c) &&
+               World.Current.Scene.IsVisible(c.GetComponent<LocationComponent>().Location) &&
+               (range == null || (c.GetComponent<LocationComponent>().Location - this.PlayerCreature.GetComponent<LocationComponent>().Location).LengthSquared <= rangeSquared))
             .Select(e => new SeeableNode() { Entity = e, Drawn = e.GetComponent<DrawnComponent>(), Loc = e.GetComponent<LocationComponent>() })
             .ToArray();
 

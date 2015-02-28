@@ -19,7 +19,7 @@ namespace DragonRising.GameWorld.Powers.Nodes
       public CreatureNodeOutput CreatureOutput { get { return creatureOutput; } }
       public NumberNodeInput RangeInput { get { return rangeInput; } }
 
-      public override ActionRequirement Requirements => new EntityRequirement(rangeInput.Value, typeof(CreatureComponent));
+      public override ActionRequirement Requirements => new EntityRequirement(rangeInput.Value, true, typeof(CreatureComponent));
 
       public override void Do(Entity initiator, RequirementFulfillment fulfillment)
       {

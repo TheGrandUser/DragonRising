@@ -17,7 +17,7 @@ namespace DragonRising.Commands
    public class InteractWithCreatureCommand: ActionCommand
    {
       ActionRequirement requirement = //new OrRequirement(
-         new EntityRequirement(1, typeof(CreatureComponent));//,
+         new EntityRequirement(1, true, typeof(CreatureComponent));//,
                                  //new DirectionRequirement());
 
       public override ActionRequirement GetRequirement(Entity user) => requirement;

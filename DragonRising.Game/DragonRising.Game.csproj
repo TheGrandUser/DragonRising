@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DragonRising</RootNamespace>
     <AssemblyName>DragonRising.Game</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -107,7 +108,7 @@
     <Compile Include="EntityStoreExtensions.cs" />
     <Compile Include="GameStates\LoadGeneralDataScreen.cs" />
     <Compile Include="GameStates\NewGameScreen.cs" />
-    <Compile Include="GameStates\SelectBenefitScreen.cs" />
+    <Compile Include="GameStates\LevelUpScreen.cs" />
     <Compile Include="GameWorld\Actions\AttackEntityAction.cs" />
     <Compile Include="GameWorld\Actions\DropItemAction.cs" />
     <Compile Include="GameWorld\Actions\ManipulateEntityAction.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="GameWorld\Generators\GreenskinsGenerator.cs" />
     <Compile Include="GameWorld\Generators\StandardItemGenerator.cs" />
     <Compile Include="GameWorld\Items\PowerItemUsageTemplate.cs" />
+    <Compile Include="GameWorld\LevelingPolicy.cs" />
     <Compile Include="GameWorld\Nodes\ActionManagementNode.cs" />
     <Compile Include="GameWorld\Nodes\BehaviorNode.cs" />
     <Compile Include="GameWorld\Nodes\CreatureDrawNode.cs" />
@@ -199,6 +201,7 @@
     <Compile Include="Widgets\BarWidget.cs" />
     <Compile Include="Widgets\HighlightWidget.cs" />
     <Compile Include="Widgets\InfoWidget.cs" />
+    <Compile Include="Widgets\MenuWidget.cs" />
     <Compile Include="Widgets\MessagesWidget.cs" />
     <Compile Include="Widgets\SceneView.cs" />
     <Compile Include="Widgets\SceneWidget.cs" />

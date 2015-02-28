@@ -10,7 +10,7 @@ using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.GameWorld.Behaviors;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using DraconicEngine.GameWorld.Effects;
 using DraconicEngine.Services;
 using DragonRising.Storage;

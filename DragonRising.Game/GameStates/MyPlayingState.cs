@@ -9,7 +9,7 @@ using DraconicEngine.Widgets;
 using DragonRising.GameWorld.Systems;
 using DragonRising.Services;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +19,8 @@ using DragonRising.GameWorld.Components;
 using DragonRising.Widgets;
 using DragonRising.Storage;
 using DragonRising.GameWorld;
+using Microsoft.Practices.ServiceLocation;
+using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace DragonRising.GameStates
 {
@@ -36,12 +38,15 @@ namespace DragonRising.GameStates
       ITerminal statsPanel;
 
       BarWidget hpBarWidget;
+      BarWidget xpBarWidget;
       MessagesWidget messageWidget;
       HighlightWidget highlightWidget;
       MessagesWidget infoWidget;
       SceneWidget sceneWidget;
       FocusEntitySceneView sceneView;
       LifeDeathMonitorService lifeDeathMonitorService;
+
+      StatTracker statTracker;
 
       Queue<IAsyncInterruption> interruptions = new Queue<IAsyncInterruption>();
 
@@ -79,6 +84,11 @@ namespace DragonRising.GameStates
             () => player.GetComponent<CombatantComponent>().MaxHP,
             RogueColors.Red, RogueColors.DarkRed);
 
+         this.xpBarWidget = new BarWidget(this.statsPanel[1, 3, BarWidth, 1], "XP",
+            () => player.GetComponent<CombatantComponent>().XP,
+            () => LevelingPolicy.XpForNextLevel(player.GetComponent<LevelComponent>().Level),
+            RogueColors.Purple, RogueColors.DarkPurple);
+
          this.infoWidget = new MessagesWidget(this.statsPanel[1, 2, BarWidth, this.statsPanel.Size.Y - 3], this.infoMessages, MessagePriority.ShowOldest);
 
          this.messageWidget = new MessagesWidget(this.statsPanel[MessageX, 1, MessageWidth, MessageHeight], this.messageService.Messages, MessagePriority.ShowNewest);
@@ -102,12 +112,14 @@ namespace DragonRising.GameStates
 
          this.Widgets.Add(sceneWidget);
          this.Widgets.Add(hpBarWidget);
+         this.Widgets.Add(xpBarWidget);
          this.Widgets.Add(messageWidget);
          this.Widgets.Add(highlightWidget);
          this.Widgets.Add(infoWidget);
 
          this.PlayerController = new PlayerController(sceneView) { PlayerCreature = player };
          this.lifeDeathMonitorService = new LifeDeathMonitorService(world.Scene.EntityStore);
+         this.statTracker = new StatTracker(ServiceLocator.Current.GetInstance<IEventAggregator>());
 
          this.subscriptions = this.Engine.ObserveStore(this.World.Scene.EntityStore);
       }
@@ -136,6 +148,9 @@ namespace DragonRising.GameStates
       protected override Option<IGameState> OnFinished()
       {
          this.subscriptions.Dispose();
+
+         this.statTracker.Dispose();
+         this.lifeDeathMonitorService.Dispose();
 
          SaveManager.Current.SaveGame(this.gameName, this.World);
 

@@ -9,11 +9,11 @@ using DraconicEngine.Terminals;
 using DragonRising.Storage;
 using DragonRising.GameWorld.Items;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using DraconicEngine.Input;
 using DraconicEngine.Terminals.Input;
 using System.Threading;
-using DraconicEngine.Input.CommandGestureFactory;
+using static DraconicEngine.Input.CommandGestureFactory;
 
 namespace DragonRising.GameStates
 {

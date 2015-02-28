@@ -13,16 +13,19 @@ namespace DraconicEngine.GameWorld.Actions.Requirements
       public IImmutableList<Type> ComponentTypes { get; }
 
       public int? MaxRange { get; }
+      public bool ExcludeSelf { get; }
 
-      public EntityRequirement(int? maxRange, params Type[] componentTypes)
+      public EntityRequirement(int? maxRange, bool excludeSelf, params Type[] componentTypes)
       {
          this.MaxRange = maxRange;
+         this.ExcludeSelf = excludeSelf;
          this.ComponentTypes = ImmutableList.CreateRange(componentTypes);
       }
 
-      public EntityRequirement(int? maxRange, IEnumerable<Type> componentTypes)
+      public EntityRequirement(int? maxRange, bool excludeSelf, IEnumerable<Type> componentTypes)
       {
          this.MaxRange = maxRange;
+         this.ExcludeSelf = excludeSelf;
          this.ComponentTypes = ImmutableList.CreateRange(componentTypes);
       }
 

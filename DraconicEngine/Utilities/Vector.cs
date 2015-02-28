@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Math;
+using static System.Math;
 using System.Diagnostics;
 using Newtonsoft.Json;
 
@@ -92,7 +92,7 @@ namespace DraconicEngine
          }
          if (this.KingLength == 1)
          {
-            if (this.X > 0)
+            if (this.X > 0) // east
             {
                if (this.Y > 0)
                {
@@ -107,7 +107,7 @@ namespace DraconicEngine
                   return Direction.East;
                }
             }
-            else if (this.X < 0)
+            else if (this.X < 0) // west
             {
                if (this.Y > 0)
                {
@@ -115,7 +115,7 @@ namespace DraconicEngine
                }
                else if (this.Y < 0)
                {
-                  return Direction.Southeast;
+                  return Direction.Northwest;
                }
                else
                {

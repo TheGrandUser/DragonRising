@@ -7,7 +7,7 @@ using DraconicEngine.GameWorld.EntitySystem;
 using DragonRising.GameWorld.Items;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DragonRising.TempConstants;
+using static DragonRising.TempConstants;
 using DragonRising.Storage;
 
 namespace DragonRising.Generators

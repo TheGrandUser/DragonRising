@@ -2,7 +2,7 @@
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.Terminals;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

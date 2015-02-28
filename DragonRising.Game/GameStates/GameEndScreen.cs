@@ -9,7 +9,7 @@ using DraconicEngine.Input;
 using DraconicEngine.Widgets;
 using DraconicEngine.Terminals;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 
 namespace DragonRising.GameStates
 {

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using DragonRising.GameWorld.Components;
 
 namespace DragonRising.GameWorld.Items

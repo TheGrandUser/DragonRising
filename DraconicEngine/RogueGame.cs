@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageExt;
-using LanguageExt.Prelude;
+using static LanguageExt.Prelude;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
