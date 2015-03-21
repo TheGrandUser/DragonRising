@@ -107,6 +107,8 @@ namespace DragonRising
          }
       }
 
+      public int Level { get; set; }
+
       public void ClearFoV()
       {
          if (recomputeFov)

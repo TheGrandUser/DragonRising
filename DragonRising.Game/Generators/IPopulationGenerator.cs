@@ -9,8 +9,8 @@ namespace DragonRising.Generators
 {
    public interface IPopulationGenerator
    {
-      List<Entity> GenerarateMonsters(int min, int max);
+      List<Entity> GenerarateMonsters(int level);
 
-      Entity GenerarateMonster();
+      Entity GenerarateMonster(int level);
    }
 }

@@ -10,6 +10,6 @@ namespace DragonRising.Generators
 {
    public interface IItemGenerator
    {
-      Entity GenerateItem();
+      Entity GenerateItem(int level);
    }
 }

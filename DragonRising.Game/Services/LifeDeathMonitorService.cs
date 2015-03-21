@@ -62,6 +62,7 @@ namespace DragonRising.Services
          npc.RemoveComponent<BehaviorComponent>();
          npc.RemoveComponent<CreatureComponent>();
 
+
          World.Current.Scene.EntityStore.SendToBack(npc);
       }
 

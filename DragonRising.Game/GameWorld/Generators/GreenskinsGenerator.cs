@@ -10,48 +10,61 @@ using DraconicEngine.GameWorld.EntitySystem.Components;
 using DraconicEngine.GameWorld.Behaviors;
 using DragonRising.GameWorld.Alligences;
 using DragonRising.Storage;
+using DraconicEngine.Utilities;
+using LanguageExt;
+using static LanguageExt.Prelude;
+using static DraconicEngine.Utilities.ItemSelection;
 
 namespace DragonRising.Generators
 {
    public class GreenskinsGenerator : IPopulationGenerator
    {
-      Random random = new Random();
       public Alligence GreenskinsAllignce { get; set; }
+      Dictionary<Entity, Either<double, IEnumerable<Tuple<double, int>>>> monsters;
+      List<Tuple<int, int>> monstersPerRoomByLevel;
+
       public GreenskinsGenerator()
       {
          GreenskinsAllignce = AlligenceManager.Current.GetOrAddByName("Greenskins");
+
+         monsters = new Dictionary<Entity, Either<double, IEnumerable<Tuple<double, int>>>>()
+         {
+            { Library.Current.Entities.Get("Orc"), Make(0.8) },
+            { Library.Current.Entities.Get("Troll"), Make(tuple(0.15, 3), tuple(.30, 5), tuple(.60, 7)) }
+         };
+
+         this.monstersPerRoomByLevel = new List<Tuple<int, int>>
+         {
+            tuple(2,1),
+            tuple(3,4),
+            tuple(5,6),
+         };
       }
 
-      public List<Entity> GenerarateMonsters(int min, int max)
-      {
-         var count = random.Next(min, max + 1);
 
+      public List<Entity> GenerarateMonsters(int level)
+      {
+         var max = ItemSelection.FromDungeonLevel(level, monstersPerRoomByLevel);
+
+         var count = max.Match(
+            Some: m => RogueGame.Current.GameRandom.Next(m + 1),
+            None: () => 0);
+         
          var monsters = new List<Entity>();
 
          for (int i = 0; i < count; i++)
          {
-            monsters.Add(GenerarateMonster());
+            monsters.Add(GenerarateMonster(level));
          }
 
          return monsters;
       }
 
-      public Entity GenerarateMonster()
+      public Entity GenerarateMonster(int level)
       {
-         Entity monsterTemplate;
-         var value = random.NextDouble();
-         if (value < 0.8)
-         {
-            monsterTemplate = Library.Current.Entities.Get("Orc");
-         }
-         else
-         {
-            monsterTemplate = Library.Current.Entities.Get("Troll");
-         }
-
+         Entity monsterTemplate = ItemSelection.RandomChoice(level, this.monsters);
+         
          var monster = monsterTemplate.Clone();
-
-         var alligence = 
 
          monster.AsCreature(c => c.Alligence = GreenskinsAllignce);
 

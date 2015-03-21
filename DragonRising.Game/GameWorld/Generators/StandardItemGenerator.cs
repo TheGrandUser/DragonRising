@@ -9,40 +9,40 @@ using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using static DragonRising.TempConstants;
 using DragonRising.Storage;
+using DraconicEngine.Utilities;
+using static DraconicEngine.Utilities.ItemSelection;
+using LanguageExt;
+using static LanguageExt.Prelude;
 
 namespace DragonRising.Generators
 {
    public class StandardItemGenerator : IItemGenerator
    {
-      Random random = new Random();
+      Dictionary<Entity, Either<double, IEnumerable<Tuple<double, int>>>> items;
+      List<Tuple<int, int>> itemsPerRoomByLevel;
 
-      public Entity GenerateItem()
+      public StandardItemGenerator()
       {
-         Entity item = null;
-         var value = random.NextDouble();
+         this.itemsPerRoomByLevel = new List<Tuple<int, int>>
+         {
+            tuple(1,1),
+            tuple(2,4),
+         };
 
-         if (value <= 0.7 && Library.Current.Items.Contains(HealingPotion))
+         items = new Dictionary<Entity, Either<double, IEnumerable<Tuple<double, int>>>>()
          {
-            var template = Library.Current.Items.Get(HealingPotion);
-            item = template.Clone();
-         }
-         else if (value <= 0.85 && Library.Current.Items.Contains(ScrollOfLightningBolt))
-         {
-            var template = Library.Current.Items.Get(ScrollOfLightningBolt);
-            item = template.Clone();
-         }
-         else if (value <= 0.90 && Library.Current.Items.Contains(ScrollOfFireball))
-         {
-            var template = Library.Current.Items.Get(ScrollOfFireball);
-            item = template.Clone();
-         }
-         else if (Library.Current.Items.Contains(ScrollOfConfusion))
-         {
-            var template = Library.Current.Items.Get(ScrollOfConfusion);
-            item = template.Clone();
-         }
+            { Library.Current.Items.Get(HealingPotion), Make(0.35) },
+            { Library.Current.Items.Get(ScrollOfLightningBolt), Make(tuple(0.25, 4)) },
+            { Library.Current.Items.Get(ScrollOfFireball), Make(tuple(0.25, 6)) },
+            { Library.Current.Items.Get(ScrollOfConfusion), Make(tuple(0.10, 2)) },
+         };
+      }
 
-         return item;
+      public Entity GenerateItem(int level)
+      {
+         var template = ItemSelection.RandomChoice(level, items);
+
+         return template.Clone();
       }
    }
 }

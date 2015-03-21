@@ -56,6 +56,7 @@ namespace DragonRising.GameWorld
 
          Scene scene = new Scene(MapWidth, MapHeight);
          scene.FocusEntity = this.Player;
+         scene.Level = this.DungeonLevel;
 
          var startPoint = generator.MakeMap(scene);
 
