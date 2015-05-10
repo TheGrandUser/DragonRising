@@ -9,6 +9,8 @@ using DraconicEngine.GameWorld.EntitySystem.Components;
 using System.Reactive.Linq;
 using DragonRising.GameWorld.Components;
 using DragonRising.GameWorld;
+using Microsoft.Practices.Prism.PubSubEvents;
+using DragonRising.GameWorld.Events;
 
 namespace DragonRising.Services
 {
@@ -16,13 +18,16 @@ namespace DragonRising.Services
    {
       IDisposable subscriptions;
 
-      public LifeDeathMonitorService(IEntityStore store)
+      public LifeDeathMonitorService(IEventAggregator eventAggregator)
       {
-         subscriptions = store.Killed.Subscribe(OnKilled);
+         var creatureKilledEvent = eventAggregator.GetEvent<CreatureKilledEvent>();
+
+         subscriptions = creatureKilledEvent.Subscribe(OnKilled);
       }
 
-      private void OnKilled(Entity entity)
+      private void OnKilled(CreatureKilledEventArgs args)
       {
+         var entity = args.CreatureKilled;
          if (entity == World.Current.Player)
          {
             PlayerDeath(entity);
@@ -32,7 +37,7 @@ namespace DragonRising.Services
             NpcDeath(entity);
          }
       }
-
+      
       public Entity PlayerCreature { get; set; }
 
       private bool isPlayerDead;

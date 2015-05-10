@@ -14,14 +14,14 @@ namespace DraconicEngine.GameWorld.EntitySystem
    public class ComponentMatchingFamily<TNode> : IFamily<TNode>
       where TNode : Node, new()
    {
-      Engine engine;
+      EntityEngine engine;
       ReactiveList<TNode> nodes = new ReactiveList<TNode>();
       Dictionary<Entity, TNode> entities = new Dictionary<Entity, TNode>();
       Dictionary<Type, PropertyInfo> componentFields = new Dictionary<Type, PropertyInfo>();
       HashSet<Type> shouldNotHave = new HashSet<Type>();
       NodePool<TNode> nodePool;
 
-      public ComponentMatchingFamily(Engine engine)
+      public ComponentMatchingFamily(EntityEngine engine)
       {
          this.engine = engine;
 

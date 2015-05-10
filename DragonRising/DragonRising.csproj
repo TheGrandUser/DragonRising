@@ -41,6 +41,10 @@
     <Reference Include="LanguageExt.Core">
       <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\LanguageExt.Core.dll</HintPath>
     </Reference>
+    <Reference Include="LiteDB, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.1.0.0\lib\net40\LiteDB.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Practices.Prism.PubSubEvents">
       <HintPath>..\packages\Prism.PubSubEvents.1.1.2\lib\portable-sl5+windowsphone8+windows8+net40+wpa81\Microsoft.Practices.Prism.PubSubEvents.dll</HintPath>
     </Reference>

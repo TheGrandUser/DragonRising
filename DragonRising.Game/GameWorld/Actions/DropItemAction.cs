@@ -31,7 +31,7 @@ namespace DragonRising.GameWorld.Actions
 
          executer.GetComponent<InventoryComponent>().Items.Remove(item);
          item.GetComponent<LocationComponent>().Location = executer.GetComponent<LocationComponent>().Location;
-         scene.EntityStore.Add(this.item);
+         scene.EntityStore.AddEntity(this.item);
       }
    }
 }

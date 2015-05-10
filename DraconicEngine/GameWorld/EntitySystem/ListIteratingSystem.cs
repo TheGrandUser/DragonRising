@@ -18,7 +18,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       {
       }
 
-      public override void AddToEngine(Engine engine)
+      public override void AddToEngine(EntityEngine engine)
       {
          this.subscriptions = new CompositeDisposable();
 
@@ -31,7 +31,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          this.subscriptions.Add(nodeList.ItemsRemoved.Subscribe(NodeRemovedFunction));
       }
 
-      public override void RemoveFromEngine(Engine engine)
+      public override void RemoveFromEngine(EntityEngine engine)
       {
          this.subscriptions.Dispose();
          nodeList = null;
@@ -61,7 +61,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       {
       }
 
-      public override void AddToEngine(Engine engine)
+      public override void AddToEngine(EntityEngine engine)
       {
          this.subscriptions = new CompositeDisposable();
 
@@ -74,7 +74,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          this.subscriptions.Add(nodeList.ItemsRemoved.Subscribe(NodeRemovedFunction));
       }
 
-      public override void RemoveFromEngine(Engine engine)
+      public override void RemoveFromEngine(EntityEngine engine)
       {
          this.subscriptions.Dispose();
          nodeList = null;
@@ -105,7 +105,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       {
       }
 
-      public override void AddToEngine(Engine engine)
+      public override void AddToEngine(EntityEngine engine)
       {
          this.subscriptions = new CompositeDisposable();
 
@@ -118,7 +118,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
          this.subscriptions.Add(nodeList.ItemsRemoved.Subscribe(NodeRemovedFunction));
       }
 
-      public override void RemoveFromEngine(Engine engine)
+      public override void RemoveFromEngine(EntityEngine engine)
       {
          this.subscriptions.Dispose();
          nodeList = null;

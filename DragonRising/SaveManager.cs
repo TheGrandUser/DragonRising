@@ -163,11 +163,11 @@ namespace DragonRising
                }
             }
          }
-         var scene = new Scene(map, width, height);
+         var scene = new Scene(map, width, height, world.EntityEngine.CreateChildStore());
 
          foreach (var entity in sceneInfo.entities)
          {
-            scene.EntityStore.Add(entity);
+            scene.EntityStore.AddEntity(entity);
          }
 
          scene.FocusEntity = sceneInfo.entities[sceneInfo.focusEntityId];
@@ -204,7 +204,7 @@ namespace DragonRising
                   new JProperty("Relationship", (int)relationship.Item3)));
          }
 
-         var entities = scene.EntityStore.AllEntities.ToArray();
+         var entities = scene.EntityStore.Entities.ToArray();
 
          var sceneInfo = new SceneInfo()
          {

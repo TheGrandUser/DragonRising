@@ -114,7 +114,6 @@
     <Compile Include="GameWorld\EntitySystem\GameSystem.cs" />
     <Compile Include="GameWorld\EntitySystem\Component.cs" />
     <Compile Include="GameWorld\EntitySystem\IFamily.cs" />
-    <Compile Include="GameWorld\EntityStore.cs" />
     <Compile Include="GameWorld\EntitySystem\Node.cs" />
     <Compile Include="GameWorld\EntitySystem\NodePool.cs" />
     <Compile Include="GameWorld\EntitySystem\ListIteratingSystem.cs" />

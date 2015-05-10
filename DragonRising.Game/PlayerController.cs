@@ -78,6 +78,7 @@ namespace DragonRising
             yield return pickUpCommandGesture;
             yield return dropCommandGesture;
             yield return waitCommandGesture;
+            yield return goDownGesture;
          }
       }
 
@@ -100,7 +101,7 @@ namespace DragonRising
       static readonly CommandGesture lookCommandGesture = Create(new LookCommand(), RogueKey.L);
       static readonly CommandGesture2D mouseLookCommandGesture = CreateMousePointer((loc, delta) => new LookAtCommand(loc));
 
-      static readonly CommandGesture goDownGesture = Create(new GoDownCommand(), GestureSet.Create(RogueKey.OemComma, RogueKey.LeftShift));
+      static readonly CommandGesture goDownGesture = Create(new GoDownCommand(), GestureSet.Create(RogueKey.OemComma, RogueModifierKeys.Shift));
 
       static readonly CommandGesture quitCommandGesture = Create(RogueCommands.Quit, GestureSet.Create(RogueKey.Escape));
 
@@ -374,7 +375,7 @@ namespace DragonRising
             {
                MyPlayingState.Current.SetHighlight(lookCursor.Value);
 
-               foreach (var entity in World.Current.Scene.EntityStore.AllEntities.Where(en => en.GetLocation() == scenePoint))
+               foreach (var entity in World.Current.Scene.EntityStore.Entities.Where(en => en.GetLocation() == scenePoint))
                {
                   MyPlayingState.Current.AddInfoMessage(new RogueMessage(entity.Name, RogueColors.White));
                }
@@ -420,7 +421,7 @@ namespace DragonRising
          var rangeSquared = range * range;
 
 
-         var entitiesInRange = World.Current.Scene.EntityStore.AllCreaturesExceptSpecial()
+         var entitiesInRange = World.Current.Scene.EntityStore.AllCreatures()
             .Where(c => (!excludeSelf || c != this.playerCreature) &&
                c.HasComponent<DrawnComponent>() && c.HasComponent<LocationComponent>() &&
                requirement.DoesEntityMatch(c) &&

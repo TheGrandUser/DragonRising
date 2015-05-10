@@ -8,6 +8,7 @@ using DraconicEngine.GameWorld.EntitySystem;
 using LanguageExt;
 using static LanguageExt.Prelude;
 using DraconicEngine.Utilities;
+using DragonRising.GameWorld.Components;
 
 namespace DragonRising.Generators
 {
@@ -88,6 +89,17 @@ namespace DragonRising.Generators
             }
          }
 
+         var stairs = new Entity("Stairs",
+            new DrawnComponent()
+            {
+               SeenCharacter = new Character(Glyph.LessThan, RogueColors.White),
+               ExploredCharacter = new Character(Glyph.LessThan, RogueColors.LightGray)
+            },
+            new LocationComponent() { Location = rooms.Last().Center });
+
+         scene.EntityStore.AddEntity(stairs);
+         scene.Stairs = stairs;
+
          return rooms.First().Center;
       }
 
@@ -114,7 +126,7 @@ namespace DragonRising.Generators
 
                entity.SetLocation(location);
 
-               scene.EntityStore.Add(entity);
+               scene.EntityStore.AddEntity(entity);
             }
          }
       }

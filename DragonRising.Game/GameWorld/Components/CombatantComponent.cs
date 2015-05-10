@@ -58,7 +58,6 @@ namespace DragonRising.GameWorld.Components
             {
                this.IsAlive = false;
                this.Owner.SetBlocks(false);
-               World.Current.Scene.EntityStore.KillEntity(this.Owner);
                var eventAggregator = ServiceLocator.Current.GetInstance<IEventAggregator>();
                var creatureKilledEvent = eventAggregator.GetEvent<CreatureKilledEvent>();
                creatureKilledEvent.Publish(this.Owner, "Entity", from);

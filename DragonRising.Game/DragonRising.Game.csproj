@@ -128,7 +128,6 @@
     <Compile Include="GameWorld\Components\CreatureComponent.cs" />
     <Compile Include="GameWorld\Components\DrawnComponent.cs" />
     <Compile Include="GameWorld\Components\EquipmentComponent.cs" />
-    <Compile Include="GameWorld\Components\GameActionsComponent.cs" />
     <Compile Include="GameWorld\Components\InventoryComponent.cs" />
     <Compile Include="GameWorld\Components\ItemComponent.cs" />
     <Compile Include="GameWorld\Components\LevelComponent.cs" />
@@ -157,7 +156,6 @@
     <Compile Include="GameWorld\Generators\StandardItemGenerator.cs" />
     <Compile Include="GameWorld\Items\PowerItemUsageTemplate.cs" />
     <Compile Include="GameWorld\LevelingPolicy.cs" />
-    <Compile Include="GameWorld\Nodes\ActionManagementNode.cs" />
     <Compile Include="GameWorld\Nodes\BehaviorNode.cs" />
     <Compile Include="GameWorld\Nodes\CreatureDrawNode.cs" />
     <Compile Include="GameWorld\Nodes\DrawNode.cs" />
@@ -175,8 +173,7 @@
     <Compile Include="GameWorld\Powers\Power.cs" />
     <Compile Include="GameWorld\Powers\PowerException.cs" />
     <Compile Include="GameWorld\Scene.cs" />
-    <Compile Include="GameWorld\Systems\AIDecisionSystem.cs" />
-    <Compile Include="GameWorld\Systems\CreatureActionSystem.cs" />
+    <Compile Include="GameWorld\Systems\ActionSystem.cs" />
     <Compile Include="GameWorld\Systems\RenderSystem.cs" />
     <Compile Include="GameWorld\Tile.cs" />
     <Compile Include="GameWorld\World.cs" />
@@ -219,7 +216,9 @@
   <ItemGroup>
     <Content Include="ConcurrentHashtable.License.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="GameWorld\EntityModifiers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

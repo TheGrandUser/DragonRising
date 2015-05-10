@@ -27,6 +27,11 @@ namespace DraconicEngine.Input
          return new GestureSet(ImmutableList.Create(new RogueKeyGesture(key, RogueModifierKeys.None)), null);
       }
 
+      public static GestureSet Create(RogueKey key, RogueModifierKeys modifiers)
+      {
+         return new GestureSet(ImmutableList.Create(new RogueKeyGesture(key, modifiers)), null);
+      }
+
       public static GestureSet Create(RogueMouseAction mouseAction, params RogueKey[] keys)
       {
          ImmutableList<RogueKeyGesture> keyGestures = ImmutableList.CreateRange(keys.Select(k => new RogueKeyGesture(k, RogueModifierKeys.None)));

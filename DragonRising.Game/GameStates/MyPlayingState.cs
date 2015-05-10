@@ -57,8 +57,7 @@ namespace DragonRising.GameStates
       IMessageService messageService;
       List<RogueMessage> infoMessages = new List<RogueMessage>();
       private Terminal rootTerminal;
-
-      private IDisposable subscriptions;
+      
       string gameName;
 
       public PlayerController PlayerController { get; set; }
@@ -94,18 +93,8 @@ namespace DragonRising.GameStates
          this.messageWidget = new MessagesWidget(this.statsPanel[MessageX, 1, MessageWidth, MessageHeight], this.messageService.Messages, MessagePriority.ShowNewest);
 
          this.highlightWidget = new HighlightWidget(this.sceneWidget.Panel[RogueColors.Black, RogueColors.LightCyan]);
-
-         var gameManagerEntity = new Entity()
-         {
-            Name = "Game Manager"
-         };
-         gameManagerEntity.AddComponent(new GameActionsComponent());
-
-         this.Engine.AddEntity(gameManagerEntity);
-
-         this.Engine.AddSystem(new AIDecisionSystem(), 1, SystemTrack.Game);
-         this.Engine.AddSystem(new CreatureActionSystem(), 2, SystemTrack.Game);
-
+         
+         this.Engine.AddSystem(new ActionSystem(), 1, SystemTrack.Game);
          this.Engine.AddSystem(new RenderSystem(scenePanel, sceneView, world), 4, SystemTrack.Render);
          this.Engine.AddSystem(new ItemRenderSystem(scenePanel, sceneView, world), 5, SystemTrack.Render);
          this.Engine.AddSystem(new CreatureRenderSystem(scenePanel, sceneView, world), 6, SystemTrack.Render);
@@ -118,10 +107,8 @@ namespace DragonRising.GameStates
          this.Widgets.Add(infoWidget);
 
          this.PlayerController = new PlayerController(sceneView) { PlayerCreature = player };
-         this.lifeDeathMonitorService = new LifeDeathMonitorService(world.Scene.EntityStore);
+         this.lifeDeathMonitorService = new LifeDeathMonitorService(ServiceLocator.Current.GetInstance<IEventAggregator>());
          this.statTracker = new StatTracker(ServiceLocator.Current.GetInstance<IEventAggregator>());
-
-         this.subscriptions = this.Engine.ObserveStore(this.World.Scene.EntityStore);
       }
 
       protected override void PreSceneDraw()
@@ -147,20 +134,22 @@ namespace DragonRising.GameStates
 
       protected override Option<IGameState> OnFinished()
       {
-         this.subscriptions.Dispose();
-
          this.statTracker.Dispose();
          this.lifeDeathMonitorService.Dispose();
-
+         
          SaveManager.Current.SaveGame(this.gameName, this.World);
 
          MyPlayingState.Current = null;
          World.Current = null;
 
+         this.World.Dispose();
+
          return None;
       }
 
       public static new MyPlayingState Current { get; private set; }
+
+      protected override EntityEngine Engine => this.World.EntityEngine;
 
       public void ClearInfoMessages()
       {

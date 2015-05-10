@@ -15,7 +15,7 @@ namespace DraconicEngine.GameStates
 {
    public abstract class PlayingState : IGameState
    {
-      protected Engine Engine { get; } = new Engine();
+      protected abstract EntityEngine Engine { get; }
 
       public List<Widget> Widgets { get; } = new List<Widget>();
 

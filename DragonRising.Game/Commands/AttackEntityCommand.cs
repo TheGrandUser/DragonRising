@@ -46,9 +46,10 @@ namespace DragonRising.Commands
             }
             var targetLocation = executer.GetLocation() + delta;
 
+            var world = World.Current;
             var scene = World.Current.Scene;
 
-            targetEntity = scene.EntityStore.GetCreatureAt(targetLocation);
+            targetEntity = world.EntityEngine.GetCreatureAt(targetLocation);
          }
          else if (fulfillment is EntityFulfillment)
          {

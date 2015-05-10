@@ -37,7 +37,7 @@ namespace DragonRising.GameWorld.Actions
 
          if (inventory.TryPickUp(itemToPick))
          {
-            scene.EntityStore.Remove(itemToPick);
+            scene.EntityStore.RemoveEntity(itemToPick);
          }
       }
    }

@@ -10,12 +10,12 @@ namespace DraconicEngine.GameWorld.EntitySystem
    {
       internal int priority = 0;
 
-      public virtual void AddToEngine(Engine engine)
+      public virtual void AddToEngine(EntityEngine engine)
       {
 
       }
 
-      public virtual void RemoveFromEngine(Engine engine)
+      public virtual void RemoveFromEngine(EntityEngine engine)
       {
 
       }

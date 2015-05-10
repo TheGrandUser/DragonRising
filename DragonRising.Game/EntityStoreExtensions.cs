@@ -13,19 +13,19 @@ namespace DragonRising
    {
       public static IEnumerable<Entity> GetEntitiesAt(this IEntityStore store, Loc location)
       {
-         return store.AllEntities.Where(e => e.GetComponentOrDefault<LocationComponent>()?.Location == location);
+         return store.Entities.Where(e => e.GetComponentOrDefault<LocationComponent>()?.Location == location);
       }
 
       public static Entity GetCreatureAt(this IEntityStore store, Loc location)
       {
-         var creature = store.AllCreaturesSpecialFirst().FirstOrDefault(c => c.GetComponentOrDefault<LocationComponent>()?.Location == location);
+         var creature = store.AllCreatures().FirstOrDefault(c => c.GetComponentOrDefault<LocationComponent>()?.Location == location);
 
          return creature;
       }
 
       public static IEnumerable<Entity> AllItems(this IEntityStore store)
       {
-         return store.RegularEntities.Where(e => e.HasComponent<ItemComponent>());
+         return store.Entities.Where(e => e.HasComponent<ItemComponent>());
       }
 
       public static IEnumerable<Entity> GetItemsAt(this IEntityStore store, Loc location)
@@ -38,40 +38,13 @@ namespace DragonRising
             }
          }
       }
-
-
-      public static IEnumerable<Entity> AllCreaturesSpecialFirst(this IEntityStore store)
+      
+      public static IEnumerable<Entity> AllCreatures(this IEntityStore store)
       {
-         foreach (var specialCreature in store.AllSpecialCreatures())
-         {
-            yield return specialCreature;
-         }
-         foreach (var creature in store.RegularEntities.Where(e => e.HasComponent<CreatureComponent>()))
+         foreach (var creature in store.Entities.Where(e => e.HasComponent<CreatureComponent>()))
          {
             yield return creature;
          }
-      }
-
-      public static IEnumerable<Entity> AllCreaturesSpecialLast(this IEntityStore store)
-      {
-         foreach (var creature in store.RegularEntities.Where(e => e.HasComponent<CreatureComponent>()))
-         {
-            yield return creature;
-         }
-         foreach (var specialCreature in store.AllSpecialCreatures())
-         {
-            yield return specialCreature;
-         }
-      }
-
-      public static IEnumerable<Entity> AllCreaturesExceptSpecial(this IEntityStore store)
-      {
-         return store.AllEntities.Where(e => e.HasComponent<CreatureComponent>());
-      }
-
-      public static IEnumerable<Entity> AllSpecialCreatures(this IEntityStore store)
-      {
-         return store.SpecialEntities.Where(e => e.HasComponent<CreatureComponent>());
       }
    }
 }

@@ -23,14 +23,15 @@ namespace DragonRising
       public int MapWidth { get; set; }
       public int MapHeight { get; set; }
 
-      public Scene(Tile[] map, int width, int height)
+      public Scene(Tile[] map, int width, int height, IEntityStore entityStore)
       {
          this.Map = map;
          this.MapWidth = width;
          this.MapHeight = height;
+         this.EntityStore = entityStore;
       }
 
-      public Scene(int mapWidth, int mapHeight)
+      public Scene(int mapWidth, int mapHeight, IEntityStore entityStore)
       {
          this.MapWidth = mapWidth;
          this.MapHeight = mapHeight;
@@ -41,18 +42,10 @@ namespace DragonRising
          {
             Map[index] = new Tile(wallId);
          }
-         this.Stairs = new Entity("Stairs",
-            new DrawnComponent()
-            {
-               SeenCharacter = new Character(Glyph.LessThan, RogueColors.White),
-               ExploredCharacter = new Character(Glyph.LessThan, RogueColors.LightGray)
-            },
-            new LocationComponent());
-         this.EntityStore.Add(this.Stairs);
-         this.EntityStore.SendToBack(this.Stairs);
+         this.EntityStore = entityStore;
       }
-
-      public IEntityStore EntityStore { get; } = new EntityStore();
+      
+      public IEntityStore EntityStore { get; }
 
       public Tile[] Map { get; set; }
 
@@ -92,17 +85,7 @@ namespace DragonRising
          {
             if (this.focusEntity != value)
             {
-               if (this.focusEntity != null)
-               {
-                  this.EntityStore.SetSpecial(this.focusEntity, false);
-               }
                this.focusEntity = value;
-
-               if (this.focusEntity != null)
-               {
-                  this.EntityStore.SetSpecial(this.focusEntity, true);
-                  this.ResetFoV();
-               }
             }
          }
       }
@@ -190,7 +173,7 @@ namespace DragonRising
       {
          int max = maxRange + 1 ?? int.MaxValue;
 
-         var closestEnemy = from c in scene.EntityStore.AllCreaturesSpecialFirst()
+         var closestEnemy = from c in scene.EntityStore.AllCreatures()
                             where c != originator
                             let distance = (c.GetLocation() - originator.GetLocation()).KingLength
                             where distance < max && scene.IsVisible(c.GetLocation()) && c.HasComponent<CombatantComponent>() && originator.IsEnemy(c)
