@@ -137,6 +137,7 @@
     <Compile Include="GameWorld\Effects\DamageEffect.cs" />
     <Compile Include="GameWorld\Effects\MessageEffect.cs" />
     <Compile Include="GameWorld\Effects\RemoveBehaviorEffect.cs" />
+    <Compile Include="GameWorld\EntityModifiers\EntityModifierSet.cs" />
     <Compile Include="GameWorld\Events\CreatureKilledEvent.cs" />
     <Compile Include="GameWorld\Items\BehaviorReplacementItem.cs" />
     <Compile Include="GameWorld\Items\FireballScroll.cs" />
@@ -216,9 +217,7 @@
   <ItemGroup>
     <Content Include="ConcurrentHashtable.License.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GameWorld\EntityModifiers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
