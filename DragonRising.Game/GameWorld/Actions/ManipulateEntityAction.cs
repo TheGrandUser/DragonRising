@@ -18,19 +18,24 @@ namespace DragonRising.GameWorld.Actions
 {
    public class ManipulateEntityAction : RogueAction
    {
-      Some<Entity> target;
-      Option<Entity> itemToUse;
+      public Some<Entity> User { get; }
+      public Some<Entity> Target { get; }
+      public Option<Entity> ItemToUse { get; }
 
-      public ManipulateEntityAction(Some<Entity> target, Option<Entity> item)
+      public ManipulateEntityAction(Some<Entity> user, Some<Entity> target, Option<Entity> item)
       {
-         this.target = target;
-         this.itemToUse = item;
+         User = user;
+         this.Target = target;
+         this.ItemToUse = item;
       }
+   }
 
-      public override void Do(Entity executer)
+   public class BaseManipulateEntityRule : IActionRule<ManipulateEntityAction>
+   {
+      public void Apply(ManipulateEntityAction action)
       {
-         var m = target.Value.GetComponent<ManipulatableComponent>();
-         if (m.Use(this.itemToUse))
+         var m = action.Target.Value.GetComponent<ManipulatableComponent>();
+         if (m.Use(action.ItemToUse))
          {
             // success!
          }

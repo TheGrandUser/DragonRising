@@ -1,5 +1,5 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DragonRising.GameWorld.Alligences;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
@@ -24,7 +24,7 @@ using Microsoft.Practices.Prism.PubSubEvents;
 
 namespace DragonRising.GameStates
 {
-   class MyPlayingState : PlayingState
+   class MyPlayingScreen : PlayingScreen
    {
       public static readonly int BarWidth = 20;
       public static readonly int PanelHeight = 9;
@@ -62,7 +62,7 @@ namespace DragonRising.GameStates
 
       public PlayerController PlayerController { get; set; }
 
-      public MyPlayingState(World world, string gameName)
+      public MyPlayingScreen(World world, string gameName)
       {
          this.World = world;
 
@@ -94,7 +94,7 @@ namespace DragonRising.GameStates
 
          this.highlightWidget = new HighlightWidget(this.sceneWidget.Panel[RogueColors.Black, RogueColors.LightCyan]);
          
-         this.Engine.AddSystem(new ActionSystem(), 1, SystemTrack.Game);
+         this.Engine.AddSystem(new ActionSystem(ServiceLocator.Current.GetInstance<IRulesManager>()), 1, SystemTrack.Game);
          this.Engine.AddSystem(new RenderSystem(scenePanel, sceneView, world), 4, SystemTrack.Render);
          this.Engine.AddSystem(new ItemRenderSystem(scenePanel, sceneView, world), 5, SystemTrack.Render);
          this.Engine.AddSystem(new CreatureRenderSystem(scenePanel, sceneView, world), 6, SystemTrack.Render);
@@ -118,7 +118,7 @@ namespace DragonRising.GameStates
          this.statsPanel.DrawBox(DrawBoxOptions.DoubleLines);
       }
 
-      protected override Some<IGameState> CreateEndScreen()
+      protected override Some<IGameView> CreateEndScreen()
       {
          return new GameEndScreen();
       }
@@ -126,20 +126,20 @@ namespace DragonRising.GameStates
       public override void Start()
       {
          base.Start();
-         MyPlayingState.Current = this;
+         MyPlayingScreen.Current = this;
          World.Current = World;
 
          this.messageService.PostMessage("Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.", RogueColors.Red);
       }
 
-      protected override Option<IGameState> OnFinished()
+      protected override Option<IGameView> OnFinished()
       {
          this.statTracker.Dispose();
          this.lifeDeathMonitorService.Dispose();
          
          SaveManager.Current.SaveGame(this.gameName, this.World);
 
-         MyPlayingState.Current = null;
+         MyPlayingScreen.Current = null;
          World.Current = null;
 
          this.World.Dispose();
@@ -147,7 +147,7 @@ namespace DragonRising.GameStates
          return None;
       }
 
-      public static new MyPlayingState Current { get; private set; }
+      public static new MyPlayingScreen Current { get; private set; }
 
       protected override EntityEngine Engine => this.World.EntityEngine;
 

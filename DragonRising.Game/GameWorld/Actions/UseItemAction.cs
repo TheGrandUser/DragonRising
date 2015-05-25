@@ -17,24 +17,29 @@ namespace DragonRising.GameWorld.Actions
 {
    public class UseItemAction : RogueAction
    {
-      Some<Entity> item;
-      Some<RequirementFulfillment> itemReqFulfillment;
+      public Some<Entity> User { get; }
+      public Some<Entity> Item { get; }
+      public Some<RequirementFulfillment> ItemReqFulfillment { get; }
 
-      public UseItemAction(Some<Entity> item, Some<RequirementFulfillment> itemReqFulfillment)
+      public UseItemAction(Some<Entity> user, Some<Entity> item, Some<RequirementFulfillment> itemReqFulfillment)
       {
-         this.itemReqFulfillment = itemReqFulfillment;
-         this.item = item;
+         User = user;
+         this.ItemReqFulfillment = itemReqFulfillment;
+         this.Item = item;
       }
+   }
 
-      public override void Do(Entity executer)
+   public class BaseUseItemRule : IActionRule<UseItemAction>
+   {
+      public void Apply(UseItemAction action)
       {
-         var itemComponent = item.Value.GetComponent<ItemComponent>();
+         var itemComponent = action.Item.Value.GetComponent<ItemComponent>();
          var usable = itemComponent.Usable;
 
-         var result = usable.Use(executer, itemReqFulfillment);
+         var result = usable.Use(action.User, action.ItemReqFulfillment);
          if (result == ItemUseResult.Destroyed)
          {
-            executer.As<InventoryComponent>(inventory => inventory.Items.Remove(item));
+            action.User.Value.As<InventoryComponent>(inventory => inventory.Items.Remove(action.Item));
          }
       }
    }

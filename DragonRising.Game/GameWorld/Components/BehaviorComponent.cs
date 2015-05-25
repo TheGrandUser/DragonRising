@@ -30,7 +30,7 @@ namespace DragonRising.GameWorld.Components
          this.behaviors.AddLast(initialBehavior);
       }
 
-      protected BehaviorComponent(BehaviorComponent original, bool fresh)
+      BehaviorComponent(BehaviorComponent original, bool fresh)
          : base(original, fresh)
       {
          this.behaviors = new LinkedList<Behavior>(original.behaviors.Select(b => b.Clone()));

@@ -16,17 +16,33 @@ namespace DragonRising.GameWorld.Actions
 {
    public class MoveInDirectionAction : RogueAction
    {
-      Direction dir;
+      public Entity Mover { get; }
+      public Direction Dir { get; }
 
-      public MoveInDirectionAction(Direction dir)
+      public MoveInDirectionAction(Entity mover, Direction dir)
       {
-         this.dir = dir;
+         Mover = mover;
+         this.Dir = dir;
       }
+   }
 
-      public override void Do(Entity executer)
+   public class MoveToAction : RogueAction
+   {
+      public Entity Mover { get; }
+      public Loc NewLocation { get; }
+      public MoveToAction(Entity mover, Loc newLocation)
       {
-         var locComp = executer.GetComponent<LocationComponent>();
-         var newLocation = locComp.Location + Vector.FromDirection(dir);
+         Mover = mover;
+         this.NewLocation = newLocation;
+      }
+   }
+
+   public class MoveInDirectionRule : IActionRule<MoveInDirectionAction>
+   {
+      public void Apply(MoveInDirectionAction action)
+      {
+         var locComp = action.Mover.GetComponent<LocationComponent>();
+         var newLocation = locComp.Location + Vector.FromDirection(action.Dir);
          if (World.Current.Scene.IsBlocked(newLocation) == Blockage.None)
          {
             locComp.Location = newLocation;
@@ -34,19 +50,13 @@ namespace DragonRising.GameWorld.Actions
       }
    }
 
-   public class MoveToAction : RogueAction
+   public class MoveToRule : IActionRule<MoveToAction>
    {
-      Loc newLocation;
-      public MoveToAction(Loc newLocation)
+      public void Apply(MoveToAction action)
       {
-         this.newLocation = newLocation;
-      }
-
-      public override void Do(Entity executer)
-      {
-         if (World.Current.Scene.IsBlocked(newLocation) == Blockage.None)
+         if (World.Current.Scene.IsBlocked(action.NewLocation) == Blockage.None)
          {
-            executer.GetComponent<LocationComponent>().Location = newLocation;
+            action.Mover.GetComponent<LocationComponent>().Location = action.NewLocation;
          }
       }
    }

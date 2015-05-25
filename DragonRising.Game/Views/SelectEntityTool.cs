@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DraconicEngine.Input;
 using DraconicEngine.Widgets;
 using DraconicEngine.Terminals;
@@ -20,7 +20,7 @@ using DragonRising.Widgets;
 
 namespace DragonRising.GameStates
 {
-   class SelectEntityTool : IGameState<Entity>
+   class SelectEntityTool : IGameView<Entity>
    {
       IImmutableList<SeeableNode> availableEntities;
       SceneView sceneView;
@@ -29,7 +29,7 @@ namespace DragonRising.GameStates
       Entity result;
       public Entity Result { get { return result; } }
 
-      public GameStateType Type { get { return GameStateType.Tool; } }
+      public GameViewType Type { get { return GameViewType.Tool; } }
 
       public SelectEntityTool(IImmutableList<SeeableNode> availableEntities, SceneView sceneView, ITerminal scenePanel)
       {
@@ -121,7 +121,7 @@ namespace DragonRising.GameStates
             case TargetAction.Point:
                var inputResult2D = inputResult.As2D();
                var rootPoint = inputResult2D.Point.Value;
-               var localPoint = MyPlayingState.Current.ScenePanel.RootVecToLocalVec(rootPoint);
+               var localPoint = MyPlayingScreen.Current.ScenePanel.RootVecToLocalVec(rootPoint);
                if (localPoint.HasValue)
                {
                   var scenePoint = this.sceneView.ViewOffset + localPoint;
@@ -166,7 +166,7 @@ namespace DragonRising.GameStates
          return Task.FromResult(0);
       }
 
-      public Option<IGameState> Finish()
+      public Option<IGameView> Finish()
       {
          return None;
       }

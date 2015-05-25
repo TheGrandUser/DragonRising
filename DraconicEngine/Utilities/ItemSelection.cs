@@ -36,8 +36,8 @@ namespace DraconicEngine.Utilities
             {
                Item = kvp.Key,
                Weight = kvp.Value.Match<double>(
-                  Right: weight => weight,
-                  Left: byLevel => FromDungeonLevel(level, byLevel)
+                  Left: weight => weight,
+                  Right: byLevel => FromDungeonLevel(level, byLevel)
                   .Match(
                      Some: val => val,
                      None: () => 0))

@@ -36,7 +36,7 @@ namespace DragonRising.Commands
          {
             return RogueAction.Abort;
          }
-
+         
          var scene = World.Current.Scene;
 
          var delta = Vector.FromDirection(direction);
@@ -46,7 +46,7 @@ namespace DragonRising.Commands
          var blockage = scene.IsBlocked(newLocation, ignoreWhere: entity => entity == executer);
          if (blockage == Blockage.None)
          {
-            return new MoveToAction(newLocation);
+            return new MoveToAction(executer, newLocation);
          }
          else if (blockage == Blockage.Entity)
          {

@@ -35,11 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConcurrentHashtable">
-      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\ConcurrentHashtable.dll</HintPath>
-    </Reference>
-    <Reference Include="LanguageExt.Core">
-      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\LanguageExt.Core.dll</HintPath>
+    <Reference Include="LanguageExt.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LanguageExt.0.1.2-beta\lib\LanguageExt.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="LiteDB, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LiteDB.1.0.0\lib\net40\LiteDB.dll</HintPath>
@@ -71,9 +69,9 @@
       <HintPath>..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Collections.Immutable, Version=1.1.34.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.1.34-rc\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
-      <HintPath>..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Interactive">
@@ -176,9 +174,6 @@
       <Project>{971cd2c2-86d3-49f9-8bad-496056363f21}</Project>
       <Name>DragonRising.Game</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="ConcurrentHashtable.License.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Repositories\" />

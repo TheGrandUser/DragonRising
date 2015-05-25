@@ -31,7 +31,7 @@ namespace DragonRising.GameWorld.Components
          this.VisionRadius = visionRadius;
       }
 
-      protected CreatureComponent(CreatureComponent original, bool fresh)
+      CreatureComponent(CreatureComponent original, bool fresh)
          : base(original, fresh)
       {
          this.Alligence = original.Alligence;

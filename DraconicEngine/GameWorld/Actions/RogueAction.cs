@@ -6,19 +6,17 @@ using System.Threading.Tasks;
 using LanguageExt;
 using static LanguageExt.Prelude;
 using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.GameWorld.Effects;
 
 namespace DraconicEngine.GameWorld.Actions
 {
    public abstract class RogueAction
    {
-      public abstract void Do(Entity executer);
-  
       class NoOpAction : RogueAction
       {
-         public override void Do(Entity executer) { }
          public NoOpAction() { }
       }
 
@@ -28,4 +26,20 @@ namespace DraconicEngine.GameWorld.Actions
       public static RogueAction Idle => idle;
    }
 
+   public interface IRule
+   {
+
+   }
+
+   public interface IActionRule<TAction> : IRule
+      where TAction : RogueAction
+   {
+      void Apply(TAction action);
+   }
+   public interface IActionRule<TAction, TEffect> : IRule
+      where TAction : RogueAction
+      where TEffect : IEffect
+   {
+      TEffect Apply(TAction action);
+   }
 }

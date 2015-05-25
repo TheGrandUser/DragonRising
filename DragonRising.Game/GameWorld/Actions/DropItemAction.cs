@@ -18,20 +18,26 @@ namespace DragonRising.GameWorld.Actions
 {
    public class DropItemAction : RogueAction
    {
-      Entity item;
-      public DropItemAction(Entity item)
+      public Entity Dropper { get; }
+      public Entity Item { get; }
+      public DropItemAction(Entity dropper, Entity item)
       {
+         Contract.Requires(dropper != null);
          Contract.Requires(item != null);
-         this.item = item;
+         this.Dropper = dropper;
+         this.Item = item;
       }
+   }
 
-      public override void Do(Entity executer)
+   public class BaseDropItemRule
+   {
+      public void Apply(DropItemAction action)
       {
          var scene = World.Current.Scene;
 
-         executer.GetComponent<InventoryComponent>().Items.Remove(item);
-         item.GetComponent<LocationComponent>().Location = executer.GetComponent<LocationComponent>().Location;
-         scene.EntityStore.AddEntity(this.item);
+         action.Dropper.GetComponent<InventoryComponent>().Items.Remove(action.Item);
+         action.Item.GetComponent<LocationComponent>().Location = action.Dropper.GetComponent<LocationComponent>().Location;
+         scene.EntityStore.AddEntity(action.Item);
       }
    }
 }
