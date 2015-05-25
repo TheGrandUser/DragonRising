@@ -16,7 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static DraconicEngine.Input.CommandGestureFactory;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DraconicEngine.Terminals.Input;
 using DragonRising.Commands;
 using DraconicEngine.GameWorld.Behaviors;
@@ -365,7 +365,7 @@ namespace DragonRising
 
       public void SetLookAt(Loc? lookCursor)
       {
-         MyPlayingState.Current.ClearInfoMessages();
+         MyPlayingScreen.Current.ClearInfoMessages();
 
          if (lookCursor.HasValue)
          {
@@ -373,17 +373,17 @@ namespace DragonRising
             
             if (World.Current.Scene.IsVisible(scenePoint))
             {
-               MyPlayingState.Current.SetHighlight(lookCursor.Value);
+               MyPlayingScreen.Current.SetHighlight(lookCursor.Value);
 
                foreach (var entity in World.Current.Scene.EntityStore.Entities.Where(en => en.GetLocation() == scenePoint))
                {
-                  MyPlayingState.Current.AddInfoMessage(new RogueMessage(entity.Name, RogueColors.White));
+                  MyPlayingScreen.Current.AddInfoMessage(new RogueMessage(entity.Name, RogueColors.White));
                }
             }
          }
          else
          {
-            MyPlayingState.Current.ClearHighlight();
+            MyPlayingScreen.Current.ClearHighlight();
          }
       }
 
@@ -405,7 +405,7 @@ namespace DragonRising
       {
          //string message, bool isLimitedToFoV = true, int? maxRange = null
 
-         MyPlayingState playingState = MyPlayingState.Current;
+         MyPlayingScreen playingState = MyPlayingScreen.Current;
          var targetTool = new LocationTargetingTool(this.PlayerCreature.GetLocation(), this.sceneView, playingState.ScenePanel, requirement.Message, requirement.IsLimitedToFoV, requirement.MaxRange);
 
          await RogueGame.Current.RunGameState(targetTool);
@@ -415,7 +415,7 @@ namespace DragonRising
 
       public async Task<Option<Entity>> SelectTargetEntity(EntityRequirement requirement)
       {
-         MyPlayingState playingState = MyPlayingState.Current;
+         MyPlayingScreen playingState = MyPlayingScreen.Current;
          var range = requirement.MaxRange;
          var excludeSelf = requirement.ExcludeSelf;
          var rangeSquared = range * range;

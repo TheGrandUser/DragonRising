@@ -31,11 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConcurrentHashtable">
-      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\ConcurrentHashtable.dll</HintPath>
-    </Reference>
-    <Reference Include="LanguageExt.Core">
-      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\LanguageExt.Core.dll</HintPath>
+    <Reference Include="LanguageExt.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LanguageExt.0.1.2-beta\lib\LanguageExt.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism.PubSubEvents">
       <HintPath>..\packages\Prism.PubSubEvents.1.1.2\lib\portable-sl5+windowsphone8+windows8+net40+wpa81\Microsoft.Practices.Prism.PubSubEvents.dll</HintPath>
@@ -54,9 +52,9 @@
       <HintPath>..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Collections.Immutable, Version=1.1.34.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.1.34-rc\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
-      <HintPath>..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Interactive">
@@ -118,9 +116,9 @@
     <Compile Include="GameWorld\EntitySystem\NodePool.cs" />
     <Compile Include="GameWorld\EntitySystem\ListIteratingSystem.cs" />
     <Compile Include="GameWorld\Actions\RogueAction.cs" />
-    <Compile Include="GameStates\ConfirmDialog.cs" />
-    <Compile Include="GameStates\GameSate.cs" />
-    <Compile Include="GameStates\PlayingState.cs" />
+    <Compile Include="GameViews\ConfirmDialog.cs" />
+    <Compile Include="GameViews\GameView.cs" />
+    <Compile Include="GameViews\PlayingScreen.cs" />
     <Compile Include="Terminals\Glyphs\Character.cs" />
     <Compile Include="Terminals\Glyphs\CharacterString.cs" />
     <Compile Include="Terminals\Glyphs\Glyph.cs" />

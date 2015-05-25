@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DraconicEngine.GameStates
+namespace DraconicEngine.GameViews
 {
-   public enum GameStateType
+   public enum GameViewType
    {
       Screen,
       Dialog,
@@ -36,32 +36,32 @@ namespace DraconicEngine.GameStates
       Middle,
    }
 
-   public interface IGameState
+   public interface IGameView
    {
-      GameStateType Type { get; }
+      GameViewType Type { get; }
 
       Task<TickResult> Tick();
       Task Draw();
 
-      Option<IGameState> Finish();
+      Option<IGameView> Finish();
 
       void Start();
    }
 
-   public interface IGameState<TData> : IGameState
+   public interface IGameView<TData> : IGameView
    {
       TData Result { get; }
    }
 
-   public abstract class GameState : IGameState
+   public abstract class GameView : IGameView
    {
-      public abstract GameStateType Type { get; }
+      public abstract GameViewType Type { get; }
 
       public abstract Task<TickResult> Tick();
 
       public abstract Task Draw();
 
-      public virtual Option<IGameState> Finish()
+      public virtual Option<IGameView> Finish()
       {
          return None;
       }

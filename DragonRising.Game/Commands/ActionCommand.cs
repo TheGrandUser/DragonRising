@@ -35,8 +35,8 @@ namespace DragonRising.Commands
          }
 
          var result = await action.PrepareAction(entity, fulfillment).Match(
-               taken => Task.FromResult(taken),
-               another => GetFinalActionAsync(another.Action, entity, getFulfillment, another.PreFulfillment));
+               Left: taken => Task.FromResult(taken),
+               Right: another => GetFinalActionAsync(another.Action, entity, getFulfillment, another.PreFulfillment));
 
          return result;
       }

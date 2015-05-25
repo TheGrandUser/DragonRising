@@ -31,17 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConcurrentHashtable">
-      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\ConcurrentHashtable.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="LanguageExt.Core">
-      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\LanguageExt.Core.dll</HintPath>
+    <Reference Include="LanguageExt.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LanguageExt.0.1.2-beta\lib\LanguageExt.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism.PubSubEvents">
       <HintPath>..\packages\Prism.PubSubEvents.1.1.2\lib\portable-sl5+windowsphone8+windows8+net40+wpa81\Microsoft.Practices.Prism.PubSubEvents.dll</HintPath>
@@ -60,9 +58,9 @@
       <HintPath>..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Collections.Immutable, Version=1.1.34.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.1.34-rc\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
-      <HintPath>..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -106,9 +104,10 @@
     <Compile Include="Commands\LookCommand.cs" />
     <Compile Include="EntityExtensions.cs" />
     <Compile Include="EntityStoreExtensions.cs" />
-    <Compile Include="GameStates\LoadGeneralDataScreen.cs" />
-    <Compile Include="GameStates\NewGameScreen.cs" />
-    <Compile Include="GameStates\LevelUpScreen.cs" />
+    <Compile Include="Services\RulesManager.cs" />
+    <Compile Include="Views\LoadGeneralDataScreen.cs" />
+    <Compile Include="Views\NewGameScreen.cs" />
+    <Compile Include="Views\LevelUpScreen.cs" />
     <Compile Include="GameWorld\Actions\AttackEntityAction.cs" />
     <Compile Include="GameWorld\Actions\DropItemAction.cs" />
     <Compile Include="GameWorld\Actions\ManipulateEntityAction.cs" />
@@ -144,14 +143,14 @@
     <Compile Include="GameWorld\Items\HealingItem.cs" />
     <Compile Include="GameWorld\Items\IItemUsage.cs" />
     <Compile Include="GameWorld\Items\LightningScroll.cs" />
-    <Compile Include="GameStates\GameEndScreen.cs" />
-    <Compile Include="GameStates\InventoryScreen.cs" />
-    <Compile Include="GameStates\LoadGameScreen.cs" />
-    <Compile Include="GameStates\LookTool.cs" />
-    <Compile Include="GameStates\MainMenuScreen.cs" />
-    <Compile Include="GameStates\MyPlayingState.cs" />
-    <Compile Include="GameStates\SelectEntityTool.cs" />
-    <Compile Include="GameStates\TargetingTool.cs" />
+    <Compile Include="Views\GameEndScreen.cs" />
+    <Compile Include="Views\InventoryScreen.cs" />
+    <Compile Include="Views\LoadGameScreen.cs" />
+    <Compile Include="Views\LookTool.cs" />
+    <Compile Include="Views\MainMenuScreen.cs" />
+    <Compile Include="Views\MyPlayingScreen.cs" />
+    <Compile Include="Views\SelectEntityTool.cs" />
+    <Compile Include="Views\TargetingTool.cs" />
     <Compile Include="GameWorld\Generators\DungeonGenerator.cs" />
     <Compile Include="GameWorld\Generators\GreenskinsGenerator.cs" />
     <Compile Include="GameWorld\Generators\StandardItemGenerator.cs" />
@@ -213,9 +212,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ConcurrentHashtable.License.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

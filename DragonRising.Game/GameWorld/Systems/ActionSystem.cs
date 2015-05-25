@@ -8,30 +8,37 @@ using DraconicEngine.GameWorld.EntitySystem;
 using DragonRising.GameWorld.Nodes;
 using LanguageExt;
 using static LanguageExt.Prelude;
+using DragonRising.Services;
 
 namespace DragonRising.GameWorld.Systems
 {
    public class ActionSystem : ListIteratingSystemSync<BehaviorNode>
    {
-      Dictionary<Entity, RogueAction> actionsSTore = new Dictionary<Entity, RogueAction>();
-      
+      IRulesManager rulesManager;
+      Dictionary<Entity, RogueAction> actionsStore = new Dictionary<Entity, RogueAction>();
+
+      public ActionSystem(IRulesManager rulesManager)
+      {
+         this.rulesManager = rulesManager;
+      }
+        
       public override void Update(double time)
       {
          base.Update(time);
 
-         var actionsToDo = actionsSTore.Select(kvp => tuple(kvp.Key, kvp.Value)).ToList();
-         actionsSTore.Clear();
+         var actionsToDo = actionsStore.Select(kvp => kvp.Value).ToList();
+         actionsStore.Clear();
 
-         foreach (var tuple in actionsToDo)
+         foreach (var action in actionsToDo)
          {
-            tuple.With((entity, action) => action.Do(entity));
+            rulesManager.PerformAction(action);
          }
       }
 
       protected override void NodeUpdateFunction(BehaviorNode node, double time)
       {
          var readyAction = node.Behavior.CurrentBehavior.PlanTurn(node.Entity);
-         this.actionsSTore.Add(node.Entity, readyAction);
+         this.actionsStore.Add(node.Entity, readyAction);
       }
    }
 }

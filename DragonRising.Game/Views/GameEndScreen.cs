@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DraconicEngine.Input;
 using DraconicEngine.Widgets;
 using DraconicEngine.Terminals;
@@ -13,7 +13,7 @@ using static LanguageExt.Prelude;
 
 namespace DragonRising.GameStates
 {
-   class GameEndScreen : IGameState
+   class GameEndScreen : IGameView
    {
       ITerminal messageTerminal;
 
@@ -53,9 +53,9 @@ namespace DragonRising.GameStates
          return Task.FromResult(0);
       }
 
-      public GameStateType Type { get { return GameStateType.Dialog; } }
+      public GameViewType Type { get { return GameViewType.Dialog; } }
 
-      public Option<IGameState> Finish()
+      public Option<IGameView> Finish()
       {
          return None;
       }

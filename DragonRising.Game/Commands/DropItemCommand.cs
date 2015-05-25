@@ -29,7 +29,7 @@ namespace DragonRising.Commands
       {
          var item = (ItemFulfillment)fulfillment;
 
-         return new DropItemAction(item.Item);
+         return new DropItemAction(executer, item.Item);
       }
    }
 }

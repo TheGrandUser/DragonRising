@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DraconicEngine.Input;
 using DraconicEngine.Terminals;
 using DraconicEngine.Widgets;
@@ -15,7 +15,7 @@ using DragonRising.GameWorld;
 
 namespace DragonRising.GameStates
 {
-   class LocationTargetingTool : IGameState<Loc?>
+   class LocationTargetingTool : IGameView<Loc?>
    {
       enum TargetAction
       {
@@ -34,7 +34,7 @@ namespace DragonRising.GameStates
       Loc startLocation;
       Loc location;
 
-      public GameStateType Type { get { return GameStateType.Tool; } }
+      public GameViewType Type { get { return GameViewType.Tool; } }
 
       ITerminal sceneTerminal;
       private bool isLimitedToFoV;
@@ -94,7 +94,7 @@ namespace DragonRising.GameStates
          return Task.FromResult(0);
       }
 
-      public Option<IGameState> Finish()
+      public Option<IGameView> Finish()
       {
          return None;
       }

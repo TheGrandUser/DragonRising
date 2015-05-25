@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DraconicEngine;
 using DraconicEngine.GameWorld.Actions;
 using DraconicEngine.Terminals.Input;

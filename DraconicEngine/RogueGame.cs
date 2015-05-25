@@ -1,4 +1,4 @@
-﻿using DraconicEngine.GameStates;
+﻿using DraconicEngine.GameViews;
 using DraconicEngine.Terminals;
 using System;
 using System.Collections.Generic;
@@ -31,9 +31,9 @@ namespace DraconicEngine
          protected set { rootTerminal = value; }
       }
       
-      Stack<IGameState> gameStates = new Stack<IGameState>();
+      Stack<IGameView> gameStates = new Stack<IGameView>();
 
-      public async Task RunGameState(Some<IGameState> gameState)
+      public async Task RunGameState(Some<IGameView> gameState)
       {
          gameStates.Push(gameState.Value);
          gameStateAdded.OnNext(gameState.Value);
@@ -52,13 +52,13 @@ namespace DraconicEngine
          await drawTask;
       }
 
-      private bool ShowsPrior(GameStateType type)
+      private bool ShowsPrior(GameViewType type)
       {
-         return type == GameStateType.Dialog || type == GameStateType.Effect || type == GameStateType.Tool;
+         return type == GameViewType.Dialog || type == GameViewType.Effect || type == GameViewType.Tool;
       }
 
-      Subject<IGameState> gameStateAdded = new Subject<IGameState>();
-      Subject<IGameState> gameStateRemoved = new Subject<IGameState>();
+      Subject<IGameView> gameStateAdded = new Subject<IGameView>();
+      Subject<IGameView> gameStateRemoved = new Subject<IGameView>();
 
       Subject<Unit> drawStarted = new Subject<Unit>();
       Subject<Unit> drawFinished = new Subject<Unit>();
@@ -75,7 +75,7 @@ namespace DraconicEngine
 
             watch.Restart();
 
-            var screen = gameStates.FirstOrDefault(state => state.Type == GameStateType.Screen);
+            var screen = gameStates.FirstOrDefault(state => state.Type == GameViewType.Screen);
             if (screen != null)
             {
                await screen.Draw();
@@ -97,7 +97,7 @@ namespace DraconicEngine
          }
       }
 
-      async Task TurnLoop(Some<IGameState> gameState)
+      async Task TurnLoop(Some<IGameView> gameState)
       {
          while (true)
          {
@@ -123,7 +123,7 @@ namespace DraconicEngine
 
       static readonly TimeSpan frameTime = TimeSpan.FromSeconds(1.0 / 15.0);
 
-      public IGameState CurrentGameState { get; set; }
+      public IGameView CurrentGameState { get; set; }
 
       Random randomer = new Random();
       public Random GameRandom { get { return randomer; } }

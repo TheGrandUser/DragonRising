@@ -58,7 +58,7 @@ namespace DragonRising.Commands
 
          if (targetEntity != null)
          {
-            return new AttackEntityAction(targetEntity, None);
+            return new AttackEntityAction(executer, targetEntity, None);
          }
          else
          {

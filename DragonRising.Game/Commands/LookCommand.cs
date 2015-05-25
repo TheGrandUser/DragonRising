@@ -24,7 +24,7 @@ namespace DragonRising.Commands
 
       public override async Task Do()
       {
-         MyPlayingState playingState = MyPlayingState.Current;
+         MyPlayingScreen playingState = MyPlayingScreen.Current;
 
          var lookTool = new LookTool(playingState.World.Scene.FocusEntity.GetLocation(), playingState.PlayerController);
          

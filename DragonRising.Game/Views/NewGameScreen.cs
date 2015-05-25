@@ -1,5 +1,5 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DragonRising.GameWorld.Alligences;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
@@ -21,9 +21,9 @@ using DragonRising.GameWorld;
 
 namespace DragonRising.GameStates
 {
-   class NewGameScreen : IGameState
+   class NewGameScreen : IGameView
    {
-      public GameStateType Type => GameStateType.Screen;
+      public GameViewType Type => GameViewType.Screen;
 
       string nameInProgress;
 
@@ -58,7 +58,7 @@ namespace DragonRising.GameStates
          return Task.FromResult(0);
       }
 
-      public Option<IGameState> Finish()
+      public Option<IGameView> Finish()
       {
 
          return None;

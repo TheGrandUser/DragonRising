@@ -1,5 +1,5 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ using DragonRising.GameWorld.Components;
 
 namespace DragonRising.GameStates
 {
-   class LoadGeneralDataScreen : IGameState
+   class LoadGeneralDataScreen : IGameView
    {
       private readonly ITerminal messageTerminal;
 
@@ -43,7 +43,7 @@ namespace DragonRising.GameStates
          this.messageTerminal = DragonRisingGame.Current.RootTerminal[x, y, width, height];
       }
 
-      public GameStateType Type { get { return GameStateType.Screen; } }
+      public GameViewType Type { get { return GameViewType.Screen; } }
 
       public Task Draw()
       {
@@ -54,7 +54,7 @@ namespace DragonRising.GameStates
          return Task.FromResult(0);
       }
 
-      public Option<IGameState> Finish()
+      public Option<IGameView> Finish()
       {
          return None;
       }

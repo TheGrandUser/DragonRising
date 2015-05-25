@@ -1,5 +1,5 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DraconicEngine.GameWorld.Actions.Requirements;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.Input;
@@ -17,9 +17,9 @@ using System.Threading;
 
 namespace DragonRising.GameStates
 {
-   class LookTool : IGameState
+   class LookTool : IGameView
    {
-      public GameStateType Type { get { return GameStateType.Tool; } }
+      public GameViewType Type { get { return GameViewType.Tool; } }
 
       PlayerController playerController;
 
@@ -54,7 +54,7 @@ namespace DragonRising.GameStates
                lastPoint + input.As2D().Delta;
             lastPoint = point;
 
-            Loc? localPoint = MyPlayingState.Current.ScenePanel.RootVecToLocalVec(point);
+            Loc? localPoint = MyPlayingScreen.Current.ScenePanel.RootVecToLocalVec(point);
 
             this.playerController.SetLookAt(localPoint);
 
@@ -76,7 +76,7 @@ namespace DragonRising.GameStates
          return Task.FromResult(0);
       }
 
-      public Option<IGameState> Finish()
+      public Option<IGameView> Finish()
       {
          this.playerController.SetLookAt(null);
          return None;

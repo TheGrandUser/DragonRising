@@ -11,7 +11,7 @@ using DragonRising.GameWorld.Components;
 using DraconicEngine.GameWorld.EntitySystem;
 using DragonRising.GameStates;
 using DraconicEngine.GameWorld;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using LanguageExt;
 using static LanguageExt.Prelude;
 
@@ -51,7 +51,7 @@ namespace DragonRising
 
                MessageService.Current.PostMessage("Your battle skills grow stronger! You reached level " + playerLevel.Level, RogueColors.Yellow);
 
-               MyPlayingState.Current.AddAsyncInterruption(
+               MyPlayingScreen.Current.AddAsyncInterruption(
                   ChooseLevelUpBenefit,
                   ChooseLevelUpBenefitStillApplies);
             }

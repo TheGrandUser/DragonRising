@@ -49,10 +49,10 @@ namespace DragonRising.Commands
          if (m.RequiresItem)
          {
             return optionalFulfillment.Match(
-               Some: itemFulfillment => new ManipulateEntityAction(other, ((ItemFulfillment)itemFulfillment).Item),
+               Some: itemFulfillment => new ManipulateEntityAction(executer, other, ((ItemFulfillment)itemFulfillment).Item),
                None: () => RogueAction.Abort);
          }
-         return new ManipulateEntityAction(other, None);
+         return new ManipulateEntityAction(executer, other, None);
       }
    }
 

@@ -1,4 +1,4 @@
-﻿using DraconicEngine.GameStates;
+﻿using DraconicEngine.GameViews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using DraconicEngine;
 
 namespace DragonRising.GameStates
 {
-   public class LevelUpScreen : GameState
+   public class LevelUpScreen : GameView
    {
       MenuWidget<Benefit> menu;
 
@@ -28,7 +28,7 @@ namespace DragonRising.GameStates
             new MenuItem<Benefit>($"Agility (+1 defense from {combatant.Defense})", Benefit.Agility));
       }
       
-      public override GameStateType Type => GameStateType.Screen;
+      public override GameViewType Type => GameViewType.Screen;
 
       public Benefit Benefit { get; private set; }
 

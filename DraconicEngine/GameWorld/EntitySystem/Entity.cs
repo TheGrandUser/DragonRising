@@ -25,46 +25,7 @@ namespace DraconicEngine.GameWorld.EntitySystem
       Subject<Component> componentAdded = new Subject<Component>();
       [NonSerialized]
       Subject<Component> componentRemoved = new Subject<Component>();
-
-      #region Action Resolvers
-
-      public T GetActionResolver<T>()
-         where T : class, IActionResolver
-      {
-         return GetDefaultResolver<T>();
-      }
-
-      static Dictionary<Type, IActionResolver> defaultResolvers = new Dictionary<Type, IActionResolver>();
-
-      static T GetDefaultResolver<T>()
-         where T : class, IActionResolver
-      {
-         if (defaultResolvers.ContainsKey(typeof(T)))
-         {
-            return defaultResolvers[typeof(T)] as T;
-         }
-         var assembly = typeof(T).Assembly;
-         var defaultResolverTypes = assembly.GetTypes().Where(t => typeof(T).IsAssignableFrom(t) &&
-         t.CustomAttributes.Any(cad => cad.AttributeType == typeof(DefaultResolverAttribute))).ToList();
-
-         if (defaultResolverTypes.Count > 1)
-         {
-            throw new Exception("Too many defaults");
-         }
-         else if (defaultResolverTypes.Count < 1)
-         {
-            throw new Exception("No default");
-         }
-
-         T resolver = assembly.CreateInstance(defaultResolverTypes.Single().FullName) as T;
-
-         defaultResolvers[typeof(T)] = resolver;
-
-         return resolver;
-      }
-
-      #endregion
-
+      
       public Entity()
       {
       }

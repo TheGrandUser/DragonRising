@@ -10,11 +10,19 @@ using DraconicEngine.GameWorld.EntitySystem;
 
 namespace DragonRising.GameWorld.Actions
 {
-   class UsePortalAction : RogueAction
+   public class UsePortalAction : RogueAction
    {
-      public override void Do(Entity executer)
+      public Entity User { get; }
+      public UsePortalAction(Entity user)
       {
-         throw new NotImplementedException();
+         User = user;
+      }
+   }
+
+   public class BaseUsePortalRule : IActionRule<UsePortalAction>
+   {
+      public void Apply(UsePortalAction action)
+      {
       }
    }
 }

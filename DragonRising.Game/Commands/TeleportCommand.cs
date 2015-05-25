@@ -36,7 +36,7 @@ namespace DragonRising.Commands
          {
             return RogueAction.Abort;
          }
-         return new MoveToAction(destination);
+         return new MoveToAction(executer, destination);
       }
    }
 }

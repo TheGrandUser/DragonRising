@@ -43,7 +43,7 @@ namespace DragonRising.GameWorld.Behaviors
             {
                if (owner.IsAdjacent(player))
                {
-                  action = Attack(player);
+                  action = new AttackEntityAction(owner, player, None);
                }
                action = MoveTowards(owner, player.GetComponent<LocationComponent>().Location);
             }
@@ -51,12 +51,7 @@ namespace DragonRising.GameWorld.Behaviors
 
          return action ?? RogueAction.Idle;
       }
-
-      RogueAction Attack(Entity player)
-      {
-         return new AttackEntityAction(player, None);
-      }
-
+      
       RogueAction MoveTowards(Entity owner, Loc targetLocation)
       {
          var locComp = owner.GetComponent<LocationComponent>();
@@ -73,7 +68,7 @@ namespace DragonRising.GameWorld.Behaviors
 
             if (blockage == Blockage.None)
             {
-               return new MoveInDirectionAction(moveVec.ToDirection());
+               return new MoveInDirectionAction(owner, moveVec.ToDirection());
             }
             else if (blockage == Blockage.Entity)
             {
@@ -88,7 +83,7 @@ namespace DragonRising.GameWorld.Behaviors
                   {
                      dir = moveVec.ToDirection();
 
-                     return new AttackEntityAction(blocker, None);
+                     return new AttackEntityAction(owner, blocker, None);
                   }
                }
             }

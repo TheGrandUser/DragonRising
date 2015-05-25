@@ -16,28 +16,28 @@ namespace DragonRising.GameWorld.Actions
 {
    public class PickUpItemAction : RogueAction
    {
-      Entity itemToPick;
-
-      Action<Entity> onSuccess = null;
-      Action<Entity> onFailure = null;
-
-      public PickUpItemAction(Entity itemToPick, Action<Entity> onSuccess = null, Action<Entity> onFailure = null)
+      public Entity Picker { get; }
+      public Entity ItemToPick { get; }
+      
+      public PickUpItemAction (Entity picker, Entity itemToPick)
       {
-         this.itemToPick = itemToPick;
-         this.onFailure = onFailure;
-         this.onSuccess = onSuccess;
+         Picker = picker;
+         ItemToPick = itemToPick;
       }
+   }
 
-      public override void Do(Entity executer)
+   public class BasePickupItemRule : IActionRule<PickUpItemAction>
+   {
+      public void Apply(PickUpItemAction action)
       {
-         var inventory = executer.GetComponent<InventoryComponent>();
+         var inventory = action.Picker.GetComponent<InventoryComponent>();
          var scene = World.Current.Scene;
 
-         var itemComponent = itemToPick.GetComponent<ItemComponent>();
+         var itemComponent = action.ItemToPick.GetComponent<ItemComponent>();
 
-         if (inventory.TryPickUp(itemToPick))
+         if (inventory.TryPickUp(action.ItemToPick))
          {
-            scene.EntityStore.RemoveEntity(itemToPick);
+            scene.EntityStore.RemoveEntity(action.ItemToPick);
          }
       }
    }

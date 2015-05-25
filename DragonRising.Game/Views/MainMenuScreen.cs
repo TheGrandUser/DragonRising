@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DragonRising.Generators;
 using DraconicEngine.Input;
 using DraconicEngine.Terminals;
@@ -19,10 +19,8 @@ using DragonRising.Widgets;
 
 namespace DragonRising.GameStates
 {
-   class MainMenuScreen : IGameState
+   class MainMenuScreen : IGameView
    {
-      int currentMenuItem = 0;
-
       delegate Task<TickResult> MenuCommand();
 
       MenuWidget<MenuCommand> menu;
@@ -68,7 +66,7 @@ namespace DragonRising.GameStates
          return Task.FromResult(0);
       }
 
-      public GameStateType Type { get { return GameStateType.Screen; } }
+      public GameViewType Type { get { return GameViewType.Screen; } }
 
       async Task<TickResult> ContinueGame()
       {
@@ -89,7 +87,7 @@ namespace DragonRising.GameStates
          if (newGameScreen.World != null)
          {
             var world = newGameScreen.World;
-            var playingState = new MyPlayingState(world, newGameScreen.GameName);
+            var playingState = new MyPlayingScreen(world, newGameScreen.GameName);
 
             await RogueGame.Current.RunGameState(playingState);
          }
@@ -119,14 +117,14 @@ namespace DragonRising.GameStates
          var world = await SaveManager.Current.LoadGame(gameName);
          world.Scene.ClearFoV();
 
-         var playingState = new MyPlayingState(world, gameName);
+         var playingState = new MyPlayingScreen(world, gameName);
 
          await RogueGame.Current.RunGameState(playingState);
       }
 
       public void Start() { }
 
-      public Option<IGameState> Finish() { return None; }
+      public Option<IGameView> Finish() { return None; }
 
       enum MenuCommands
       {

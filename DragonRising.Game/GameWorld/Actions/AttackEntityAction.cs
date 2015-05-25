@@ -2,6 +2,7 @@
 using DraconicEngine.GameWorld;
 using DraconicEngine.GameWorld.Actions;
 using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.GameWorld.Effects;
 using DraconicEngine.GameWorld.EntitySystem;
 using DraconicEngine.GameWorld.EntitySystem.Components;
 using DragonRising.GameWorld.Components;
@@ -18,63 +19,35 @@ namespace DragonRising.GameWorld.Actions
 {
    public class AttackEntityAction : RogueAction
    {
+      public Entity Attacker { get; set; }
       public Entity Target { get; set; }
       public Option<Entity> Weapon { get; set; }
 
-      public AttackEntityAction(Entity target, Option<Entity> weapon)
+      public AttackEntityAction(Entity attacker, Entity target, Option<Entity> weapon)
       {
          Contract.Requires(target != null);
          Contract.Requires(weapon.ForAll(w => w.HasComponent<ItemComponent>() && w.GetComponent<ItemComponent>().WeaponUse != null));
-         this.Target = target;
-         this.Weapon = weapon;
-
-         
-      }
-
-      public override void Do(Entity executer)
-      {
-         Debug.Assert(Weapon.Match(
-            Some: w => executer.DistanceTo(Target).KingLength <= w.GetComponent<ItemComponent>().WeaponUse.Range,
-            None: () => executer.IsAdjacent(Target)), "Target is not within attacker's range");
-
-         var attack = new Attack()
-         {
-            Attacker = executer,
-            Target = Target,
-            Weapon = Weapon,
-         };
-
-         var resolver = Target.GetActionResolver<IAttackResolver>();
-
-         resolver.Resolve(attack);
+         Attacker = attacker;
+         Target = target;
+         Weapon = weapon;
       }
    }
-
-   public class Attack
-   {
-      public Entity Target { get; set; }
-      public Entity Attacker { get; set; }
-      public Option<Entity> Weapon { get; set; }
-   }
-
-   public class AttackResult
+   
+   public class AttackResult: IEffect
    {
       public bool Negated { get; set; }
       public int InitialDamage { get; set; }
       public int DamageDealt { get; set; }
+
+      public void Do()
+      {
+
+      }
    }
 
-   public interface IAttackResolver : IActionResolver
+   public class BaseAttackRule : IActionRule<AttackEntityAction, AttackResult>
    {
-      AttackResult Resolve(Attack attack);
-   }
-
-   [DefaultResolverAttribute(typeof(Attack))]
-   public class DefaultAttackResolver : IAttackResolver
-   {
-      public Type ActionType => typeof(Attack);
-      public Type ResultType => typeof(AttackResult);
-      public AttackResult Resolve(Attack attack)
+      public AttackResult Apply(AttackEntityAction attack)
       {
          var me = attack.Attacker.GetComponent<CombatantComponent>();
          var them = attack.Target.GetComponent<CombatantComponent>();

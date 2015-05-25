@@ -8,15 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DraconicEngine.GameStates
+namespace DraconicEngine.GameViews
 {
-   public class ConfirmDialog : IGameState
+   public class ConfirmDialog : IGameView
    {
       string message;
       List<CharacterString> lines = new List<CharacterString>();
       ITerminal dialogPanel;
 
-      public GameStateType Type { get { return GameStateType.Dialog; } }
+      public GameViewType Type { get { return GameViewType.Dialog; } }
 
       public ConfirmDialog(string message, ITerminal hostPanel)
       {
@@ -81,7 +81,7 @@ namespace DraconicEngine.GameStates
          return Task.FromResult(0);
       }
 
-      public Option<IGameState> Finish()
+      public Option<IGameView> Finish()
       {
          return None;
       }

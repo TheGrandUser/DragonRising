@@ -11,15 +11,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DraconicEngine.GameStates
+namespace DraconicEngine.GameViews
 {
-   public abstract class PlayingState : IGameState
+   public abstract class PlayingScreen : IGameView
    {
       protected abstract EntityEngine Engine { get; }
 
       public List<Widget> Widgets { get; } = new List<Widget>();
 
-      public PlayingState()
+      public PlayingScreen()
       {
       }
 
@@ -102,28 +102,28 @@ namespace DraconicEngine.GameStates
       {
       }
 
-      protected abstract Some<IGameState> CreateEndScreen();
+      protected abstract Some<IGameView> CreateEndScreen();
 
-      public GameStateType Type { get { return GameStateType.Screen; } }
+      public GameViewType Type { get { return GameViewType.Screen; } }
 
       public virtual void Start()
       {
          Current = this;
       }
 
-      public Option<IGameState> Finish()
+      public Option<IGameView> Finish()
       {
          Current = null;
 
          return OnFinished();
       }
 
-      protected virtual Option<IGameState> OnFinished()
+      protected virtual Option<IGameView> OnFinished()
       {
          return None;
       }
 
-      public static PlayingState Current { get; private set; }
+      public static PlayingScreen Current { get; private set; }
    }
 
    public interface IAsyncInterruption
@@ -156,7 +156,7 @@ namespace DraconicEngine.GameStates
 
    public static class PlayingStateExtensions
    {
-      public static void AddAsyncInterruption(this PlayingState playingState, Func<Task> run, Func<bool> stillApplies = null)
+      public static void AddAsyncInterruption(this PlayingScreen playingState, Func<Task> run, Func<bool> stillApplies = null)
       {
          playingState.AddAsyncInterruption(new DelegateAsyncInterruption(run, stillApplies));
       }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
 using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameStates;
+using DraconicEngine.GameViews;
 using DraconicEngine.Input;
 using DraconicEngine.Terminals;
 using DraconicEngine.GameWorld.EntitySystem.Components;
@@ -15,7 +15,7 @@ using DragonRising.GameWorld.Components;
 
 namespace DragonRising.GameStates
 {
-   class InventoryScreen : IGameState<int?>
+   class InventoryScreen : IGameView<int?>
    {
       InventoryComponent inventory;
 
@@ -26,7 +26,7 @@ namespace DragonRising.GameStates
       private  int? result;
       public int? Result { get { return this.result; } }
 
-      public GameStateType Type { get { return GameStateType.Screen; } }
+      public GameViewType Type { get { return GameViewType.Screen; } }
 
       public InventoryScreen(InventoryComponent inventory, Option<string> message)
       {
@@ -99,7 +99,7 @@ namespace DragonRising.GameStates
          return Task.FromResult(0);
       }
 
-      public Option<IGameState> Finish()
+      public Option<IGameView> Finish()
       {
          return None;
       }
