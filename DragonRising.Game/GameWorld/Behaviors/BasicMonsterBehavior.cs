@@ -1,21 +1,16 @@
-﻿using DraconicEngine.GameWorld.EntitySystem.Components;
-using DragonRising.GameWorld.Items;
-using DraconicEngine.GameWorld.Actions;
+﻿using DraconicEngine;
+using DraconicEngine.EntitySystem;
+using DraconicEngine.RulesSystem;
+using DragonRising.GameWorld.Actions;
+using DragonRising.GameWorld.Alligences;
+using DragonRising.GameWorld.Components;
+using LanguageExt;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.Actions.Requirements;
-using DragonRising.GameWorld.Alligences;
-using LanguageExt;
 using static LanguageExt.Prelude;
-using DragonRising.GameWorld.Actions;
-using DragonRising.GameWorld.Components;
-using DraconicEngine;
-using DraconicEngine.GameWorld;
-using DraconicEngine.GameWorld.Behaviors;
 
 namespace DragonRising.GameWorld.Behaviors
 {
@@ -33,10 +28,10 @@ namespace DragonRising.GameWorld.Behaviors
       {
       }
 
-      public override RogueAction PlanTurn(Entity owner)
+      public override ActionTaken PlanTurn(Entity owner)
       {
-         RogueAction action = null;
-         if (World.Current.Scene.IsVisible(owner.GetComponent<LocationComponent>().Location))
+         ActionTaken action = null;
+         if (World.Current.Scene.IsVisible(owner.Location))
          {
             var player = World.Current.Scene.FocusEntity;
             if (player != null)
@@ -45,17 +40,16 @@ namespace DragonRising.GameWorld.Behaviors
                {
                   action = new AttackEntityAction(owner, player, None);
                }
-               action = MoveTowards(owner, player.GetComponent<LocationComponent>().Location);
+               action = MoveTowards(owner, player.Location);
             }
          }
 
-         return action ?? RogueAction.Idle;
+         return action ?? ActionTaken.Idle;
       }
       
-      RogueAction MoveTowards(Entity owner, Loc targetLocation)
+      ActionTaken MoveTowards(Entity owner, Loc targetLocation)
       {
-         var locComp = owner.GetComponent<LocationComponent>();
-         var directionVec = targetLocation - locComp.Location;
+         var directionVec = targetLocation - owner.Location;
 
          Vector[] moveAttempts = directionVec.PathFindAttempts().ToArray();
 
@@ -63,7 +57,7 @@ namespace DragonRising.GameWorld.Behaviors
 
          foreach (var moveVec in moveAttempts)
          {
-            var newLoc = locComp.Location + moveVec;
+            var newLoc = owner.Location + moveVec;
             var blockage = World.Current.Scene.IsBlocked(newLoc);
 
             if (blockage == Blockage.None)
@@ -88,7 +82,7 @@ namespace DragonRising.GameWorld.Behaviors
                }
             }
          }
-         return RogueAction.Idle;
+         return ActionTaken.Idle;
       }
 
       protected override Behavior CloneCore()

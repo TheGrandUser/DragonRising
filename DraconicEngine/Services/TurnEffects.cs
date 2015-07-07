@@ -1,4 +1,4 @@
-﻿using DraconicEngine.GameWorld.Effects;
+﻿using DraconicEngine.RulesSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.Services
 {
-   public interface ITurnEffects
+   public interface ITurnEvents
    {
-      void Add(IEffect effect);
+      void Add(Fact effect);
 
-      void DoAllEffects();
+      void DoAllEvents();
    }
 
-   public class TurnEffects
+   public class TurnEvents
    {
-      static ITurnEffects currentService;
+      static ITurnEvents currentService;
 
-      public static ITurnEffects Current { get { return currentService; } }
+      public static ITurnEvents Current { get { return currentService; } }
 
-      public static void SetTurnEffects(ITurnEffects turnEffects)
+      public static void SetTurnEffects(ITurnEvents turnEffects)
       {
          currentService = turnEffects;
       }

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
-using DragonRising.GameWorld.Items;
+using DraconicEngine.EntitySystem;
 
 namespace DragonRising.Generators
 {

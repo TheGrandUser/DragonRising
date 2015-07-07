@@ -1,8 +1,7 @@
 ﻿using DraconicEngine;
 using DraconicEngine.GameViews;
 using DragonRising.GameWorld.Alligences;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.EntitySystem;
 using DraconicEngine.Input;
 using DraconicEngine.Terminals;
 using DraconicEngine.Widgets;
@@ -19,7 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DragonRising.GameWorld;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class NewGameScreen : IGameView
    {
@@ -109,13 +108,14 @@ namespace DragonRising.GameStates
       void CreateNew(string name)
       {
          var player = new Entity(name,
-            new DrawnComponent() { SeenCharacter = new Character(Glyph.At, RogueColors.White) },
-            new LocationComponent() { Blocks = true },
-            new CombatantComponent(hp: 30, xp: 0, defense: 2, power: 5),
-            new CreatureComponent(6),
-            new InventoryComponent() { Capacity = 26 },
-            new BehaviorComponent(),
-            new LevelComponent() { Level = 1 });
+            new ComponentSet(
+               new DrawnComponent() { SeenCharacter = new Character(Glyph.At, RogueColors.White) },
+               new CombatantComponent(hp: 30, defense: 2, power: 5),
+               new CreatureComponent(6),
+               new InventoryComponent() { Capacity = 26 },
+               new BehaviorComponent()),
+            new StatSet(new CharacterStat<int>("Level", 1)))
+         { Blocks = true };
 
          var inventory = player.GetComponent<InventoryComponent>();
 

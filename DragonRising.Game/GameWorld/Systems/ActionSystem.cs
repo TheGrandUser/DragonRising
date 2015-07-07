@@ -1,21 +1,22 @@
-﻿using DraconicEngine.GameWorld.Actions;
+﻿using DraconicEngine.RulesSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using DragonRising.GameWorld.Nodes;
 using LanguageExt;
 using static LanguageExt.Prelude;
 using DragonRising.Services;
+using DragonRising.Rules;
 
 namespace DragonRising.GameWorld.Systems
 {
    public class ActionSystem : ListIteratingSystemSync<BehaviorNode>
    {
       IRulesManager rulesManager;
-      Dictionary<Entity, RogueAction> actionsStore = new Dictionary<Entity, RogueAction>();
+      Dictionary<Entity, ActionTaken> actionsStore = new Dictionary<Entity, ActionTaken>();
 
       public ActionSystem(IRulesManager rulesManager)
       {
@@ -31,7 +32,7 @@ namespace DragonRising.GameWorld.Systems
 
          foreach (var action in actionsToDo)
          {
-            rulesManager.PerformAction(action);
+            rulesManager.ProcessFact(action);
          }
       }
 

@@ -1,12 +1,10 @@
-﻿using DragonRising.GameWorld.Items;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld;
+using DraconicEngine.EntitySystem;
 using DraconicEngine;
 
 namespace DragonRising.GameWorld.Components
@@ -51,6 +49,10 @@ namespace DragonRising.GameWorld.Components
       protected override Component CloneCore(bool fresh)
       {
          return new InventoryComponent(this,fresh);
+      }
+
+      protected override void OnOwnerChanged(Entity oldOwner, Entity newOwner)
+      {
       }
    }
 

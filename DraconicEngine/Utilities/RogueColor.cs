@@ -74,10 +74,7 @@ namespace DraconicEngine
             this.b == other.b;
       }
 
-      public override string ToString()
-      {
-         return r.ToString("x2") + g.ToString("x2") + b.ToString("x2");
-      }
+      public override string ToString() => r.ToString("x2") + g.ToString("x2") + b.ToString("x2");
 
       public int ToInt32() => (r << 16) | (g << 8) | b;
 

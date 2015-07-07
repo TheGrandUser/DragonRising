@@ -1,5 +1,5 @@
 ﻿using DraconicEngine.GameViews;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using DragonRising.GameWorld.Alligences;
 using DragonRising.Generators;
 using System;

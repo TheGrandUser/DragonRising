@@ -19,7 +19,15 @@ namespace DraconicEngine.Input
 
    public static class RogueKeyExtensions
    {
-      public static bool IsStandardMovementKey(this RogueKey key)
+      public static bool IsFourWayMovementKey(this RogueKey key)
+      {
+         return key == RogueKey.Up || key == RogueKey.NumPad8 ||
+            key == RogueKey.Down || key == RogueKey.NumPad2 ||
+            key == RogueKey.Left || key == RogueKey.NumPad4 ||
+            key == RogueKey.Right || key == RogueKey.NumPad6;
+      }
+
+      public static bool IsEightWayMovementKey(this RogueKey key)
       {
          return key == RogueKey.Up || key == RogueKey.NumPad8 ||
             key == RogueKey.Down || key == RogueKey.NumPad2 ||

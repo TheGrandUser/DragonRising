@@ -16,9 +16,7 @@ namespace DragonRising.Libraries
       public IPowerLibrary Powers { get; }
 
       public ITileLibrary Tiles { get; }
-
-      public IItemUsageLibrary ItemUsages { get; }
-
+      
       public IBehaviorLibrary Behaviors { get; }
 
       public SimpleLibrary()
@@ -30,7 +28,6 @@ namespace DragonRising.Libraries
          this.Items = new SimpleItemLibrary();
          this.Powers = new SimplePowerLibrary();
          this.Tiles = new SimpleTileLibrary();
-         this.ItemUsages = new SimpleItemUsagesLibrary();
 
          entities.Initialize(this.Behaviors);
       }

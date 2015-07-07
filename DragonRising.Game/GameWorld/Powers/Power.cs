@@ -1,36 +1,41 @@
-﻿using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.GameWorld.EntitySystem;
-using DragonRising.GameWorld.Powers.Nodes;
+﻿using DragonRising.Commands.Requirements;
+using DraconicEngine.EntitySystem;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DraconicEngine.RulesSystem;
+using DraconicEngine;
+using LanguageExt;
 
 namespace DragonRising.GameWorld.Powers
 {
-   public interface IPower
+   public abstract class Power
    {
-      ActionRequirement Requirements { get; }
-      void Do(Entity initiator, RequirementFulfillment fulfilment);
-   }
-
-   public class Power : IPower
-   {
-      private List<PowerNode> nodes = new List<PowerNode>();
-      private List<NodeConnection> connections = new List<NodeConnection>();
-
-
-      public ActionRequirement Requirements { get; set; }
-
-      public List<PowerNode> Nodes { get { return this.nodes; } }
-      public List<NodeConnection> Connections { get { return this.connections; } }
-
-      public virtual void Do(Entity initiator, RequirementFulfillment fulfilment)
+      public Power(string name)
       {
-
+         Name = name;
       }
+
+      public string Name { get; set; }
+
+      public virtual IEnumerable<ILocationBasedTargeter> Targeters { get; } = Enumerable.Empty<ILocationBasedTargeter>();
+      public virtual IEnumerable<ILocationBasedQuery> Queries { get; } = Enumerable.Empty<ILocationBasedQuery>();
+      public virtual IEnumerable<IEffect> Effects { get; } = Enumerable.Empty<IEffect>();
+      
+      //public PlanRequirement Requirements { get; set; }
+
+      //public List<PowerNode> Nodes { get { return this.nodes; } }
+      //public List<NodeConnection> Connections { get { return this.connections; } }
+
+      //public virtual ImmutableList<Fact> Do(Entity initiator, RequirementFulfillment fulfilment)
+      //{
+      //   return ImmutableList<Fact>.Empty;
+      //}
+
+
 
       // A Power is an acyclical directed Graph
       // A Power has a one or more Root Nodes, zero or more Nodes, and one or more Effects
@@ -90,6 +95,5 @@ namespace DragonRising.GameWorld.Powers
       // Heal Self: One TS, Root Step (Self), Effect (Heal X amount)
       // Fireball: One TS, Root Step (Get Location), loc => Step (Of Entities, all within Radius of loc), entity => Effect (Damage entity X amount)
       // Chain Lightning: Five Ts's (for five targets), for each Root Step (Get Creature)
-
    }
 }

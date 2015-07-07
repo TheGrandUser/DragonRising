@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using LanguageExt;
 using static LanguageExt.Prelude;
 using DraconicEngine.Utilities;
@@ -90,12 +90,15 @@ namespace DragonRising.Generators
          }
 
          var stairs = new Entity("Stairs",
-            new DrawnComponent()
-            {
-               SeenCharacter = new Character(Glyph.LessThan, RogueColors.White),
-               ExploredCharacter = new Character(Glyph.LessThan, RogueColors.LightGray)
-            },
-            new LocationComponent() { Location = rooms.Last().Center });
+            new ComponentSet(
+               new DrawnComponent()
+               {
+                  SeenCharacter = new Character(Glyph.LessThan, RogueColors.White),
+                  ExploredCharacter = new Character(Glyph.LessThan, RogueColors.LightGray)
+               }))
+         {
+            Location = rooms.Last().Center
+         };
 
          scene.EntityStore.AddEntity(stairs);
          scene.Stairs = stairs;

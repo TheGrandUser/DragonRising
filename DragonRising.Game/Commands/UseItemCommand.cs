@@ -3,33 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem.Components;
 using LanguageExt;
-using DragonRising.GameWorld.Items;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.GameWorld.Actions;
+using DraconicEngine.EntitySystem;
+using DragonRising.Commands.Requirements;
+using DraconicEngine.RulesSystem;
 using DraconicEngine.Terminals.Input;
 using DragonRising.GameWorld.Actions;
-using DragonRising.GameWorld.Actions.Requirements;
+using DragonRising.GameWorld.Components;
 
 namespace DragonRising.Commands
 {
    public class UseItemCommand : ActionCommand
    {
-      ActionRequirement requirement = new ItemRequirement("Select an item to use", needsItemsFulfillment: true);
-      public override ActionRequirement GetRequirement(Entity user) => requirement;
+      PlanRequirement requirement = new ItemRequirement("Select an item to use", needsItemsFulfillment: true);
+      public override PlanRequirement GetRequirement(Entity user) => requirement;
       public override string Name => "Use Item";
       public UseItemCommand()
       {
       }
 
-      public override Either<RogueAction, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment)
+      public override Either<ActionTaken, AlternateCommmand> PrepareAction(Entity user, RequirementFulfillment fulfillment)
       {
          var itemFulfillment = (ItemFulfillment)fulfillment;
          var item = itemFulfillment.Item;
 
-         return new UseItemAction(executer, item, itemFulfillment.ItemsFulfillments);
+         return itemFulfillment.FinalizedPlan.Match(
+            Some: plan => new UseItemAction(user, item, plan),
+            None: () => { throw new ArgumentException("Fulfillment does not have a finalized plan"); });
       }
    }
 }

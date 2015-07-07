@@ -1,15 +1,16 @@
-﻿using DragonRising.GameWorld.Items;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageExt;
 using static LanguageExt.Prelude;
-using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld;
+using DragonRising.Commands.Requirements;
+using DraconicEngine.EntitySystem;
 using DraconicEngine;
+using DraconicEngine.RulesSystem;
+using DragonRising.GameWorld.Powers;
+using System.Collections.Immutable;
 
 namespace DragonRising.GameWorld.Components
 {
@@ -33,12 +34,28 @@ namespace DragonRising.GameWorld.Components
       {
          return new ItemComponent(this, fresh);
       }
+
+      protected override void OnOwnerChanged(Entity oldOwner, Entity newOwner)
+      {
+      }
    }
 
    public class Usable
    {
+      public Usable(Power power)
+      {
+         this.Power = power;
+      }
 
-      public IItemUsage Usage { get; set; }
+      public Usable(Usable original, bool fresh)
+      {
+         this.Power = original.Power;
+         this.MaxCharges = original.MaxCharges;
+         this.IsCharged = original.IsCharged;
+         this.Charges = fresh ? MaxCharges : original.Charges;
+      }
+
+      public Power Power { get; }
       public int MaxCharges { get; set; }
 
       public int Charges { get; set; }
@@ -46,37 +63,7 @@ namespace DragonRising.GameWorld.Components
 
       public Usable Clone(bool fresh)
       {
-         return new Usable()
-         {
-            Usage = Usage,
-            MaxCharges = MaxCharges,
-            IsCharged = IsCharged,
-            Charges = fresh ? MaxCharges : Charges
-         };
-      }
-
-      public ItemUseResult Use(Entity user, Some<RequirementFulfillment> itemsRequirements)
-      {
-         var usage = this.Usage;
-         if (usage != null)
-         {
-            if (usage.Use(user, itemsRequirements))
-            {
-               if (this.IsCharged)
-               {
-                  this.Charges--;
-
-                  if (this.Charges <= 0)
-                  {
-                     return ItemUseResult.Destroyed;
-                  }
-               }
-
-               return ItemUseResult.Used;
-            }
-         }
-
-         return ItemUseResult.NotUsed;
+         return new Usable(this, fresh);
       }
    }
 
@@ -103,6 +90,8 @@ namespace DragonRising.GameWorld.Components
       public int Range { get; set; }
 
       // takes ammo?
+
+      public string DamageType { get; set; } = "Normal";
 
       public WeaponUse Clone(bool fresh)
       {

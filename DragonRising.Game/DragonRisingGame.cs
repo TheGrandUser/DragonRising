@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DragonRising.GameStates;
+using DragonRising.Views;
 using DraconicEngine.Input;
 
 namespace DragonRising

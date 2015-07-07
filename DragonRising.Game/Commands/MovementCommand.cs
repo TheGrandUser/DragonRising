@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem.Components;
 using LanguageExt;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.GameWorld.Actions;
+using DraconicEngine.EntitySystem;
+using DragonRising.Commands.Requirements;
+using DraconicEngine.RulesSystem;
 using DraconicEngine.Terminals.Input;
 using DraconicEngine;
 using DragonRising.GameWorld.Actions;
@@ -18,23 +17,22 @@ namespace DragonRising.Commands
 {
    public class MovementCommand : ActionCommand
    {
-      Direction? direction;
+      Direction direction;
 
-      ActionRequirement requirement = new DirectionRequirement();
-      public override ActionRequirement GetRequirement(Entity user) => direction == null ? requirement : NoRequirement.None;
+      PlanRequirement requirement = new DirectionRequirement();
+      public override PlanRequirement GetRequirement(Entity user) => NoRequirement.None;
       public override string Name => "Move";
-      public MovementCommand(Direction? direction = null)
+      public MovementCommand(Direction direction)
       {
          this.direction = direction;
       }
 
-      public override Either<RogueAction, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment)
+      public override Either<ActionTaken, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment)
       {
          var dirFulfillment = fulfillment as DirectionFulfillment;
-         var direction = this.direction ?? dirFulfillment?.Direction ?? Direction.None;
          if(direction == Direction.None)
          {
-            return RogueAction.Abort;
+            return ActionTaken.Abort;
          }
          
          var scene = World.Current.Scene;
@@ -62,10 +60,10 @@ namespace DragonRising.Commands
             }
             else
             {
-               return RogueAction.Abort;
+               return ActionTaken.Abort;
             }
          }
-         return RogueAction.Abort;
+         return ActionTaken.Abort;
       }
    }
 }

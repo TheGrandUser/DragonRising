@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using DraconicEngine.GameViews;
 using DragonRising.Generators;
 using DraconicEngine.Input;
@@ -17,7 +17,7 @@ using System.Threading;
 using DragonRising.Storage;
 using DragonRising.Widgets;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class MainMenuScreen : IGameView
    {

@@ -1,8 +1,7 @@
 ﻿using DraconicEngine;
 using DraconicEngine.GameViews;
 using DragonRising.GameWorld.Alligences;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.EntitySystem;
 using DraconicEngine.Input;
 using DraconicEngine.Terminals;
 using DraconicEngine.Widgets;
@@ -21,14 +20,28 @@ using DragonRising.Storage;
 using DragonRising.GameWorld;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Prism.PubSubEvents;
+using DragonRising.Rules.GameFlowRules;
+using DragonRising.Rules;
+using DragonRising.Rules.CombatRules;
+using DragonRising.Rules.ModificationRules;
+using DragonRising.Rules.InventoryRules;
+using DragonRising.Rules.ExplorationRules;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class MyPlayingScreen : PlayingScreen
    {
       public static readonly int BarWidth = 20;
       public static readonly int PanelHeight = 9;
       public static readonly int PanelY = DragonRisingGame.ScreenHeight - PanelHeight;
+
+      GameEnd? gameEnd;
+
+      public void GameHasEnded(GameEnd gameEnd)
+      {
+         this.gameEnd = gameEnd;
+      }
+
       public static readonly int SceneHeight = DragonRisingGame.ScreenHeight - PanelHeight - 1;
 
       public static readonly int MessageX = BarWidth + 2;
@@ -52,7 +65,8 @@ namespace DragonRising.GameStates
 
       public World World { get; set; }
 
-      public ITerminal ScenePanel { get { return sceneWidget.Panel; } }
+      public ITerminal ScenePanel => sceneWidget.Panel;
+      public SceneView SceneView => sceneView;
 
       IMessageService messageService;
       List<RogueMessage> infoMessages = new List<RogueMessage>();
@@ -69,6 +83,8 @@ namespace DragonRising.GameStates
          var player = world.Player;
          this.gameName = gameName;
 
+         var rulesManager = ServiceLocator.Current.GetInstance<IRulesManager>();
+
          this.messageService = MessageService.Current;
          this.rootTerminal = DragonRisingGame.Current.RootTerminal;
 
@@ -84,8 +100,8 @@ namespace DragonRising.GameStates
             RogueColors.Red, RogueColors.DarkRed);
 
          this.xpBarWidget = new BarWidget(this.statsPanel[1, 3, BarWidth, 1], "XP",
-            () => player.GetComponent<CombatantComponent>().XP,
-            () => LevelingPolicy.XpForNextLevel(player.GetComponent<LevelComponent>().Level),
+            () => player.GetXP(),
+            () => LevelingPolicy.XpForNextLevel(player.GetLevel()?.Value ?? 0),
             RogueColors.Purple, RogueColors.DarkPurple);
 
          this.infoWidget = new MessagesWidget(this.statsPanel[1, 2, BarWidth, this.statsPanel.Size.Y - 3], this.infoMessages, MessagePriority.ShowOldest);
@@ -94,7 +110,7 @@ namespace DragonRising.GameStates
 
          this.highlightWidget = new HighlightWidget(this.sceneWidget.Panel[RogueColors.Black, RogueColors.LightCyan]);
          
-         this.Engine.AddSystem(new ActionSystem(ServiceLocator.Current.GetInstance<IRulesManager>()), 1, SystemTrack.Game);
+         this.Engine.AddSystem(new ActionSystem(rulesManager), 1, SystemTrack.Game);
          this.Engine.AddSystem(new RenderSystem(scenePanel, sceneView, world), 4, SystemTrack.Render);
          this.Engine.AddSystem(new ItemRenderSystem(scenePanel, sceneView, world), 5, SystemTrack.Render);
          this.Engine.AddSystem(new CreatureRenderSystem(scenePanel, sceneView, world), 6, SystemTrack.Render);
@@ -109,6 +125,29 @@ namespace DragonRising.GameStates
          this.PlayerController = new PlayerController(sceneView) { PlayerCreature = player };
          this.lifeDeathMonitorService = new LifeDeathMonitorService(ServiceLocator.Current.GetInstance<IEventAggregator>());
          this.statTracker = new StatTracker(ServiceLocator.Current.GetInstance<IEventAggregator>());
+         
+         SetupRules(rulesManager);
+      }
+
+      private void SetupRules(IRulesManager rulesManager)
+      {
+         rulesManager.AddRule(new AddConditionRule());
+         rulesManager.AddRule(new AttackRule());
+         rulesManager.AddRule(new ConditionExpiredRule());
+         rulesManager.AddRule(new DamageRule());
+         rulesManager.AddRule(new DropItemRule());
+         rulesManager.AddRule(new GameEndsOnPlayerDeathRule());
+         rulesManager.AddRule(new ManipulateEntityRule());
+         rulesManager.AddRule(new MoveInDirectionRule());
+         rulesManager.AddRule(new MoveToRule());
+         rulesManager.AddRule(new OnConfusedStatusAddedRule());
+         rulesManager.AddRule(new OnConfusedStatusRemovedRule());
+         rulesManager.AddRule(new PickupItemRule());
+         rulesManager.AddRule(new ReportDamageRule());
+         rulesManager.AddRule(new ReportStatusAddedRule());
+         rulesManager.AddRule(new ReportStatusRemovedRule());
+         rulesManager.AddRule(new UseItemRule());
+         rulesManager.AddRule(new UsePortalRule());
       }
 
       protected override void PreSceneDraw()
@@ -174,7 +213,7 @@ namespace DragonRising.GameStates
 
       protected override bool IsGameEndState()
       {
-         return this.lifeDeathMonitorService.HasPlayerLost;
+         return gameEnd.HasValue;
       }
 
       protected override bool IsUnderPlayerControl()

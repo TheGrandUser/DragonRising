@@ -1,33 +1,32 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
-using DragonRising.GameWorld.Items;
-using DraconicEngine.GameWorld.Actions;
-using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.EntitySystem;
+using DraconicEngine.GameViews;
 using DraconicEngine.Input;
+using DraconicEngine.RulesSystem;
+using DraconicEngine.Terminals.Input;
 using DraconicEngine.Widgets;
-using DragonRising.GameStates;
+using DragonRising.Commands;
+using DragonRising.Commands.Requirements;
+using DragonRising.GameWorld;
+using DragonRising.GameWorld.Behaviors;
+using DragonRising.GameWorld.Components;
+using DragonRising.GameWorld.Nodes;
+using DragonRising.GameWorld.Powers;
+using DragonRising.Plans.Targeters;
+using DragonRising.Storage;
+using DragonRising.Views;
+using DragonRising.Widgets;
 using LanguageExt;
-using static LanguageExt.Prelude;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static DraconicEngine.Input.CommandGestureFactory;
-using DraconicEngine.GameViews;
-using DraconicEngine.Terminals.Input;
-using DragonRising.Commands;
-using DraconicEngine.GameWorld.Behaviors;
-using System.Threading;
-using System.Diagnostics;
-using DragonRising.GameWorld.Nodes;
-using DragonRising.Storage;
-using DragonRising.GameWorld.Components;
-using DragonRising.Widgets;
-using DragonRising.GameWorld.Actions.Requirements;
-using DragonRising.GameWorld;
+using static LanguageExt.Prelude;
 
 namespace DragonRising
 {
@@ -91,7 +90,7 @@ namespace DragonRising
          }
       }
 
-      static readonly CommandGesture moveCommandGesture = CreateAction(kg => new MovementCommand(kg.Key.ToDirection()), GestureSet.Create8WayMove());
+      static readonly CommandGesture moveCommandGesture = CreateCommand(kg => new MovementCommand(kg.Key.ToDirection()), GestureSet.Create8WayMove());
       static readonly CommandGesture waitCommandGesture = Create(RogueCommands.Wait, GestureSet.Create(RogueKey.NumPad5));
 
       static readonly CommandGesture pickUpCommandGesture = Create(new PickUpItemCommand(), RogueKey.G);
@@ -150,7 +149,7 @@ namespace DragonRising
 
                var action = await ActionCommand.GetFinalActionAsync(initialCommand, this.playerCreature, GetFulfillmentAsync, preFulfillment);
 
-               if (action == RogueAction.Abort)
+               if (action == ActionTaken.Abort)
                {
                   return PlayerTurnResult.None;
                }
@@ -161,7 +160,7 @@ namespace DragonRising
             else if (inputResult.Command is GoDownCommand)
             {
                // new level
-               if(World.Current.Player.GetLocation() ==
+               if (World.Current.Player.GetLocation() ==
                   World.Current.Scene.Stairs.GetLocation())
                {
                   MessageService.Current.PostMessage("You take a moment to rest, and recover your strength.", RogueColors.LightViolet);
@@ -180,7 +179,7 @@ namespace DragonRising
             }
             else if (inputResult.Command == RogueCommands.Wait)
             {
-               this.playerControlledBehavior.SetNextAction(RogueAction.Idle);
+               this.playerControlledBehavior.SetNextAction(ActionTaken.Idle);
                return PlayerTurnResult.TurnAdvancing;
             }
             else if (inputResult.Command == RogueCommands.NoOp)
@@ -195,18 +194,18 @@ namespace DragonRising
             }
             else
             {
-               this.playerControlledBehavior.SetNextAction(RogueAction.Idle);
+               this.playerControlledBehavior.SetNextAction(ActionTaken.Idle);
                return PlayerTurnResult.Idle;
             }
          }
          catch (OperationCanceledException)
          {
-            this.playerControlledBehavior.SetNextAction(RogueAction.Idle);
+            this.playerControlledBehavior.SetNextAction(ActionTaken.Idle);
             return PlayerTurnResult.Idle;
          }
       }
 
-      async Task<RequirementFulfillment> GetFulfillmentAsync(ActionRequirement requirements)
+      async Task<RequirementFulfillment> GetFulfillmentAsync(PlanRequirement requirements)
       {
          if (requirements is NoRequirement)
          {
@@ -217,7 +216,7 @@ namespace DragonRising
          {
             var itemRequirement = (ItemRequirement)requirements;
 
-            var item = await SelectInventoryItem(itemRequirement);
+            var item = await SelectInventoryItem(PlayerCreature, itemRequirement.Message);
 
             if (item == null)
             {
@@ -226,27 +225,46 @@ namespace DragonRising
 
             var itemComponent = item.GetComponent<ItemComponent>();
 
-            Func<Usable, Task<ItemFulfillment>> onSome = async usable =>
+            if (itemComponent.Usable != null)
             {
                if (itemRequirement.NeedsItemsFulfillment)
                {
-                  RequirementFulfillment itemFulfillment =
-                     usable.Usage.Requirements is NoRequirement ? NoFulfillment.None :
-                     await GetFulfillmentAsync(usable.Usage.Requirements);
+                  var finalizedPlan = await GetPowerTargets(itemComponent.Usable.Power);
 
-                  return new ItemFulfillment(item, itemFulfillment);
+                  return finalizedPlan.Match(
+                     Some: plan => ItemFulfillment.Create(item, plan),
+                     None: () => NoFulfillment.None);
                }
                else
                {
-                  return new ItemFulfillment(item, NoFulfillment.None);
+                  return ItemFulfillment.Create(item, None);
                }
-            };
-            Func<Task<ItemFulfillment>> onNone = () => Task.FromResult(new ItemFulfillment(item, NoFulfillment.None));
+            }
+            else
+            {
+               return ItemFulfillment.Create(item, None);
+            }
+            //Func<Usable, Task<RequirementFulfillment>> onSome = async usable =>
+            //{
+            //   if (itemRequirement.NeedsItemsFulfillment)
+            //   {
+            //      var finalizedPlan = await GetPowerTargets(usable.Power);
 
-            
+            //      return finalizedPlan.Match(
+            //         Some: plan => ItemFulfillment.Create(item, plan),
+            //         None: () => NoFulfillment.None);
+            //   }
+            //   else
+            //   {
+            //      return ItemFulfillment.Create(item, None);
+            //   }
+            //};
+            //var onNone = fun(() => Task.FromResult(ItemFulfillment.Create(item, None)));
 
-            return await (itemComponent.Usable != null ?
-               onSome(itemComponent.Usable) : onNone());
+
+
+            //return await (itemComponent.Usable != null ?
+            //   onSome(itemComponent.Usable) : onNone());
          }
          #endregion
          #region LocationRequirement
@@ -256,22 +274,26 @@ namespace DragonRising
 
             //locationRequirement.Message
 
-            var location = await SelectTargetLocation(locationRequirement);
+            var location = await SelectTargetLocation(
+               PlayerCreature.GetLocation(),
+               locationRequirement.Message,
+               locationRequirement.SelectionRange,
+               sceneView,
+               None);
 
-            if (location.HasValue)
-            {
-               return new LocationFulfillment(location.Value);
-            }
-            else
-            {
-               return NoFulfillment.None;
-            }
+            return location.HasValue ?
+               (RequirementFulfillment)new LocationFulfillment(location.Value) :
+               NoFulfillment.None;
          }
          #endregion
          #region Entity Requirement
          else if (requirements is EntityRequirement)
          {
-            var entity = await SelectTargetEntity((EntityRequirement)requirements);
+            var entityRequirement = (EntityRequirement)requirements;
+
+            var entity = await SelectTargetEntity(PlayerCreature.Location,
+               entityRequirement.Range, c => (!entityRequirement.ExcludeSelf || c != PlayerCreature) &&
+               entityRequirement.DoesEntityMatch(c), sceneView, None);
 
             return entity.Match<RequirementFulfillment>(
                Some: e => new EntityFulfillment(e),
@@ -345,9 +367,17 @@ namespace DragonRising
          else if (requirements is DirectionRequirement)
          {
             // Generally shoulod be prefulfilled, but...
-            var dir = await SelectDirection((DirectionRequirement)requirements);
+            var directionReq = (DirectionRequirement)requirements;
+            var dir = await SelectDirection(PlayerCreature.Location, directionReq.Message, directionReq.Limits);
 
-            return new DirectionFulfillment(dir);
+            if (dir.HasValue)
+            {
+               return new DirectionFulfillment(dir.Value.ToDirection());
+            }
+            else
+            {
+               return NoFulfillment.None;
+            }
          }
          #endregion
 
@@ -370,7 +400,7 @@ namespace DragonRising
          if (lookCursor.HasValue)
          {
             var scenePoint = this.sceneView.ViewOffset + lookCursor.GetValueOrDefault();
-            
+
             if (World.Current.Scene.IsVisible(scenePoint))
             {
                MyPlayingScreen.Current.SetHighlight(lookCursor.Value);
@@ -387,10 +417,11 @@ namespace DragonRising
          }
       }
 
-      public async Task<Entity> SelectInventoryItem(ItemRequirement requirement)
+
+      public static async Task<Entity> SelectInventoryItem(Entity player, string message)
       {
-         var inventory = this.PlayerCreature.GetComponent<InventoryComponent>();
-         var inventoryScreen = new InventoryScreen(inventory, requirement.Message);
+         var inventory = player.GetComponent<InventoryComponent>();
+         var inventoryScreen = new InventoryScreen(inventory, message);
          await RogueGame.Current.RunGameState(inventoryScreen);
 
          var index = inventoryScreen.Result;
@@ -401,33 +432,35 @@ namespace DragonRising
          return null;
       }
 
-      public async Task<Loc?> SelectTargetLocation(LocationRequirement requirement)
+      public static async Task<Loc?> SelectTargetLocation(
+         Loc startLocation,
+         string message,
+         SelectionRange range,
+         SceneView sceneView,
+         Option<Area> areaOfEffect)
       {
          //string message, bool isLimitedToFoV = true, int? maxRange = null
 
          MyPlayingScreen playingState = MyPlayingScreen.Current;
-         var targetTool = new LocationTargetingTool(this.PlayerCreature.GetLocation(), this.sceneView, playingState.ScenePanel, requirement.Message, requirement.IsLimitedToFoV, requirement.MaxRange);
+         var targetTool = new LocationTargetingTool(startLocation, sceneView, playingState.ScenePanel, message, range);
 
          await RogueGame.Current.RunGameState(targetTool);
 
          return targetTool.Result;
       }
 
-      public async Task<Option<Entity>> SelectTargetEntity(EntityRequirement requirement)
+      public static async Task<Option<Entity>> SelectTargetEntity(Loc origin, SelectionRange range,
+         Predicate<Entity> filter, SceneView sceneView, Option<Area> areaOfEffect)
       {
          MyPlayingScreen playingState = MyPlayingScreen.Current;
-         var range = requirement.MaxRange;
-         var excludeSelf = requirement.ExcludeSelf;
-         var rangeSquared = range * range;
+         var rangeSquared = range.Range * range.Range;
 
 
          var entitiesInRange = World.Current.Scene.EntityStore.AllCreatures()
-            .Where(c => (!excludeSelf || c != this.playerCreature) &&
-               c.HasComponent<DrawnComponent>() && c.HasComponent<LocationComponent>() &&
-               requirement.DoesEntityMatch(c) &&
-               World.Current.Scene.IsVisible(c.GetComponent<LocationComponent>().Location) &&
-               (range == null || (c.GetComponent<LocationComponent>().Location - this.PlayerCreature.GetComponent<LocationComponent>().Location).LengthSquared <= rangeSquared))
-            .Select(e => new SeeableNode() { Entity = e, Drawn = e.GetComponent<DrawnComponent>(), Loc = e.GetComponent<LocationComponent>() })
+            .Where(c => c.HasComponent<DrawnComponent>() && filter(c) &&
+               World.Current.Scene.IsVisible(c.Location) &&
+               (range.Range == null || Loc.IsDistanceWithin(c.Location, origin, range.Range.Value)))
+            .Select(e => new SeeableNode() { Entity = e, Drawn = e.GetComponent<DrawnComponent>() })
             .ToArray();
 
          if (!entitiesInRange.Any())
@@ -435,17 +468,51 @@ namespace DragonRising
             return None;
          }
 
-         var selectEntityTool = new SelectEntityTool(ImmutableList.CreateRange(entitiesInRange), this.sceneView, playingState.ScenePanel);
+         var selectEntityTool = new SelectEntityTool(ImmutableList.CreateRange(entitiesInRange), sceneView, playingState.ScenePanel);
 
          await RogueGame.Current.RunGameState(selectEntityTool);
 
          return selectEntityTool.Result;
       }
 
-      public Task<Direction> SelectDirection(DirectionRequirement requirement)
+      public static async Task<Vector?> SelectDirection(Loc origin, string message, DirectionLimit limit)
       {
-         throw new NotImplementedException();
+         while (true)
+         {
+            if (limit == DirectionLimit.FullVector)
+            {
+               var keyPress = await InputSystem.Current.GetKeyPressAsync();
+
+               if (keyPress.Key.IsEightWayMovementKey())
+               {
+                  return Vector.FromDirection(keyPress.Key.ToDirection());
+               };
+            }
+            else
+            {
+               var keyPress = await InputSystem.Current.GetKeyPressAsync();
+
+               if (limit == DirectionLimit.Cardinal ?
+                  keyPress.Key.IsFourWayMovementKey() :
+                  keyPress.Key.IsEightWayMovementKey())
+               {
+                  return Vector.FromDirection(keyPress.Key.ToDirection());
+               };
+            }
+         }
       }
 
+      private async Task<Option<FinalizedPlan>> GetPowerTargets(Power power)
+      {
+         var origin = PlayerCreature.Location;
+
+         var results = await Targeter.HandleChildTargetersAsync(
+            power.Targeters,
+            t => t.GetPlayerTargetingAsync(origin, ImmutableStack<Either<Loc, Vector>>.Empty));
+
+         return results.Match(
+            Some: r => Some(new FinalizedPlan(r, power.Queries, power.Effects)),
+            None: () => None);
+      }
    }
 }

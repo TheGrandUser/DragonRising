@@ -1,12 +1,11 @@
-﻿using DraconicEngine.GameWorld.Actions;
-using DraconicEngine.GameWorld.Actions.Requirements;
+﻿using DraconicEngine.RulesSystem;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using System.Diagnostics.Contracts;
 
 namespace DraconicEngine.Terminals.Input

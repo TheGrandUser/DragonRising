@@ -1,0 +1,14 @@
+﻿{
+  "ConcussiveFireBolt": {
+    "inputs": [
+      {
+        "type": "Location",
+        "range": 10,
+        "limit": "LoE",
+        "inputs": [ ]
+      }
+    ],
+    "areas": [ ],
+    "effects": [ ]
+  }
+}

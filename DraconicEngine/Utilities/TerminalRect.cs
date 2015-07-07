@@ -24,10 +24,7 @@ namespace DraconicEngine
       /// </summary>
       /// <param name="size">The width of the rectangle.</param>
       /// <returns>The new rectangle.</returns>
-      public static TerminalRect Row(int size)
-      {
-         return new TerminalRect(0, 0, size, 1);
-      }
+      public static TerminalRect Row(int size) => new TerminalRect(0, 0, size, 1);
 
       /// <summary>
       /// Creates a new rectangle a single row in height, as wide as the given size,
@@ -37,10 +34,7 @@ namespace DraconicEngine
       /// <param name="y">The top of the rectangle.</param>
       /// <param name="size">The width of the rectangle.</param>
       /// <returns>The new rectangle.</returns>
-      public static TerminalRect Row(int x, int y, int size)
-      {
-         return new TerminalRect(x, y, size, 1);
-      }
+      public static TerminalRect Row(int x, int y, int size) => new TerminalRect(x, y, size, 1);
 
       /// <summary>
       /// Creates a new rectangle a single row in height, as wide as the given size,
@@ -48,20 +42,14 @@ namespace DraconicEngine
       /// </summary>
       /// <param name="pos">The top-left corner of the rectangle.</param>
       /// <returns>The new rectangle.</returns>
-      public static TerminalRect Row(Loc pos, int size)
-      {
-         return new TerminalRect(pos.X, pos.Y, size, 1);
-      }
+      public static TerminalRect Row(Loc pos, int size) => new TerminalRect(pos.X, pos.Y, size, 1);
 
       /// <summary>
       /// Creates a new rectangle a single column in width, as tall as the given size.
       /// </summary>
       /// <param name="size">The height of the rectangle.</param>
       /// <returns>The new rectangle.</returns>
-      public static TerminalRect Column(int size)
-      {
-         return new TerminalRect(0, 0, 1, size);
-      }
+      public static TerminalRect Column(int size) => new TerminalRect(0, 0, 1, size);
 
       /// <summary>
       /// Creates a new rectangle a single column in width, as tall as the given size,
@@ -71,10 +59,7 @@ namespace DraconicEngine
       /// <param name="y">The top of the rectangle.</param>
       /// <param name="size">The height of the rectangle.</param>
       /// <returns>The new rectangle.</returns>
-      public static TerminalRect Column(int x, int y, int size)
-      {
-         return new TerminalRect(x, y, 1, size);
-      }
+      public static TerminalRect Column(int x, int y, int size) => new TerminalRect(x, y, 1, size);
 
       /// <summary>
       /// Creates a new rectangle a single column in width, as tall as the given size,
@@ -83,10 +68,7 @@ namespace DraconicEngine
       /// <param name="pos">The top-left corner of the rectangle.</param>
       /// <param name="size">The height of the rectangle.</param>
       /// <returns>The new rectangle.</returns>
-      public static TerminalRect Column(Loc pos, int size)
-      {
-         return new TerminalRect(pos.X, pos.Y, 1, size);
-      }
+      public static TerminalRect Column(Loc pos, int size) => new TerminalRect(pos.X, pos.Y, 1, size);
 
       /// <summary>
       /// Creates a new rectangle that is the intersection of the two given rectangles.
@@ -117,69 +99,47 @@ namespace DraconicEngine
          return new TerminalRect(left, top, width, height);
       }
 
-      public static bool Intersects(TerminalRect a, TerminalRect b)
-      {
-         return a.Left <= b.Right && a.Right >= b.Left &&
-                a.Top <= b.Bottom && a.Bottom >= b.Top;
-      }
+      public static bool Intersects(TerminalRect a, TerminalRect b) => a.Left <= b.Right && a.Right >= b.Left &&
+                                                                        a.Top <= b.Bottom && a.Bottom >= b.Top;
 
-      public static TerminalRect CenterIn(TerminalRect toCenter, TerminalRect main)
-      {
-         Loc pos = main.Position + ((main.Size - toCenter.Size) / 2);
-
-         return new TerminalRect(pos, toCenter.Size);
-      }
+      public static TerminalRect CenterIn(TerminalRect toCenter, TerminalRect main) =>
+         new TerminalRect(main.Position + ((main.Size - toCenter.Size) / 2), toCenter.Size);
 
       #region Operators
 
-      public static bool operator ==(TerminalRect r1, TerminalRect r2)
-      {
-         return r1.Equals(r2);
-      }
+      public static bool operator ==(TerminalRect r1, TerminalRect r2) =>  r1.Equals(r2);
 
-      public static bool operator !=(TerminalRect r1, TerminalRect r2)
-      {
-         return !r1.Equals(r2);
-      }
+      public static bool operator !=(TerminalRect r1, TerminalRect r2) => !r1.Equals(r2);
 
-      public static TerminalRect operator +(TerminalRect r1, Loc v2)
-      {
-         return new TerminalRect(r1.Position + v2, r1.Size);
-      }
+      public static TerminalRect operator +(TerminalRect r1, Loc v2) => new TerminalRect(r1.Position + v2, r1.Size);
 
-      public static TerminalRect operator +(Loc v1, TerminalRect r2)
-      {
-         return new TerminalRect(r2.Position + v1, r2.Size);
-      }
+      public static TerminalRect operator +(Loc v1, TerminalRect r2) =>  new TerminalRect(r2.Position + v1, r2.Size);
 
-      public static TerminalRect operator -(TerminalRect r1, Vector v2)
-      {
-         return new TerminalRect(r1.Position - v2, r1.Size);
-      }
+      public static TerminalRect operator -(TerminalRect r1, Vector v2) => new TerminalRect(r1.Position - v2, r1.Size);
 
       #endregion
 
-      public Loc Position { get { return mPos; } }
-      public Vector Size { get { return mSize; } }
+      public Loc Position => mPos;
+      public Vector Size => mSize;
 
-      public int X { get { return mPos.X; } }
-      public int Y { get { return mPos.Y; } }
-      public int Width { get { return mSize.X; } }
-      public int Height { get { return mSize.Y; } }
+      public int X => mPos.X;
+      public int Y => mPos.Y;
+      public int Width => mSize.X; 
+      public int Height => mSize.Y;
 
-      public int Left { get { return X; } }
-      public int Top { get { return Y; } }
-      public int Right { get { return X + Width; } }
-      public int Bottom { get { return Y + Height; } }
+      public int Left => X;
+      public int Top => Y;
+      public int Right => X + Width;
+      public int Bottom => Y + Height;
 
-      public Loc TopLeft { get { return new Loc(Left, Top); } }
-      public Loc TopRight { get { return new Loc(Right, Top); } }
-      public Loc BottomLeft { get { return new Loc(Left, Bottom); } }
-      public Loc BottomRight { get { return new Loc(Right, Bottom); } }
+      public Loc TopLeft => new Loc(Left, Top);
+      public Loc TopRight => new Loc(Right, Top);
+      public Loc BottomLeft => new Loc(Left, Bottom);
+      public Loc BottomRight => new Loc(Right, Bottom);
 
-      public Loc Center { get { return new Loc((Left + Right) / 2, (Top + Bottom) / 2); } }
+      public Loc Center => new Loc((Left + Right) / 2, (Top + Bottom) / 2);
 
-      public int Area { get { return mSize.Area; } }
+      public int Area => mSize.X * mSize.Y;
 
       public TerminalRect(Loc pos, Vector size)
       {
@@ -350,10 +310,7 @@ namespace DraconicEngine
 
       #region IEnumerable Members
 
-      System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-      {
-         return GetEnumerator();
-      }
+      System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
       #endregion
 

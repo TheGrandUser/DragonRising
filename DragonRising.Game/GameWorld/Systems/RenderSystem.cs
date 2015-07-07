@@ -1,7 +1,5 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameWorld;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.EntitySystem;
 using DraconicEngine.Terminals;
 using DraconicEngine.Widgets;
 using DragonRising.GameWorld.Nodes;
@@ -29,12 +27,12 @@ namespace DragonRising.GameWorld.Systems
 
       protected override void NodeUpdateFunction(DrawNode node, double time)
       {
-         var display = node.Location.Location - sceneView.ViewOffset;
+         var display = node.Entity.Location - sceneView.ViewOffset;
 
          if (display.X >= 0 && display.X < terminal.Size.X &&
              display.Y >= 0 && display.Y < terminal.Size.Y)
          {
-            var tile = world.Scene.GetTileSafe(node.Location.Location);
+            var tile = world.Scene.GetTileSafe(node.Entity.Location);
             if (tile.Visibility == TileVisibility.Seen)
             {
                terminal.Set(display, node.Drawn.SeenCharacter);
@@ -62,12 +60,12 @@ namespace DragonRising.GameWorld.Systems
 
       protected override void NodeUpdateFunction(ItemDrawNode node, double time)
       {
-         var display = node.Location.Location - sceneView.ViewOffset;
+         var display = node.Entity.Location - sceneView.ViewOffset;
 
          if (display.X >= 0 && display.X < terminal.Size.X &&
              display.Y >= 0 && display.Y < terminal.Size.Y)
          {
-            var tile = world.Scene.GetTileSafe(node.Location.Location);
+            var tile = world.Scene.GetTileSafe(node.Entity.Location);
             if (tile.Visibility == TileVisibility.Seen)
             {
                terminal.Set(display, node.Drawn.SeenCharacter);
@@ -95,12 +93,12 @@ namespace DragonRising.GameWorld.Systems
 
       protected override void NodeUpdateFunction(CreatureDrawNode node, double time)
       {
-         var display = node.Location.Location - sceneView.ViewOffset;
+         var display = node.Entity.Location - sceneView.ViewOffset;
 
          if (display.X >= 0 && display.X < terminal.Size.X &&
              display.Y >= 0 && display.Y < terminal.Size.Y)
          {
-            var tile = world.Scene.GetTileSafe(node.Location.Location);
+            var tile = world.Scene.GetTileSafe(node.Entity.Location);
             if (tile.Visibility == TileVisibility.Seen)
             {
                terminal.Set(display, node.Drawn.SeenCharacter);

@@ -2,6 +2,7 @@
 using DraconicEngine.Input;
 using DraconicEngine.WPF;
 using DragonRising;
+using DragonRising.Rules;
 using DragonRising.Services;
 using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.ServiceLocation;

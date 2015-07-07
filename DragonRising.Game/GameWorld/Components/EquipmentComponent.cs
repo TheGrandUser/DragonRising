@@ -6,8 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld;
+using DraconicEngine.EntitySystem;
 using DraconicEngine;
 
 namespace DragonRising.GameWorld.Components
@@ -120,6 +119,10 @@ namespace DragonRising.GameWorld.Components
             return item;
          }
          return None;
+      }
+
+      protected override void OnOwnerChanged(Entity oldOwner, Entity newOwner)
+      {
       }
    }
 }

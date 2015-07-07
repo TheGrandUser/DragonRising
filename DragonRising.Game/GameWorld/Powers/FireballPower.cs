@@ -1,54 +1,48 @@
-﻿using DraconicEngine.GameWorld.Effects;
+﻿using DraconicEngine.RulesSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using System.Collections.Immutable;
 using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem.Components;
-using DraconicEngine.GameWorld.Actions.Requirements;
+using DragonRising.Commands.Requirements;
 using DragonRising.GameWorld.Effects;
 using DragonRising.GameWorld.Components;
-using DragonRising.GameWorld.Powers.Nodes;
+using DragonRising.GameWorld.Events;
+using DragonRising.Rules.CombatRules;
+using DragonRising.GameWorld.Events.SensoryEvents;
+using DragonRising.Plans.Effects;
+using DragonRising.Plans.Queries;
+using DragonRising.Plans.Targeters;
+using DragonRising.Plans.EntityFilters;
 
 namespace DragonRising.GameWorld.Powers
 {
    class FireballPower : Power
    {
-      public FireballPower()
+      private readonly LocationInRangeTargeter targeter;
+
+      public override IEnumerable<ILocationBasedTargeter> Targeters
       {
-         var chooseLocationNode = new ChooseLocationNode();
-         var getCreaturesWithin = new GetEntitiesWithinNode() { Radius = 3, LineOfEffect = true };
-         var damageValue = new NumberConstantNode() { Value = 12 };
-
-         var locationLink = new NodeConnection()
+         get
          {
-            Output = chooseLocationNode.LocationOutput,
-            Input = getCreaturesWithin.LocationInput,
-         };
-
-
-      }
-
-      public override void Do(Entity initiator, RequirementFulfillment fulfillment)
-      {
-         var locationFulfillment = fulfillment as LocationFulfillment;
-         var target = locationFulfillment.Location;
-
-         var rangeSquared = 3 * 3;
-
-         var entitiesToDamage = World.Current.Scene.EntityStore.AllCreatures()
-            .Where(entity => entity.HasComponent<CombatantComponent>() && (entity.GetLocation() - target).LengthSquared <= rangeSquared)
-            .ToList();
-
-         foreach(var entity in entitiesToDamage)
-         {
-            var damageEffect = new DamageEffect(initiator);
+            yield return targeter;
          }
-
-         base.Do(initiator, fulfillment);
+      }
+      
+      public FireballPower(int radius = 3, int damage = 12, int senseIntensity = 12)
+         : base("Fireball")
+      {
+         this.targeter = LocationInRangeTargeter.Build(new SelectionRange(null, RangeLimits.LineOfEffect))
+               .Add(new AffectAllInRangeQuery(radius,
+                  OnlyCreaturesFilter.Instance,
+                  new DamageEffect(new Damage(damage, "Fire"))))
+               .Add(new SensoryEffect(
+                  new Sensed(Sense.Sound, "Explosion", "Fiery", senseIntensity),
+                  new Sensed(Sense.Sight, "Flame", "Bright", senseIntensity))).Finish();
       }
    }
+
 }
