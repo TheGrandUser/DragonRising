@@ -9,7 +9,6 @@ namespace DragonRising.Storage
    public interface ILibrary
    {
       IItemLibrary Items { get; }
-      IItemUsageLibrary ItemUsages { get; }
       IBehaviorLibrary Behaviors { get; }
       IEntityLibrary Entities { get; }
       ITileLibrary Tiles { get; }

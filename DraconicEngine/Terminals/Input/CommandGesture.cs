@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.GameViews;
 using DraconicEngine;
-using DraconicEngine.GameWorld.Actions;
+using DraconicEngine.RulesSystem;
 using DraconicEngine.Terminals.Input;
 
 namespace DraconicEngine.Input
@@ -35,7 +35,7 @@ namespace DraconicEngine.Input
          
          return new CommandGesture2D(PackageBuilder.Create2D(
             (loc, delta) => command,
-            k => k.Key.IsStandardMovementKey() ? k.Key.ToMovementVec() : Vector.Zero),
+            k => k.Key.IsEightWayMovementKey() ? k.Key.ToMovementVec() : Vector.Zero),
             GestureSet.CreateMouseMoveAnd8WayMove());
       }
 
@@ -43,7 +43,7 @@ namespace DraconicEngine.Input
       {
          return new CommandGesture2D(PackageBuilder.Create2D(
             generateCommand,
-            k => k.Key.IsStandardMovementKey() ? k.Key.ToMovementVec() : Vector.Zero),
+            k => k.Key.IsEightWayMovementKey() ? k.Key.ToMovementVec() : Vector.Zero),
             GestureSet.CreateMouseMoveAnd8WayMove());
       }
 
@@ -52,7 +52,7 @@ namespace DraconicEngine.Input
          var command = new ValueCommand<T>(value);
          return new CommandGesture2D(PackageBuilder.Create2D(
             (loc, delta) => command,
-            k => k.Key.IsStandardMovementKey() ? k.Key.ToMovementVec() : Vector.Zero),
+            k => k.Key.IsEightWayMovementKey() ? k.Key.ToMovementVec() : Vector.Zero),
             GestureSet.CreateMouseMoveAnd8WayMove());
       }
 
@@ -92,7 +92,7 @@ namespace DraconicEngine.Input
          return new CommandGestureSingle(PackageBuilder.Create(keyValue), gestureSet);
       }
 
-      public static CommandGesture CreateAction(Func<RogueKeyGesture, RogueCommand> actionSelector, GestureSet gestureSet)
+      public static CommandGesture CreateCommand(Func<RogueKeyGesture, RogueCommand> actionSelector, GestureSet gestureSet)
       {
          return new CommandGestureSingle(PackageBuilder.Create(actionSelector), gestureSet);
       }

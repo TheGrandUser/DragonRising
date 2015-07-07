@@ -1,9 +1,11 @@
 ﻿using DraconicEngine;
+using DraconicEngine.EntitySystem;
+using DraconicEngine.RulesSystem;
+using DragonRising.GameWorld;
 using DragonRising.GameWorld.Alligences;
-using DraconicEngine.GameWorld.Behaviors;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
+using DragonRising.GameWorld.Behaviors;
 using DragonRising.GameWorld.Components;
+using DragonRising.GameWorld.Powers;
 using DragonRising.Properties;
 using DragonRising.Storage;
 using LanguageExt;
@@ -23,8 +25,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
-using DragonRising.GameWorld.Items;
-using DragonRising.GameWorld;
 
 namespace DragonRising
 {
@@ -57,7 +57,7 @@ namespace DragonRising
          //serializer.Converters.Add(new SomeTypeConverter());
          serializer.Converters.Add(new EntityConverter());
          serializer.Converters.Add(new CharacterConverter());
-         serializer.Converters.Add(new UsageConverter());
+         serializer.Converters.Add(new PowerConverter());
          serializer.Converters.Add(new BehaviorComponentConverter());
          serializer.Converters.Add(new BehaviorConverter());
          serializer.Converters.Add(new AlligenceConverter());
@@ -404,29 +404,29 @@ namespace DragonRising
       }
    }
 
-   class SomeTypeConverter : JsonConverter
-   {
-      public override bool CanConvert(Type objectType)
-      {
-         return objectType.IsConstructedGenericType && objectType.GetGenericTypeDefinition() == typeof(Some<>);
-      }
+   //class SomeTypeConverter : JsonConverter
+   //{
+   //   public override bool CanConvert(Type objectType)
+   //   {
+   //      return objectType.IsConstructedGenericType && objectType.GetGenericTypeDefinition() == typeof(Some<>);
+   //   }
 
-      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-      {
-         var someType = typeof(Some<>);
+   //   public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+   //   {
+   //      var someType = typeof(Some<>);
 
-         throw new NotImplementedException();
-      }
+   //      throw new NotImplementedException();
+   //   }
 
-      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-      {
-         var someType = value.GetType();
-         var valueProperty = someType.GetProperty("Value");
-         var realObject = valueProperty.GetValue(value);
+   //   public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+   //   {
+   //      var someType = value.GetType();
+   //      var valueProperty = someType.GetProperty("Value");
+   //      var realObject = valueProperty.GetValue(value);
 
-         writer.WriteValue(realObject);
-      }
-   }
+   //      writer.WriteValue(realObject);
+   //   }
+   //}
 
    class EntityConverter : JsonConverter
    {
@@ -630,11 +630,11 @@ namespace DragonRising
       }
    }
 
-   public class UsageConverter : JsonConverter
+   public class PowerConverter : JsonConverter
    {
       public override bool CanConvert(Type objectType)
       {
-         return typeof(IItemUsage).IsAssignableFrom(objectType);
+         return typeof(Power).IsAssignableFrom(objectType);
       }
 
       public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -647,14 +647,14 @@ namespace DragonRising
          var name = reader.Value.ToString();
          var context = (SerializationContext)serializer.Context.Context;
 
-         return context.Library.ItemUsages.Get(name);
+         return context.Library.Powers.Get(name);
       }
 
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
       {
-         var usage = (IItemUsage)value;
+         var power = (Power)value;
          var context = (SerializationContext)serializer.Context.Context;
-         writer.WriteValue(context.Library.ItemUsages.NameForUsage(usage));
+         writer.WriteValue(power.Name);
       }
    }
 

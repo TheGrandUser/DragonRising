@@ -8,11 +8,11 @@ using LanguageExt;
 using DraconicEngine.Terminals;
 using DragonRising.GameWorld;
 using DragonRising.GameWorld.Components;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using DragonRising.Widgets;
 using DraconicEngine;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    public class LevelUpScreen : GameView
    {

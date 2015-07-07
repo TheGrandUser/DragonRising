@@ -12,8 +12,9 @@ using LanguageExt;
 using static LanguageExt.Prelude;
 using DragonRising.Widgets;
 using DragonRising.GameWorld;
+using DraconicEngine.RulesSystem;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class LocationTargetingTool : IGameView<Loc?>
    {
@@ -37,13 +38,13 @@ namespace DragonRising.GameStates
       public GameViewType Type { get { return GameViewType.Tool; } }
 
       ITerminal sceneTerminal;
-      private bool isLimitedToFoV;
+      SelectionRange selectionRange;
 
-      public LocationTargetingTool(Loc startLocation, SceneView sceneView, ITerminal sceneTerminal, string message, bool isLimitedToFoV, int? maxRange)
+      public LocationTargetingTool(Loc startLocation, SceneView sceneView, ITerminal sceneTerminal, string message, SelectionRange selectionRange)
       {
          this.startLocation = this.location = startLocation;
          this.sceneView = sceneView;
-         this.isLimitedToFoV = isLimitedToFoV;
+         this.selectionRange = selectionRange;
 
          this.sceneTerminal = sceneTerminal;
       }
@@ -53,10 +54,15 @@ namespace DragonRising.GameStates
          var keyEvent = await InputSystem.Current.GetKeyPressAsync();
          if (keyEvent.Key == RogueKey.Enter || keyEvent.Key == RogueKey.Space)
          {
-            if (!isLimitedToFoV || World.Current.Scene.IsVisible(location))
+            if (!selectionRange.Range.HasValue || Loc.IsDistanceWithin(startLocation, location, selectionRange.Range.Value))
             {
-               result = location;
-               return TickResult.Finished;
+               if (
+                  (!selectionRange.Limits.HasFlag(RangeLimits.LineOfEffect) || World.Current.Scene.IsUnblockedBetween(startLocation, location)) &&
+                  (!selectionRange.Limits.HasFlag(RangeLimits.LineOfSight) || World.Current.Scene.IsVisible(location)))
+               {
+                  result = location;
+                  return TickResult.Finished;
+               }
             }
          }
          else if (keyEvent.Key == RogueKey.Escape)
@@ -64,7 +70,7 @@ namespace DragonRising.GameStates
             result = null;
             return TickResult.Finished;
          }
-         else if (keyEvent.Key.IsStandardMovementKey())
+         else if (keyEvent.Key.IsEightWayMovementKey())
          {
             Vector offset = keyEvent.Key.ToMovementVec();
 

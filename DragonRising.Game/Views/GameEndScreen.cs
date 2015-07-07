@@ -11,7 +11,7 @@ using DraconicEngine.Terminals;
 using LanguageExt;
 using static LanguageExt.Prelude;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class GameEndScreen : IGameView
    {

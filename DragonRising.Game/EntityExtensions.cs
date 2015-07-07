@@ -1,6 +1,6 @@
 ﻿using DraconicEngine;
 using DragonRising.GameWorld.Alligences;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using DragonRising.GameWorld.Components;
 using System;
 using System.Collections.Generic;
@@ -16,17 +16,11 @@ namespace DragonRising
       public static bool IsAdjacent(this Entity me, Entity other)
       {
          var diff =
-            me.GetComponentOrDefault<LocationComponent>()?.Location -
-            other.GetComponentOrDefault<LocationComponent>()?.Location;
-         return diff?.KingLength == 1;
-      }
-
-      public static bool IsAdjacent(this LocationComponent me, LocationComponent other)
-      {
-         var diff = me.Location - other.Location;
+            me.Location -
+            other.Location;
          return diff.KingLength == 1;
       }
-
+      
       public static bool IsEnemy(this Entity me, Entity other)
       {
          var meCreature = me.GetComponentOrDefault<CreatureComponent>();
@@ -58,22 +52,22 @@ namespace DragonRising
 
       public static Loc GetLocation(this Entity entity)
       {
-         return entity.GetComponentOrDefault<LocationComponent>()?.Location ?? new Loc(-1, -1);
+         return entity.Location;
       }
 
       public static void SetLocation(this Entity entity, Loc value)
       {
-         entity.As<LocationComponent>(comp => comp.Location = value);
+         entity.Location = value;
       }
 
       public static bool GetBlocks(this Entity entity)
       {
-         return entity.GetComponentOrDefault<LocationComponent>()?.Blocks ?? false;
+         return entity.Blocks;
       }
 
       public static void SetBlocks(this Entity entity, bool value)
       {
-         entity.As<LocationComponent>(comp => comp.Blocks = value);
+         entity.Blocks = value;
       }
    }
 }

@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld;
+using DraconicEngine.EntitySystem;
 using DraconicEngine;
 using DragonRising.GameWorld.Alligences;
 
@@ -41,6 +40,11 @@ namespace DragonRising.GameWorld.Components
       protected override Component CloneCore(bool fresh)
       {
          return new CreatureComponent(this, fresh);
+      }
+
+      protected override void OnOwnerChanged(Entity oldOwner, Entity newOwner)
+      {
+         // Get Stats
       }
    }
 }

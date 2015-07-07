@@ -1,5 +1,5 @@
-﻿using DraconicEngine.GameWorld.Effects;
-using DraconicEngine.GameWorld.EntitySystem;
+﻿using DraconicEngine.RulesSystem;
+using DraconicEngine.EntitySystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace DraconicEngine.Services
    {
       void Tick();
       void AddTimer(TurnTimer timer);
-      void Add(int duration, IEffect effect, params IEffect[] additionalEffects);
+      void AddFromNow(int duration, Fact gameEvent, params Fact[] additionalEvents);
    }
 
    public static class TimedEvents
@@ -31,7 +31,7 @@ namespace DraconicEngine.Services
    {
       List<TurnTimer> timers = new List<TurnTimer>();
 
-      public void Add(int duration, IEffect effect, params IEffect[] additionalEffects)
+      public void AddFromNow(int duration, Fact effect, params Fact[] additionalEffects)
       {
          AddTimer(new TurnTimer(duration, effect, additionalEffects));
       }
@@ -47,9 +47,9 @@ namespace DraconicEngine.Services
          {
             if (timer.Tick())
             {
-               foreach (var effect in timer.Effects)
+               foreach (var @event in timer.Events)
                {
-                  TurnEffects.Current.Add(effect);
+                  TurnEvents.Current.Add(@event);
                }
             }
          }
@@ -60,12 +60,12 @@ namespace DraconicEngine.Services
    public sealed class TurnTimer
    {
       int duration;
-      List<IEffect> effects;
+      List<Fact> gameEvents;
 
-      public TurnTimer(int duration, IEffect effect, params IEffect[] additionalEffects)
+      public TurnTimer(int duration, Fact gameEvent, params Fact[] additionalEvents)
       {
          this.duration = duration;
-         this.effects = additionalEffects.StartWith(effect).ToList();
+         this.gameEvents = additionalEvents.StartWith(gameEvent).ToList();
       }
 
       public bool Tick()
@@ -78,6 +78,6 @@ namespace DraconicEngine.Services
          return false;
       }
       public int Duration { get { return duration; } }
-      public IEnumerable<IEffect> Effects { get { return effects.AsEnumerable(); } }
+      public IEnumerable<Fact> Events { get { return gameEvents.AsEnumerable(); } }
    }
 }

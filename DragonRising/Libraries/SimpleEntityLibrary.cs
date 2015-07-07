@@ -1,10 +1,10 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameWorld.Behaviors;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
-using DragonRising.Storage;
+using DraconicEngine.EntitySystem;
+using DragonRising.GameWorld;
 using DragonRising.GameWorld.Alligences;
+using DragonRising.GameWorld.Behaviors;
 using DragonRising.GameWorld.Components;
+using DragonRising.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,19 +25,23 @@ namespace DragonRising.Libraries
       internal void Initialize(IBehaviorLibrary behaviors)
       {
          Add(new Entity("Orc",
-            new LocationComponent() { Blocks = true },
-            new DrawnComponent() { SeenCharacter = new Character(Glyph.OLower, RogueColors.LightGreen) },
-            new CombatantComponent(hp: 10, xp: 35, defense: 0, power: 3),
-            new BehaviorComponent(behaviors.Get("Basic Monster")),
-            new CreatureComponent(6)));
+            new ComponentSet(
+               new DrawnComponent() { SeenCharacter = new Character(Glyph.OLower, RogueColors.LightGreen) },
+               new CombatantComponent(hp: 10, defense: 0, power: 3),
+               new BehaviorComponent(behaviors.Get("Basic Monster")),
+               new CreatureComponent(6)),
+            new StatSet(CharacterStat.Make(CoreStats.XP, 35)))
+         { Blocks = true });
 
 
          Add(new Entity("Troll",
-            new LocationComponent() { Blocks = true },
-            new DrawnComponent() { SeenCharacter = new Character(Glyph.TUpper, RogueColors.LightGreen) },
-            new CombatantComponent(hp: 16, xp: 100, defense: 1, power: 4),
-            new BehaviorComponent(behaviors.Get("Basic Monster")),
-            new CreatureComponent(5)));
+            new ComponentSet(
+               new DrawnComponent() { SeenCharacter = new Character(Glyph.TUpper, RogueColors.LightGreen) },
+               new CombatantComponent(hp: 16, defense: 1, power: 4),
+               new BehaviorComponent(behaviors.Get("Basic Monster")),
+               new CreatureComponent(5)),
+            new StatSet(CharacterStat.Make(CoreStats.XP, 100)))
+         { Blocks = true });
       }
 
       private void Add(Entity entityTemplate)

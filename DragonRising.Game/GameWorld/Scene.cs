@@ -1,5 +1,4 @@
-﻿using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
+﻿using DraconicEngine.EntitySystem;
 using LanguageExt;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 using DraconicEngine;
 using DragonRising.GameWorld.Components;
 using DragonRising.Storage;
+using DraconicEngine.RulesSystem;
 
 namespace DragonRising
 {
@@ -64,6 +64,11 @@ namespace DragonRising
             });
 
          recomputeFov = false;
+      }
+
+      public bool IsUnblockedBetween(Loc startLocation, Loc location)
+      {
+         return true;
       }
 
       public Tile GetTileSafe(int col, int row)
@@ -177,6 +182,20 @@ namespace DragonRising
                             where c != originator
                             let distance = (c.GetLocation() - originator.GetLocation()).KingLength
                             where distance < max && scene.IsVisible(c.GetLocation()) && c.HasComponent<CombatantComponent>() && originator.IsEnemy(c)
+                            orderby distance
+                            select c;
+
+         return closestEnemy.FirstOrDefault();
+      }
+
+      public static Option<Entity> ClosestEntity(this Scene scene, Entity originator, int? maxRange, IEntityFilter filter)
+      {
+         int max = maxRange + 1 ?? int.MaxValue;
+
+         var closestEnemy = from c in scene.EntityStore.AllCreatures()
+                            where c != originator
+                            let distance = (c.GetLocation() - originator.GetLocation()).KingLength
+                            where distance < max && scene.IsVisible(c.GetLocation()) && c.HasComponent<CombatantComponent>() && filter.Matches(originator, c)
                             orderby distance
                             select c;
 

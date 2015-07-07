@@ -6,17 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.Terminals;
-using DragonRising.GameWorld.Items;
 using DragonRising.GameWorld.Alligences;
 using static DragonRising.TempConstants;
 using LanguageExt;
 using static LanguageExt.Prelude;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.EntitySystem;
 using DragonRising.Storage;
 using DragonRising.GameWorld.Components;
+using DragonRising.GameWorld.Effects;
+using DragonRising.GameWorld.Conditions;
+using DraconicEngine.RulesSystem;
+using DragonRising.GameWorld.Powers;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class LoadGeneralDataScreen : IGameView
    {
@@ -103,38 +105,36 @@ namespace DragonRising.GameStates
       public string Message => "Loading Item...";
       public Task Load()
       {
-         var itemUsageLibrary = Library.Current.ItemUsages;
+         var powerLibrary = Library.Current.Powers;
 
-         itemUsageLibrary.Add("Basic Healing", new HealingItem());
-         itemUsageLibrary.Add("Basic Lightning", new LightningScroll());
-         itemUsageLibrary.Add("Basic Fireball", new FireballEffect());
-         itemUsageLibrary.Add("Basic Confusion", BehaviorReplacementItem.CreateConfusionItem());
+         powerLibrary.Add(new CureMinorWoundsPower());
+         powerLibrary.Add(new LightningPower());
+         powerLibrary.Add(new FireballPower());
+         powerLibrary.Add(new ConfuseNearestPower(8));
 
          var itemLibrary = Library.Current.Items;
 
-         itemLibrary.Add(Make(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet, RogueColors.Violet, itemUsageLibrary.Get("Basic Healing")));
-         itemLibrary.Add(Make(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow, RogueColors.LightYellow, itemUsageLibrary.Get("Basic Lightning")));
-         itemLibrary.Add(Make(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow, RogueColors.Yellow, itemUsageLibrary.Get("Basic Fireball")));
-         itemLibrary.Add(Make(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet, RogueColors.Violet, itemUsageLibrary.Get("Basic Confusion")));
-
-         //Library.SetItemLibrary(itemLibrary);
-
+         itemLibrary.Add(Make(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet, RogueColors.Violet, powerLibrary.Get("Cure Minor Wounds")));
+         itemLibrary.Add(Make(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow, RogueColors.LightYellow, powerLibrary.Get("Lightning bolt")));
+         itemLibrary.Add(Make(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow, RogueColors.Yellow, powerLibrary.Get("Fireball")));
+         itemLibrary.Add(Make(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet, RogueColors.Violet, powerLibrary.Get("Confuse Nearest")));
+         
          return Task.Delay(TimeSpan.FromSeconds(0.5));
       }
 
-      static Entity Make(string name, Glyph glyph, RogueColor seen, RogueColor explored, IItemUsage usage)
+      static Entity Make(string name, Glyph glyph, RogueColor seen, RogueColor explored, Power power)
       {
          return new Entity(name,
-            new DrawnComponent()
-            {
-               SeenCharacter = new Character(glyph, seen),
-               ExploredCharacter = new Character(glyph, explored),
-            },
-            new LocationComponent(),
-            new ItemComponent()
-            {
-               Usable = new Usable() { Usage = usage, IsCharged = true, Charges = 1, MaxCharges = 1 }
-            });
+            new ComponentSet(
+               new DrawnComponent()
+               {
+                  SeenCharacter = new Character(glyph, seen),
+                  ExploredCharacter = new Character(glyph, explored),
+               },
+               new ItemComponent()
+               {
+                  Usable = new Usable(power) { IsCharged = true, Charges = 1, MaxCharges = 1 }
+               }));
       }
    }
 

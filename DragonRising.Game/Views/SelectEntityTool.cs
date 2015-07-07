@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using DraconicEngine.GameViews;
 using DraconicEngine.Input;
 using DraconicEngine.Widgets;
@@ -18,7 +18,7 @@ using System.Threading;
 using DragonRising.GameWorld.Nodes;
 using DragonRising.Widgets;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class SelectEntityTool : IGameView<Entity>
    {
@@ -126,7 +126,7 @@ namespace DragonRising.GameStates
                {
                   var scenePoint = this.sceneView.ViewOffset + localPoint;
 
-                  var entity = this.availableEntities.FirstOrDefault(e => e.Loc.Location == scenePoint);
+                  var entity = this.availableEntities.FirstOrDefault(e => e.Entity.Location == scenePoint);
 
                   if (entity != null)
                   {
@@ -148,13 +148,13 @@ namespace DragonRising.GameStates
       public Task Draw()
       {
          int index = 0;
-         foreach(var entity in this.availableEntities)
+         foreach(var node in this.availableEntities)
          {
-            Loc displayLocation = entity.Loc.Location - this.sceneView.ViewOffset;
+            Loc displayLocation = node.Entity.Location - this.sceneView.ViewOffset;
 
-            var foreColor = index == this.currentSelectedIndex ? entity.Drawn.SeenCharacter.ForeColor : RogueColors.Gray;
+            var foreColor = index == this.currentSelectedIndex ? node.Drawn.SeenCharacter.ForeColor : RogueColors.Gray;
 
-            var character = new Character(entity.Drawn.SeenCharacter.Glyph, foreColor, RogueColors.White);
+            var character = new Character(node.Drawn.SeenCharacter.Glyph, foreColor, RogueColors.White);
 
             if (this.sceneTerminal.Size.Contains(displayLocation))
             {

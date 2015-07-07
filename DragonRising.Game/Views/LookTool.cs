@@ -1,7 +1,7 @@
 ﻿using DraconicEngine;
 using DraconicEngine.GameViews;
-using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.GameWorld.EntitySystem;
+using DragonRising.Commands.Requirements;
+using DraconicEngine.EntitySystem;
 using DraconicEngine.Input;
 using static DraconicEngine.Input.CommandGestureFactory;
 using DraconicEngine.Terminals;
@@ -15,7 +15,7 @@ using LanguageExt;
 using static LanguageExt.Prelude;
 using System.Threading;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class LookTool : IGameView
    {
@@ -65,12 +65,7 @@ namespace DragonRising.GameStates
             return TickResult.Finished;
          }
       }
-
-      private Task<RequirementFulfillment> GetFulfillment(Action arg)
-      {
-         throw new NotImplementedException();
-      }
-
+      
       public Task Draw()
       {
          return Task.FromResult(0);

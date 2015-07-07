@@ -4,16 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using DraconicEngine.GameViews;
 using DraconicEngine.Input;
 using DraconicEngine.Terminals;
-using DraconicEngine.GameWorld.EntitySystem.Components;
 using LanguageExt;
 using static LanguageExt.Prelude;
 using DragonRising.GameWorld.Components;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class InventoryScreen : IGameView<int?>
    {

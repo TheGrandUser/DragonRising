@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.EntitySystem;
 using System.Reactive.Linq;
 using DragonRising.GameWorld.Components;
 using DragonRising.GameWorld;
@@ -20,12 +19,12 @@ namespace DragonRising.Services
 
       public LifeDeathMonitorService(IEventAggregator eventAggregator)
       {
-         var creatureKilledEvent = eventAggregator.GetEvent<CreatureKilledEvent>();
+         var creatureKilledEvent = eventAggregator.GetEvent<CreatureKilledPubSubEvent>();
 
          subscriptions = creatureKilledEvent.Subscribe(OnKilled);
       }
 
-      private void OnKilled(CreatureKilledEventArgs args)
+      private void OnKilled(CreatureKilledEvent args)
       {
          var entity = args.CreatureKilled;
          if (entity == World.Current.Player)
@@ -37,31 +36,30 @@ namespace DragonRising.Services
             NpcDeath(entity);
          }
       }
-      
-      public Entity PlayerCreature { get; set; }
 
       private bool isPlayerDead;
       public bool HasPlayerLost { get { return isPlayerDead; } }
 
-      public void PlayerDeath(Entity obj)
+      public void PlayerDeath(Entity player)
       {
          MessageService.Current.PostMessage("You have died!", RogueColors.Red);
 
          this.isPlayerDead = true;
 
-         this.PlayerCreature.As<DrawnComponent>(dc => dc.SeenCharacter = new Character(Glyph.Percent, RogueColors.DarkRed));
-         this.PlayerCreature.As<LocationComponent>(lc => lc.Blocks = false);
-         this.PlayerCreature.As<BehaviorComponent>(bc => bc.ClearBehaviors());
+         player.As<DrawnComponent>(dc => dc.SeenCharacter = new Character(Glyph.Percent, RogueColors.DarkRed));
+         player.Blocks = false;
+         player.As<BehaviorComponent>(bc => bc.ClearBehaviors());
       }
       public void NpcDeath(Entity npc)
       {
          var npcCombat = npc.GetComponent<CombatantComponent>();
+         var xp = npc.GetXP();
 
-         MessageService.Current.PostMessage($"{npc.Name} is dead! You gain {npcCombat.XP} experience points", RogueColors.Orange);
-         
+         MessageService.Current.PostMessage($"{npc.Name} is dead! You gain {xp} experience points", RogueColors.Orange);
+
          npc.As<DrawnComponent>(dc => dc.SeenCharacter = new Character(Glyph.Percent, RogueColors.DarkRed));
-         npc.As<LocationComponent>(lc => lc.Blocks = false);
-         
+         npc.Blocks = false;
+
          npc.Name = "remains of " + npc.Name;
 
          npc.RemoveComponent<BehaviorComponent>();

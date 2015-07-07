@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.Actions;
-using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.RulesSystem;
+using DragonRising.Commands.Requirements;
+using DraconicEngine.EntitySystem;
 using LanguageExt;
 
 namespace DragonRising.Commands

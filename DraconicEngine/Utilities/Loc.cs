@@ -108,8 +108,8 @@ namespace DraconicEngine
       /// Gets whether the distance between the two given <see cref="Loc">Vecs</see> is within
       /// the given distance.
       /// </summary>
-      /// <param name="a">First Vec.</param>
-      /// <param name="b">Second Vec.</param>
+      /// <param name="a">First Loc.</param>
+      /// <param name="b">Second Loc.</param>
       /// <param name="distance">Maximum distance between them.</param>
       /// <returns><c>true</c> if the distance between <c>a</c> and <c>b</c> is less than or equal to <c>distance</c>.</returns>
       public static bool IsDistanceWithin(Loc a, Loc b, int distance)
@@ -120,7 +120,7 @@ namespace DraconicEngine
       }
 
       /// <summary>
-      /// Initializes a new instance of Vec with the given coordinates.
+      /// Initializes a new instance of Loc with the given coordinates.
       /// </summary>
       /// <param name="x">X coordinate.</param>
       /// <param name="y">Y coordinate.</param>
@@ -134,50 +134,21 @@ namespace DraconicEngine
       public int X;
       [JsonProperty]
       public int Y;
-
+      
       /// <summary>
-      /// Gets the area of a rectangle with opposite corners at (0, 0) and this Vec.
+      /// Converts this Loc to a human-readable string.
       /// </summary>
-      public int Area { get { return X * Y; } }
-
-      /// <summary>
-      /// Gets the absolute magnitude of the Vec squared.
-      /// </summary>
-      public int LengthSquared { get { return (X * X) + (Y * Y); } }
-
-      /// <summary>
-      /// Gets the absolute magnitude of the Vec.
-      /// </summary>
-      public double Length { get { return Math.Sqrt(LengthSquared); } }
-
-      /// <summary>
-      /// Gets the rook length of the Vec, which is the number of squares a rook on a chessboard
-      /// would need to move from (0, 0) to reach the endpoint of the Vec. Also known as
-      /// Manhattan or taxicab distance.
-      /// </summary>
-      public int RookLength { get { return Math.Abs(X) + Math.Abs(Y); } }
-
-      /// <summary>
-      /// Gets the king length of the Vec, which is the number of squares a king on a chessboard
-      /// would need to move from (0, 0) to reach the endpoint of the Vec. Also known as
-      /// Chebyshev distance.
-      /// </summary>
-      public int KingLength { get { return Math.Max(Math.Abs(X), Math.Abs(Y)); } }
-
-      /// <summary>
-      /// Converts this Vec to a human-readable string.
-      /// </summary>
-      /// <returns>A string representation of the Vec.</returns>
+      /// <returns>A string representation of the Loc.</returns>
       public override string ToString()
       {
          return X.ToString() + ", " + Y.ToString();
       }
 
       /// <summary>
-      /// Specifies whether this Vec contains the same coordinates as the specified Object. 
+      /// Specifies whether this Loc contains the same coordinates as the specified Object. 
       /// </summary>
       /// <param name="obj">Object to compare to.</param>
-      /// <returns><c>true</c> if <c>object</c> is a Vec with the same coordinates.</returns>
+      /// <returns><c>true</c> if <c>object</c> is a Loc with the same coordinates.</returns>
       public override bool Equals(object obj)
       {
          if (obj is Loc)
@@ -191,9 +162,9 @@ namespace DraconicEngine
       }
 
       /// <summary>
-      /// Returns a hash code for this Vec.
+      /// Returns a hash code for this Loc.
       /// </summary>
-      /// <returns>An integer value that specifies a hash value for this Vec.</returns>
+      /// <returns>An integer value that specifies a hash value for this Loc.</returns>
       public override int GetHashCode()
       {
          return ToString().GetHashCode();
@@ -224,51 +195,40 @@ namespace DraconicEngine
       }
 
       /// <summary>
-      /// Returns a new Vec whose coordinates are the coordinates of this Vec
-      /// with the given values added. This Vec is not modified.
+      /// Returns a new Loc whose coordinates are the coordinates of this Loc
+      /// with the given values added. This Loc is not modified.
       /// </summary>
       /// <param name="x">Distance to offset the X coordinate.</param>
       /// <param name="y">Distance to offset the Y coordinate.</param>
-      /// <returns>A new Vec offset by the given coordinates.</returns>
+      /// <returns>A new Loc offset by the given coordinates.</returns>
       public Loc Offset(int x, int y)
       {
          return new Loc(X + x, Y + y);
       }
 
       /// <summary>
-      /// Returns a new Vec whose coordinates are the coordinates of this Vec
-      /// with the given value added to the X coordinate. This Vec is not modified.
+      /// Returns a new Loc whose coordinates are the coordinates of this Loc
+      /// with the given value added to the X coordinate. This Loc is not modified.
       /// </summary>
       /// <param name="offset">Distance to offset the X coordinate.</param>
-      /// <returns>A new Vec offset by the given X coordinate.</returns>
+      /// <returns>A new Loc offset by the given X coordinate.</returns>
       public Loc OffsetX(int offset)
       {
          return new Loc(X + offset, Y);
       }
 
       /// <summary>
-      /// Returns a new Vec whose coordinates are the coordinates of this Vec
-      /// with the given value added to the Y coordinate. This Vec is not modified.
+      /// Returns a new Loc whose coordinates are the coordinates of this Loc
+      /// with the given value added to the Y coordinate. This Loc is not modified.
       /// </summary>
       /// <param name="offset">Distance to offset the Y coordinate.</param>
-      /// <returns>A new Vec offset by the given Y coordinate.</returns>
+      /// <returns>A new Loc offset by the given Y coordinate.</returns>
       public Loc OffsetY(int offset)
       {
          return new Loc(X, Y + offset);
       }
-
-      /// <summary>
-      /// Returns a new Vec whose coordinates are the coordinates of this Vec
-      /// with the given function applied.
-      /// </summary>
-      public Loc Each(Func<int, int> function)
-      {
-         if (function == null) throw new ArgumentNullException("function");
-
-         return new Loc(function(X), function(Y));
-      }
-
-      #region IEquatable<Vec> Members
+      
+      #region IEquatable<Loc> Members
 
       public bool Equals(Loc other)
       {

@@ -1,7 +1,7 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameWorld.Actions;
-using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.RulesSystem;
+using DragonRising.Commands.Requirements;
+using DraconicEngine.EntitySystem;
 using DraconicEngine.Terminals.Input;
 using LanguageExt;
 using System;
@@ -16,12 +16,12 @@ namespace DragonRising.Commands
    public abstract class ActionCommand : RogueCommand
    {
       public abstract string Name { get; }
-      public abstract ActionRequirement GetRequirement(Entity user);
-      public abstract Either<RogueAction, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment);
+      public abstract PlanRequirement GetRequirement(Entity user);
+      public abstract Either<ActionTaken, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment);
 
-      public static async Task<RogueAction> GetFinalActionAsync(
+      public static async Task<ActionTaken> GetFinalActionAsync(
          ActionCommand action, Entity entity,
-         Func<ActionRequirement, Task<RequirementFulfillment>> getFulfillment,
+         Func<PlanRequirement, Task<RequirementFulfillment>> getFulfillment,
          RequirementFulfillment preFulfillment = null)
       {
          var requirement = action.GetRequirement(entity);
@@ -29,9 +29,9 @@ namespace DragonRising.Commands
          RequirementFulfillment fulfillment = requirement is NoRequirement ? NoFulfillment.None :
             preFulfillment ?? await getFulfillment(requirement);
 
-         if(fulfillment is NoFulfillment && !(requirement is NoRequirement))
+         if(fulfillment is NoFulfillment && !(requirement is NoRequirement) || !requirement.MeetsRequirement(fulfillment))
          {
-            return RogueAction.Abort;
+            return ActionTaken.Abort;
          }
 
          var result = await action.PrepareAction(entity, fulfillment).Match(

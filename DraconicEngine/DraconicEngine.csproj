@@ -32,33 +32,37 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LanguageExt.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LanguageExt.0.1.2-beta\lib\LanguageExt.Core.dll</HintPath>
+      <HintPath>..\packages\LanguageExt.1.0.0\lib\LanguageExt.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Practices.Prism.PubSubEvents">
-      <HintPath>..\packages\Prism.PubSubEvents.1.1.2\lib\portable-sl5+windowsphone8+windows8+net40+wpa81\Microsoft.Practices.Prism.PubSubEvents.dll</HintPath>
+    <Reference Include="Microsoft.Experimental.Collections, Version=1.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Experimental.Collections.1.0.3-alpha\lib\portable-net45+win8+wp8\Microsoft.Experimental.Collections.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="ReactiveUI">
-      <HintPath>..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
+    <Reference Include="ReactiveUI, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\reactiveui-core.6.5.0\lib\Net45\ReactiveUI.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
+    <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.1.6.2\lib\Net45\Splat.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.34.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.1.34-rc\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Interactive">
-      <HintPath>..\packages\Ix-Main.1.2.2\lib\net45\System.Interactive.dll</HintPath>
+    <Reference Include="System.Interactive, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ix-Main.1.2.3\lib\net45\System.Interactive.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
@@ -84,38 +88,32 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterEventArgs.cs" />
-    <Compile Include="GameWorld\Actions\IActionResolver.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\ActionRequirement.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\AndMaybeRequirement.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\AllRequirement.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\ConfirmRequirement.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\DirectionRequirement.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\EntityRequirement.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\LocationRequirement.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\OrRequirement.cs" />
-    <Compile Include="GameWorld\Behaviors\ExternallyControlledBehavior.cs" />
-    <Compile Include="GameWorld\EntitySystem\DoesNotHaveAttribute.cs" />
+    <Compile Include="RulesSystem\Plan.cs" />
+    <Compile Include="Utilities\Areas.cs" />
+    <Compile Include="RulesSystem\Facts.cs" />
+    <Compile Include="RulesSystem\Effects.cs" />
+    <Compile Include="RulesSystem\Queries.cs" />
+    <Compile Include="RulesSystem\Rules.cs" />
+    <Compile Include="EntitySystem\DoesNotHaveAttribute.cs" />
+    <Compile Include="RulesSystem\Targeters.cs" />
     <Compile Include="Services\TimedEvents.cs" />
     <Compile Include="Services\TurnEffects.cs" />
     <Compile Include="Terminals\Input\RogueCommand.cs" />
     <Compile Include="Utilities\ColorPair.cs" />
     <Compile Include="Utilities\Direction.cs" />
-    <Compile Include="GameWorld\EntitySystem\ComponentMatchingFamily.cs" />
-    <Compile Include="GameWorld\Behaviors\Trees\BehaviorTree.cs" />
-    <Compile Include="GameWorld\Behaviors\Trees\BehaviorTreeEvent.cs" />
-    <Compile Include="GameWorld\Behaviors\Trees\BehaviorTreeOptimized.cs" />
-    <Compile Include="GameWorld\Behaviors\Trees\BehaviorTreeShared.cs" />
-    <Compile Include="GameWorld\Behaviors\Behavior.cs" />
-    <Compile Include="GameWorld\EntitySystem\Engine.cs" />
-    <Compile Include="GameWorld\Behaviors\JustPassBehavior.cs" />
-    <Compile Include="GameWorld\EntitySystem\Entity.cs" />
-    <Compile Include="GameWorld\EntitySystem\GameSystem.cs" />
-    <Compile Include="GameWorld\EntitySystem\Component.cs" />
-    <Compile Include="GameWorld\EntitySystem\IFamily.cs" />
-    <Compile Include="GameWorld\EntitySystem\Node.cs" />
-    <Compile Include="GameWorld\EntitySystem\NodePool.cs" />
-    <Compile Include="GameWorld\EntitySystem\ListIteratingSystem.cs" />
-    <Compile Include="GameWorld\Actions\RogueAction.cs" />
+    <Compile Include="EntitySystem\ComponentMatchingFamily.cs" />
+    <Compile Include="BehaviorTrees\BehaviorTree.cs" />
+    <Compile Include="BehaviorTrees\BehaviorTreeEvent.cs" />
+    <Compile Include="BehaviorTrees\BehaviorTreeOptimized.cs" />
+    <Compile Include="BehaviorTrees\BehaviorTreeShared.cs" />
+    <Compile Include="EntitySystem\Engine.cs" />
+    <Compile Include="EntitySystem\Entity.cs" />
+    <Compile Include="EntitySystem\GameSystem.cs" />
+    <Compile Include="EntitySystem\Component.cs" />
+    <Compile Include="EntitySystem\IFamily.cs" />
+    <Compile Include="EntitySystem\Node.cs" />
+    <Compile Include="EntitySystem\NodePool.cs" />
+    <Compile Include="EntitySystem\ListIteratingSystem.cs" />
     <Compile Include="GameViews\ConfirmDialog.cs" />
     <Compile Include="GameViews\GameView.cs" />
     <Compile Include="GameViews\PlayingScreen.cs" />
@@ -152,7 +150,6 @@
     <Compile Include="Terminals\Media\Transform.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Utilities\Obj.cs" />
-    <Compile Include="GameWorld\Effects\Effect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\ItemSelection.cs" />
     <Compile Include="Utilities\RogueColor.cs" />

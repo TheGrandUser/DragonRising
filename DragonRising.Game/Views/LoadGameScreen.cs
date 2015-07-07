@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.Terminals;
 using DragonRising.Storage;
-using DragonRising.GameWorld.Items;
 using LanguageExt;
 using static LanguageExt.Prelude;
 using DraconicEngine.Input;
@@ -15,7 +14,7 @@ using DraconicEngine.Terminals.Input;
 using System.Threading;
 using static DraconicEngine.Input.CommandGestureFactory;
 
-namespace DragonRising.GameStates
+namespace DragonRising.Views
 {
    class LoadGameScreen : IGameView
    {

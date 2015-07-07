@@ -8,9 +8,8 @@ using Microsoft.Practices.Prism.PubSubEvents;
 using DragonRising.GameWorld.Events;
 using DragonRising.GameWorld;
 using DragonRising.GameWorld.Components;
-using DraconicEngine.GameWorld.EntitySystem;
-using DragonRising.GameStates;
-using DraconicEngine.GameWorld;
+using DraconicEngine.EntitySystem;
+using DragonRising.Views;
 using DraconicEngine.GameViews;
 using LanguageExt;
 using static LanguageExt.Prelude;
@@ -26,36 +25,44 @@ namespace DragonRising
 
       public StatTracker(IEventAggregator eventAggregator)
       {
-         var @event = eventAggregator.GetEvent<CreatureKilledEvent>();
+         var @event = eventAggregator.GetEvent<CreatureKilledPubSubEvent>();
          this.subscription = @event.Subscribe(OnCreatureKilled);
       }
 
-      private void OnCreatureKilled(CreatureKilledEventArgs args)
+      private void OnCreatureKilled(CreatureKilledEvent args)
       {
-         if (args.Cause == "Entity" && args.KillingEntity == World.Current.Player)
+         args.KillingEntity.IfSome(player =>
          {
-            monstersKilled++;
-
-            var targetCombat = args.CreatureKilled.GetComponent<CombatantComponent>();
-            var playerCombat = args.KillingEntity.GetComponent<CombatantComponent>();
-            playerCombat.XP += targetCombat.XP;
-
-            var playerLevel = args.KillingEntity.GetComponent<LevelComponent>();
-
-            var levelUpXp = LevelingPolicy.XpForNextLevel(playerLevel.Level);
-            if (playerCombat.XP >= levelUpXp)
+            if (player == World.Current.Player)
             {
-               playerLevel.Level += 1;
-               playerCombat.XP -= levelUpXp;
-               
+               monstersKilled++;
 
-               MessageService.Current.PostMessage("Your battle skills grow stronger! You reached level " + playerLevel.Level, RogueColors.Yellow);
+               var monster = args.CreatureKilled;
 
-               MyPlayingScreen.Current.AddAsyncInterruption(
-                  ChooseLevelUpBenefit,
-                  ChooseLevelUpBenefitStillApplies);
+               var monsterXP = monster.GetXP();
+               var playerXP = player.GetXP();
+
+               var targetCombat = monster.GetComponent<CombatantComponent>();
+               var playerCombat = player.GetComponent<CombatantComponent>();
+               playerXP.Value += monsterXP;
+
+               var playerLevel = player.GetLevel();
+
+               var levelUpXp = LevelingPolicy.XpForNextLevel(playerLevel.Value);
+               if (playerXP >= levelUpXp)
+               {
+                  playerLevel.Value += 1;
+                  playerXP.Value -= levelUpXp;
+
+
+                  MessageService.Current.PostMessage("Your battle skills grow stronger! You reached level " + playerLevel, RogueColors.Yellow);
+
+                  MyPlayingScreen.Current.AddAsyncInterruption(
+                     ChooseLevelUpBenefit,
+                     ChooseLevelUpBenefitStillApplies);
+               }
             }
-         }
+         });
       }
 
       bool ChooseLevelUpBenefitStillApplies()

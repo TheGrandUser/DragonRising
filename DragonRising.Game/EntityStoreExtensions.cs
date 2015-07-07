@@ -1,5 +1,5 @@
 ﻿using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using DragonRising.GameWorld.Components;
 using System;
 using System.Collections.Generic;
@@ -13,12 +13,12 @@ namespace DragonRising
    {
       public static IEnumerable<Entity> GetEntitiesAt(this IEntityStore store, Loc location)
       {
-         return store.Entities.Where(e => e.GetComponentOrDefault<LocationComponent>()?.Location == location);
+         return store.Entities.Where(e => e.Location == location);
       }
 
       public static Entity GetCreatureAt(this IEntityStore store, Loc location)
       {
-         var creature = store.AllCreatures().FirstOrDefault(c => c.GetComponentOrDefault<LocationComponent>()?.Location == location);
+         var creature = store.AllCreatures().FirstOrDefault(c => c.Location == location);
 
          return creature;
       }
@@ -32,7 +32,7 @@ namespace DragonRising
       {
          foreach (var entity in store.AllItems())
          {
-            if (entity.GetComponentOrDefault<LocationComponent>()?.Location == location)
+            if (entity.Location == location)
             {
                yield return entity;
             }
