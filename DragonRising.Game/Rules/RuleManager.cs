@@ -1,0 +1,55 @@
+﻿using DraconicEngine.RulesSystem;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DragonRising.Rules
+{
+   public class RulesManager : IRulesManager
+   {
+      MultiValueDictionary<Type, IRule> rules = MultiValueDictionary<Type, IRule>.Create(
+         () => new SortedSet<IRule>(Comparer<IRule>.Create((x, y) => x.Priority - y.Priority)));
+
+      public void ProcessFact(Fact gameEvent)
+      {
+         Queue<Fact> factsToProcess = new Queue<Fact>();
+         factsToProcess.Enqueue(gameEvent);
+         while (factsToProcess.Count > 0)
+         {
+            var fact = factsToProcess.Dequeue();
+
+            if (rules.ContainsKey(fact.GetType()))
+            {
+               var rules = this.rules[fact.GetType()];
+
+               foreach(var rule in rules)
+               {
+                  var result = rule.Do(fact);
+                  if (!result.Interupt)
+                  {
+                     foreach (var newFact in result.Facts)
+                     {
+                        factsToProcess.Enqueue(newFact);
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      public void AddRule<TFact>(IRule<TFact> rule)
+         where TFact : Fact
+      {
+         rules.Add(typeof(TFact), rule);
+      }
+   }
+
+   public interface IRulesManager
+   {
+      void AddRule<TFact>(IRule<TFact> rule) where TFact : Fact;
+
+      void ProcessFact(Fact gameEvent);
+   }
+}
