@@ -16,14 +16,24 @@ namespace DraconicEngine.RulesSystem
       }
    }
 
+   [Flags]
+   public enum FactResults
+   {
+      Nothing,
+      Succesful,
+      SuperSucessful,
+      Unsuccessful
+   }
    public sealed class FactInterupted<TFact> : Fact
    {
-      public FactInterupted(TFact fact)
+      public FactInterupted(TFact fact, string reason)
       {
          Fact = fact;
+         Reason = reason;
       }
 
       public TFact Fact { get; }
+      public string Reason { get; }
    }
 
    public abstract class ActionTaken : Fact

@@ -17,6 +17,8 @@ using DragonRising.GameWorld.Effects;
 using DragonRising.GameWorld.Conditions;
 using DraconicEngine.RulesSystem;
 using DragonRising.GameWorld.Powers;
+using DragonRising.Plans;
+using DragonRising.GameWorld.Powers.Spells;
 
 namespace DragonRising.Views
 {
@@ -105,24 +107,19 @@ namespace DragonRising.Views
       public string Message => "Loading Item...";
       public Task Load()
       {
-         var powerLibrary = Library.Current.Powers;
-
-         powerLibrary.Add(new CureMinorWoundsPower());
-         powerLibrary.Add(new LightningPower());
-         powerLibrary.Add(new FireballPower());
-         powerLibrary.Add(new ConfuseNearestPower(8));
-
+         var spellLibrary = Library.Current.Spells;
+         
          var itemLibrary = Library.Current.Items;
 
-         itemLibrary.Add(Make(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet, RogueColors.Violet, powerLibrary.Get("Cure Minor Wounds")));
-         itemLibrary.Add(Make(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow, RogueColors.LightYellow, powerLibrary.Get("Lightning bolt")));
-         itemLibrary.Add(Make(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow, RogueColors.Yellow, powerLibrary.Get("Fireball")));
-         itemLibrary.Add(Make(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet, RogueColors.Violet, powerLibrary.Get("Confuse Nearest")));
+         itemLibrary.Add(Make(HealingPotion, Glyph.ExclamationMark, RogueColors.Violet, RogueColors.Violet, spellLibrary.Get("Cure Minor Wounds")));
+         itemLibrary.Add(Make(ScrollOfLightningBolt, Glyph.Pound, RogueColors.LightYellow, RogueColors.LightYellow, spellLibrary.Get("Lightning Jolt")));
+         itemLibrary.Add(Make(ScrollOfFireball, Glyph.Pound, RogueColors.Yellow, RogueColors.Yellow, spellLibrary.Get("Fireball")));
+         itemLibrary.Add(Make(ScrollOfConfusion, Glyph.Pound, RogueColors.Violet, RogueColors.Violet, spellLibrary.Get("Confusion")));
          
          return Task.Delay(TimeSpan.FromSeconds(0.5));
       }
 
-      static Entity Make(string name, Glyph glyph, RogueColor seen, RogueColor explored, Power power)
+      static Entity Make(string name, Glyph glyph, RogueColor seen, RogueColor explored, Spell spell)
       {
          return new Entity(name,
             new ComponentSet(
@@ -133,7 +130,7 @@ namespace DragonRising.Views
                },
                new ItemComponent()
                {
-                  Usable = new Usable(power) { IsCharged = true, Charges = 1, MaxCharges = 1 }
+                  Usable = new SpellUsable(spell) { IsCharged = true, Charges = 1, MaxCharges = 1 }
                }));
       }
    }

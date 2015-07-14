@@ -17,10 +17,11 @@ using DragonRising.Plans.Effects;
 using DragonRising.Plans.Queries;
 using DragonRising.Plans.Targeters;
 using DragonRising.Plans.EntityFilters;
+using DragonRising.Plans;
 
 namespace DragonRising.GameWorld.Powers
 {
-   class FireballPower : Power
+   public class FireballPower : EffectPlan
    {
       private readonly LocationInRangeTargeter targeter;
 
@@ -39,7 +40,7 @@ namespace DragonRising.GameWorld.Powers
                .Add(new AffectAllInRangeQuery(radius,
                   OnlyCreaturesFilter.Instance,
                   new DamageEffect(new Damage(damage, "Fire"))))
-               .Add(new SensoryEffect(
+               .Add(new SensoryEffect("A great ball of fire bursts.",
                   new Sensed(Sense.Sound, "Explosion", "Fiery", senseIntensity),
                   new Sensed(Sense.Sight, "Flame", "Bright", senseIntensity))).Finish();
       }

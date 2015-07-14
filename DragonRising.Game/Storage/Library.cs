@@ -12,7 +12,7 @@ namespace DragonRising.Storage
       IBehaviorLibrary Behaviors { get; }
       IEntityLibrary Entities { get; }
       ITileLibrary Tiles { get; }
-      IPowerLibrary Powers { get; }
+      ISpellLibrary Spells { get; }
    }
 
    public static class Library

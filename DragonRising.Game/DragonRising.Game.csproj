@@ -118,6 +118,7 @@
     <Compile Include="EntityExtensions.cs" />
     <Compile Include="EntityStoreExtensions.cs" />
     <Compile Include="Commands\Requirements\EntityRequirement.cs" />
+    <Compile Include="Facts\Actions\CastSpellFact.cs" />
     <Compile Include="Facts\Events\HealingEvents.cs" />
     <Compile Include="GameWorld\Behaviors\Behavior.cs" />
     <Compile Include="GameWorld\Behaviors\ExternallyControlledBehavior.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="GameWorld\Powers\ConfuseNearestPower.cs" />
     <Compile Include="GameWorld\Powers\HealPower.cs" />
     <Compile Include="GameWorld\Powers\LightningPower.cs" />
+    <Compile Include="GameWorld\Powers\Spells\Spell.cs" />
     <Compile Include="Plans\Effects\ApplyTemporaryCondition.cs" />
     <Compile Include="Facts\Events\SensoryEvents\NoiseEvents.cs" />
     <Compile Include="GameWorld\Conditions\ConfusedCondition.cs" />
@@ -163,7 +165,7 @@
     <Compile Include="Rules\Rule.cs" />
     <Compile Include="Rules\RuleManager.cs" />
     <Compile Include="Rules\ExplorationRules\SearchProcessRule.cs" />
-    <Compile Include="Rules\MagicRules\UseASpellProcessRule.cs" />
+    <Compile Include="Rules\MagicRules\UseASpellRule.cs" />
     <Compile Include="Views\LoadGeneralDataScreen.cs" />
     <Compile Include="Views\NewGameScreen.cs" />
     <Compile Include="Views\LevelUpScreen.cs" />
@@ -209,7 +211,7 @@
     <Compile Include="GameWorld\Nodes\DrawNode.cs" />
     <Compile Include="GameWorld\Nodes\ItemDrawNode.cs" />
     <Compile Include="GameWorld\Nodes\SeeableNode.cs" />
-    <Compile Include="GameWorld\Powers\Power.cs" />
+    <Compile Include="Plans\EffectPlan.cs" />
     <Compile Include="GameWorld\Scene.cs" />
     <Compile Include="GameWorld\Systems\ActionSystem.cs" />
     <Compile Include="GameWorld\Systems\RenderSystem.cs" />
@@ -252,9 +254,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Facts\Actions\Requirements\" />
     <Folder Include="GameWorld\Items\" />
-    <Folder Include="GameWorld\Powers\Spells\" />
     <Folder Include="Rules\SocialRules\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

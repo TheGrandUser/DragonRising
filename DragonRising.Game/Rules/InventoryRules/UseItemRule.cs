@@ -20,12 +20,9 @@ namespace DragonRising.Rules.InventoryRules
       {
          var itemComponent = action.Item.GetComponent<ItemComponent>();
          var usable = itemComponent.Usable;
-
-         var user = action.User;
-         var plan = action.FinalizedPlan;
-
-         var facts = plan.GetFacts(user, plan);
-
+         
+         var fact = action.ItemFact;
+         
          if (usable.IsCharged)
          {
             usable.Charges--;
@@ -36,7 +33,7 @@ namespace DragonRising.Rules.InventoryRules
             }
          }
 
-         return facts;
+         return fact;
       }
    }
 }

@@ -16,13 +16,13 @@ namespace DragonRising.Plans.Effects
    {
       private Sensed[] sensedThings;
 
-      public SensoryEffect(params Sensed[] sensedThings)
+      public SensoryEffect(string message, params Sensed[] sensedThings)
       {
+         this.Message = message;
          this.sensedThings = sensedThings;
       }
 
-      public int Loudness { get; }
-
+      public string Message { get; }
       public IEnumerable<Fact> GetFacts(Entity initiator, Loc target)
       {
          yield return new SensoryEvent(target, this.sensedThings);

@@ -12,6 +12,7 @@ using DragonRising.GameWorld.Behaviors;
 using DragonRising.GameWorld.Components;
 using DragonRising.GameWorld.Nodes;
 using DragonRising.GameWorld.Powers;
+using DragonRising.Plans;
 using DragonRising.Plans.Targeters;
 using DragonRising.Storage;
 using DragonRising.Views;
@@ -229,10 +230,10 @@ namespace DragonRising
             {
                if (itemRequirement.NeedsItemsFulfillment)
                {
-                  var finalizedPlan = await GetPowerTargets(itemComponent.Usable.Power);
-
+                  var finalizedPlan = await GetPowerTargets(itemComponent.Usable.Plan);
+                  
                   return finalizedPlan.Match(
-                     Some: plan => ItemFulfillment.Create(item, plan),
+                     Some: plan => ItemFulfillment.Create(item, itemComponent.Usable.GetFact(PlayerCreature, plan)),
                      None: () => NoFulfillment.None);
                }
                else
@@ -502,7 +503,7 @@ namespace DragonRising
          }
       }
 
-      private async Task<Option<FinalizedPlan>> GetPowerTargets(Power power)
+      private async Task<Option<FinalizedPlan>> GetPowerTargets(EffectPlan power)
       {
          var origin = PlayerCreature.Location;
 

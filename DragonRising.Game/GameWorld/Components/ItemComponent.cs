@@ -11,6 +11,9 @@ using DraconicEngine;
 using DraconicEngine.RulesSystem;
 using DragonRising.GameWorld.Powers;
 using System.Collections.Immutable;
+using DragonRising.Plans;
+using DragonRising.GameWorld.Powers.Spells;
+using DragonRising.Facts.Actions;
 
 namespace DragonRising.GameWorld.Components
 {
@@ -40,22 +43,22 @@ namespace DragonRising.GameWorld.Components
       }
    }
 
-   public class Usable
+   public abstract class Usable
    {
-      public Usable(Power power)
+      public Usable(EffectPlan plan)
       {
-         this.Power = power;
+         this.Plan = plan;
       }
 
-      public Usable(Usable original, bool fresh)
+      protected Usable(Usable original, bool fresh)
       {
-         this.Power = original.Power;
+         this.Plan = original.Plan;
          this.MaxCharges = original.MaxCharges;
          this.IsCharged = original.IsCharged;
          this.Charges = fresh ? MaxCharges : original.Charges;
       }
 
-      public Power Power { get; }
+      public EffectPlan Plan { get; }
       public int MaxCharges { get; set; }
 
       public int Charges { get; set; }
@@ -63,7 +66,32 @@ namespace DragonRising.GameWorld.Components
 
       public Usable Clone(bool fresh)
       {
-         return new Usable(this, fresh);
+         return CloneCore(fresh);
+      }
+
+      protected abstract Usable CloneCore(bool fresh);
+
+      public abstract Fact GetFact(Entity user, FinalizedPlan plan);
+   }
+
+   public class SpellUsable : Usable
+   {
+      Spell spell;
+
+      public SpellUsable(Spell spell)
+         : base(spell.Plan)
+      {
+         this.spell = spell;
+      }
+
+      public override Fact GetFact(Entity user, FinalizedPlan plan)
+      {
+         return new CastSpellFact(user, spell, plan);
+      }
+
+      protected override Usable CloneCore(bool fresh)
+      {
+         throw new NotImplementedException();
       }
    }
 
