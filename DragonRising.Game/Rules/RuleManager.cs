@@ -27,12 +27,14 @@ namespace DragonRising.Rules
                foreach(var rule in rules)
                {
                   var result = rule.Do(fact);
+                  
+                  foreach (var newFact in result.Facts)
+                  {
+                     factsToProcess.Enqueue(newFact);
+                  }
                   if (!result.Interupt)
                   {
-                     foreach (var newFact in result.Facts)
-                     {
-                        factsToProcess.Enqueue(newFact);
-                     }
+                     break;
                   }
                }
             }
@@ -49,7 +51,7 @@ namespace DragonRising.Rules
    public interface IRulesManager
    {
       void AddRule<TFact>(IRule<TFact> rule) where TFact : Fact;
-
+      
       void ProcessFact(Fact gameEvent);
    }
 }

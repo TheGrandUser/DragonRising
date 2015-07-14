@@ -12,12 +12,11 @@ namespace DragonRising.Libraries
       public IEntityLibrary Entities { get; }
 
       public IItemLibrary Items { get; }
-
-      public IPowerLibrary Powers { get; }
-
+      
       public ITileLibrary Tiles { get; }
       
       public IBehaviorLibrary Behaviors { get; }
+      public ISpellLibrary Spells { get; }
 
       public SimpleLibrary()
       {
@@ -26,7 +25,7 @@ namespace DragonRising.Libraries
 
          this.Entities = entities;
          this.Items = new SimpleItemLibrary();
-         this.Powers = new SimplePowerLibrary();
+         this.Spells = new SimpleSpellLibrary();
          this.Tiles = new SimpleTileLibrary();
 
          entities.Initialize(this.Behaviors);

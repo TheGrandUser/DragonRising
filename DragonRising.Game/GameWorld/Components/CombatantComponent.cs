@@ -65,6 +65,7 @@ namespace DragonRising.GameWorld.Components
          maxHp = newOwner.GetStat<int>("MaxHP");
          power = newOwner.GetStat<int>("Power");
          defense = newOwner.GetStat<int>("Defense");
+         isAlive = newOwner.GetStat<bool>("IsAlive");
       }
    }
 }

@@ -6,6 +6,8 @@ using DragonRising.GameWorld.Alligences;
 using DragonRising.GameWorld.Behaviors;
 using DragonRising.GameWorld.Components;
 using DragonRising.GameWorld.Powers;
+using DragonRising.GameWorld.Powers.Spells;
+using DragonRising.Plans;
 using DragonRising.Properties;
 using DragonRising.Storage;
 using LanguageExt;
@@ -57,7 +59,7 @@ namespace DragonRising
          //serializer.Converters.Add(new SomeTypeConverter());
          serializer.Converters.Add(new EntityConverter());
          serializer.Converters.Add(new CharacterConverter());
-         serializer.Converters.Add(new PowerConverter());
+         serializer.Converters.Add(new SpellConverter());
          serializer.Converters.Add(new BehaviorComponentConverter());
          serializer.Converters.Add(new BehaviorConverter());
          serializer.Converters.Add(new AlligenceConverter());
@@ -630,11 +632,11 @@ namespace DragonRising
       }
    }
 
-   public class PowerConverter : JsonConverter
+   public class SpellConverter : JsonConverter
    {
       public override bool CanConvert(Type objectType)
       {
-         return typeof(Power).IsAssignableFrom(objectType);
+         return typeof(EffectPlan).IsAssignableFrom(objectType);
       }
 
       public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -647,12 +649,12 @@ namespace DragonRising
          var name = reader.Value.ToString();
          var context = (SerializationContext)serializer.Context.Context;
 
-         return context.Library.Powers.Get(name);
+         return context.Library.Spells.Get(name);
       }
 
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
       {
-         var power = (Power)value;
+         var power = (Spell)value;
          var context = (SerializationContext)serializer.Context.Context;
          writer.WriteValue(power.Name);
       }

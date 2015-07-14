@@ -17,12 +17,12 @@ namespace DragonRising.GameWorld.Actions
    {
       public Entity User { get; }
       public Entity Item { get; }
-      public FinalizedPlan FinalizedPlan { get; }
+      public Fact ItemFact { get; }
 
-      public UseItemAction(Some<Entity> user, Some<Entity> item, Some<FinalizedPlan> itemReqFulfillment)
+      public UseItemAction(Some<Entity> user, Some<Entity> item, Some<Fact> itemFact)
       {
          User = user;
-         this.FinalizedPlan = itemReqFulfillment;
+         this.ItemFact = itemFact;
          this.Item = item;
       }
    }

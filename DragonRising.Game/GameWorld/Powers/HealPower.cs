@@ -13,10 +13,11 @@ using DraconicEngine.RulesSystem;
 using DragonRising.Facts.Events;
 using System.Diagnostics;
 using DragonRising.Plans.Effects;
+using DragonRising.Plans;
 
 namespace DragonRising.GameWorld.Powers
 {
-   class CureMinorWoundsPower : Power
+   public class CureMinorWoundsPower : EffectPlan
    {
       IEffect effect;
 

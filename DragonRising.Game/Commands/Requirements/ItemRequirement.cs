@@ -37,14 +37,14 @@ namespace DragonRising.Commands.Requirements
    public class ItemFulfillment : RequirementFulfillment
    {
       public Entity Item { get; }
-      public Option<FinalizedPlan> FinalizedPlan { get; }
-      private ItemFulfillment(Some<Entity> item, Option<FinalizedPlan> finalizedPlan)
+      public Option<Fact> FinalizedPlan { get; }
+      private ItemFulfillment(Some<Entity> item, Option<Fact> finalizedPlan)
       {
          this.Item = item;
          this.FinalizedPlan = finalizedPlan;
       }
 
-      public static RequirementFulfillment Create(Some<Entity> item, Option<FinalizedPlan> finalizedPlan)
+      public static RequirementFulfillment Create(Some<Entity> item, Option<Fact> finalizedPlan)
       {
          return new ItemFulfillment(item, finalizedPlan);
       }

@@ -32,7 +32,7 @@ namespace DraconicEngine.RulesSystem
 
       public ImmutableDictionary<ITargeter, TargetResult> TargetResults => targetResults;
 
-      public ImmutableList<Fact> GetFacts(Entity user, FinalizedPlan plan)
+      public ImmutableList<Fact> GetFacts(Entity user)
       {
          var effectFacts = this.effects.SelectMany(effect =>
             effect.Match(

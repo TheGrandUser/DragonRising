@@ -16,10 +16,11 @@ using DragonRising.Plans.Effects;
 using DragonRising.Plans.Targeters;
 using DragonRising.Rules.CombatRules;
 using DragonRising.GameWorld.Events;
+using DragonRising.Plans;
 
 namespace DragonRising.GameWorld.Powers
 {
-   class LightningPower : Power
+   public class LightningPower : EffectPlan
    {
       ILocationBasedTargeter targeter;
       public LightningPower(int range = 5, int damage = 20)

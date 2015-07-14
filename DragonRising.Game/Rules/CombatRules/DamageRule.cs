@@ -13,6 +13,7 @@ using LanguageExt;
 using static LanguageExt.Prelude;
 using DraconicEngine.RulesSystem;
 using DraconicEngine;
+using DragonRising.GameWorld;
 
 namespace DragonRising.Rules.CombatRules
 {
@@ -32,7 +33,7 @@ namespace DragonRising.Rules.CombatRules
          {
             targetCombatant.IsAlive = false;
             targetCombatant.Owner.SetBlocks(false);
-            
+
             var eventAggregator = ServiceLocator.Current.GetInstance<IEventAggregator>();
             var creatureKilledEvent = eventAggregator.GetEvent<CreatureKilledPubSubEvent>();
             creatureKilledEvent.Publish(targetCombatant.Owner, "Entity", damageParameters.Initiator);
@@ -53,13 +54,43 @@ namespace DragonRising.Rules.CombatRules
    {
       public override RuleResult Do(InflictDamageEvent gameEvent)
       {
-         if (gameEvent.Damage.Type != "Normal")
+         if (World.Current.Scene.IsVisible(gameEvent.Target.Location))
          {
-            MessageService.Current.PostMessage(gameEvent.Target.Name + $"suffers {gameEvent.Damage.Amount} {gameEvent.Damage.Type} damage.", RogueColors.LightBlue);
+            var isSelf = gameEvent.Target == World.Current.Player;
+            var prefix = isSelf ? "You suffer" : $"The {gameEvent.Target.Name} suffers";
+            var message = gameEvent.Damage.Type != "Normal" ?
+               $"{prefix} {gameEvent.Damage.Amount} {gameEvent.Damage.Type} damage." :
+               $"{prefix} {gameEvent.Damage.Amount} damage.";
+
+            MessageService.Current.PostMessage(message,
+                  isSelf ? RogueColors.Red : RogueColors.LightBlue);
          }
-         else
+
+         return RuleResult.Empty;
+      }
+
+      public override int Priority => 1;
+   }
+
+   class ReportInteruptedDamageRule : Rule<FactInterupted<InflictDamageEvent>>
+   {
+      public override int Priority => 1;
+
+      public override RuleResult Do(FactInterupted<InflictDamageEvent> gameEvent)
+      {
+         if (World.Current.Scene.IsVisible(gameEvent.Fact.Target.Location))
          {
-            MessageService.Current.PostMessage(gameEvent.Target.Name + $"suffers {gameEvent.Damage.Amount} damage.", RogueColors.LightBlue);
+            if (gameEvent.Reason == "Negated")
+            {
+               var isSelf = gameEvent.Fact.Target == World.Current.Player;
+               var prefix = isSelf ? "You ignore" : $"The {gameEvent.Fact.Target.Name} ignores";
+               var message = gameEvent.Fact.Damage.Type != "Normal" ?
+                  $"{prefix} {gameEvent.Fact.Damage.Amount} {gameEvent.Fact.Damage.Type} damage." :
+                  $"{prefix} {gameEvent.Fact.Damage.Amount} damage.";
+
+               MessageService.Current.PostMessage(message,
+                  isSelf ? RogueColors.LightBlue : RogueColors.Yellow);
+            }
          }
 
          return RuleResult.Empty;

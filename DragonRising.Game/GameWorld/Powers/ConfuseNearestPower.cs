@@ -8,10 +8,11 @@ using DragonRising.Plans.Queries;
 using DragonRising.GameWorld.Effects;
 using DragonRising.GameWorld.Conditions;
 using DragonRising.Plans.EntityFilters;
+using DragonRising.Plans;
 
 namespace DragonRising.GameWorld.Powers
 {
-   class ConfuseNearestPower : Power
+   public class ConfuseNearestPower : EffectPlan
    {
       ILocationBasedQuery query;
 

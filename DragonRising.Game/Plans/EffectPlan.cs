@@ -10,11 +10,11 @@ using DraconicEngine.RulesSystem;
 using DraconicEngine;
 using LanguageExt;
 
-namespace DragonRising.GameWorld.Powers
+namespace DragonRising.Plans
 {
-   public abstract class Power
+   public abstract class EffectPlan
    {
-      public Power(string name)
+      public EffectPlan(string name)
       {
          Name = name;
       }
@@ -25,16 +25,6 @@ namespace DragonRising.GameWorld.Powers
       public virtual IEnumerable<ILocationBasedQuery> Queries { get; } = Enumerable.Empty<ILocationBasedQuery>();
       public virtual IEnumerable<IEffect> Effects { get; } = Enumerable.Empty<IEffect>();
       
-      //public PlanRequirement Requirements { get; set; }
-
-      //public List<PowerNode> Nodes { get { return this.nodes; } }
-      //public List<NodeConnection> Connections { get { return this.connections; } }
-
-      //public virtual ImmutableList<Fact> Do(Entity initiator, RequirementFulfillment fulfilment)
-      //{
-      //   return ImmutableList<Fact>.Empty;
-      //}
-
 
 
       // A Power is an acyclical directed Graph
