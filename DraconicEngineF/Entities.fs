@@ -5,13 +5,21 @@ open System.Collections.Generic
 
 type EntityId = EntityId of int
 type Entity = { name: string; location: Loc; id: EntityId }
+type EntityFilter = Entity -> bool
 
-type byEntity<'T> = Dictionary<EntityId, 'T>
-let private addTo (d: byEntity<'T>) k v = d.Add(k, v)
-let private removeFrom (d: byEntity<'T>) k = d.Remove(k)
-let private has (d: byEntity<'T>) k = d.ContainsKey(k)
-let private getFrom (d: byEntity<'T>) k = d.[k]
-let private update (d: byEntity<'T>) k v = d.[k] <- v
+type CompReply<'T> = AsyncReplyChannel<'T option>
+type EnityMapMessage<'T> =
+| SetComp of EntityId * 'T
+| RemoveComp of EntityId
+| GetComp of EntityId * CompReply<'T>
+
+type EntityMapping<'T> = EntityMapping of MailboxProcessor<EnityMapMessage<'T>>
+let private setTo (EntityMapping d) k v = SetComp (k, v) |> d.Post
+let private removeFrom (EntityMapping d) k = RemoveComp k |> d.Post
+//let private has (EntityMapping d) k = d.ContainsKey(k)
+let private getFrom (EntityMapping d) k = d.PostAndReply (fun r -> GetComp(k, r))
+let private getFromAsync (EntityMapping d) k = d.PostAndAsyncReply (fun r -> GetComp(k, r))
+//let private update (EntityMapping d) k v = d.[k] <- v
 
 let private onNext observer a =
    match observer with
@@ -23,19 +31,39 @@ type EntityUpdate<'T> =
 | ComponentRemoving of EntityId * 'T
 | ComponentRemoved of EntityId * 'T
 
-let addComponent repository observer {id=i} c =
-   addTo repository i c
-   ComponentAdded (i, c) |> onNext observer
-let entityHas repository { id = i } = has repository i
+let setComponent repository { id = i } c = setTo repository i c
+let getComponent repository { id = i } = getFrom repository i   
+let getComponentAsync repository { id = i } = getFromAsync repository i
 
-let removeComponent repository observer {id=i} c =
-   if has repository i then
+let removeComponent repository { id = i } =
+   match getFrom repository i with
+   | Some c ->
       let c = getFrom repository i
-      ComponentRemoving (i, c) |> onNext observer
-      let result = repository.Remove(i)
-      ComponentRemoved (i, c) |> onNext observer
-      result
-   else false
+      //ComponentRemoving (i, c) |> onNext observer
+      removeFrom repository i
+      //ComponentRemoved (i, c) |> onNext observer
+      true
+   | None -> false
 
-let getForEntity repository { id = i } = getFrom repository i
-let updateEntity repository { id = i } c = update repository i c
+type ListenerId = ListenerId of int
+type MappingListeningMessage<'T> =
+| Listen of ('T option -> unit) * ((unit -> unit) -> unit)
+| Stop of ListenerId
+
+let makeEntityPropMap<'T>() = EntityMapping (MailboxProcessor<EnityMapMessage<'T>>.Start(fun inbox ->
+   let rec messageLoop entityMap = async {
+         let! msg = inbox.Receive()
+         let newMap =
+            match msg with
+            | SetComp (i, c) -> 
+               entityMap |> Map.add i c
+            | RemoveComp i -> entityMap |> Map.remove i
+            | GetComp (i, r) ->
+               entityMap |> Map.tryFind i |> r.Reply
+               entityMap
+
+         return! messageLoop newMap
+   }
+   
+   messageLoop (Map.empty<EntityId, 'T>)
+   ))
