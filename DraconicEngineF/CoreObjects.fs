@@ -1,5 +1,8 @@
 ﻿module DraconicEngineF.CoreObjects
+open System
+open TryParser
 
+type Stuff = Todo
 type Direction =
    | East
    | Southeast
@@ -10,18 +13,48 @@ type Direction =
    | North
    | Northeast
    
+type DirectionLimit =
+   | Eightway
+   | Cardinal
+   | FullVector
+
 [<Struct>]
 type Vector(x: int, y: int) =
    member this.X = x
    member this.Y = y
 
-   member this.KingLength = 
-      let x' = abs x
-      let y' = abs y
-      max x' y'
-   member this.RookLength = abs x + abs y
+   member this.LengthSquard = this.X * this.X + this.Y * this.Y
    member this.Length = sqrt(double (this.X * this.X + this.Y * this.Y))
+   member this.RookLength = abs this.X + abs this.Y
+   member this.KingLength = max this.X this.Y
+   override this.ToString() = this.X.ToString() + ", " + this.Y.ToString()
    static member (+) (v1: Vector, v2: Vector) = Vector(v1.X + v2.X, v1.Y + v2.Y)
+   static member (-) (a: Vector, b: Vector) = Vector(a.X - b.X, a.Y - b.Y)
+   static member (/) (v: Vector, i) = Vector(v.X / i, v.Y / i)
+   new (d: Direction) =
+      match d with
+      | East -> Vector(1, 0)
+      | Southeast -> Vector(1, 1)
+      | South -> Vector(0, 1)
+      | Southwest -> Vector(-1, 0)
+      | West -> Vector(-1, 0)
+      | Northwest -> Vector(-1, -1)
+      | North -> Vector(0, -1)
+      | Northeast -> Vector(1, -1)
+   member this.ToDirection =
+      let sx = sign x
+      let sy = sign y
+      match (sx, sy) with
+      | ( 1,  0) -> Some(East)
+      | ( 1,  1) -> Some(Southeast)
+      | ( 0,  1) -> Some(South)
+      | (-1,  1) -> Some(Southwest)
+      | (-1,  0) -> Some(West)
+      | (-1, -1) -> Some(Northwest)
+      | ( 0, -1) -> Some(North)
+      | ( 1, -1) -> Some(Northeast)
+      | ( _,  _) -> None
+
 
 [<Struct>]
 type Loc(x: int, y: int) =
@@ -36,9 +69,63 @@ type Vector with
    member this.Zero = Vector(0, 0)
    member this.Add (a: Vector, b: Vector) = a + b
 
+type RangeLimits = | LineOfEffect | LineOfSight | Both
+type SelectionRange = { range: int option; limits: RangeLimits option }
+
+let IsDistanceWithin (a: Loc) (b: Loc) (distance: int) =
+   let offset = a - b
+   offset.LengthSquard <= distance * distance
+
+let IsInRectangle (point1: Loc) (point2: Loc) (point: Loc) =
+   let minX = min point1.X point2.X
+   let maxX = max point1.X point2.X
+   let minY = min point1.Y point2.Y
+   let maxY = max point1.Y point2.Y
+   minX <= point.X && point.X <= maxX && minY <= point.Y && point.Y <= maxY
+
 let AreAdjacent (a: Loc) (b: Loc) =
    let diff = a - b
    diff.KingLength = 1
+
+let GetLineFromTo (a: Loc) (b: Loc) =
+   let dx = abs(a.X - b.X)
+   let dy = abs(a.Y - b.Y)
+   let sx = sign (b.X - a.X)
+   let sy = sign (b.Y - a.Y)
+      
+   let length = max dx dy
+
+   let folder s i = 
+      let (err, x0, y0) = s
+      let e2 = err * 2
+      let err2 = if e2 > -dy then err-dy else err
+      let x1 = if e2 > -dy then x0+sx else x0
+      if x1 = b.X && y0 = b.Y
+      then (err2, x1, y0)
+      else
+         let err3 = if e2 < dx then err2 + dx else err2
+         let y2 = if e2 < dx then y0 + sy else y0
+         (err3, x1, y2)
+
+   [0..length]
+   |> List.scan folder (dx-dy, a.X, a.Y)
+   |> List.map (fun (_, x, y) -> Loc(x, y))
+
+let GetLineFromTo2 (a: Loc) (b: Loc) =
+   let dx = abs(a.X - b.X)
+   let dy = abs(a.Y - b.Y)
+   let sx = sign (b.X - a.X)
+   let sy = sign (b.Y - a.Y)
+   Seq.append (Seq.singleton a) (Seq.unfold (fun (err, x0, y0) ->
+      if x0 = b.X && y0 = b.Y then None
+      else 
+         let e2 = err * 2
+         let (err2, x1) = if e2 > -dy then (err-dy, x0+sx) else (err, x0)
+         if x1 = b.X && y0 = b.Y then Some(Loc(x1, y0), (err2, x1, y0))
+         else
+            let (err3, y1) = if e2 < dx then (err2+dx, y0+sy) else (err2, y0)
+            Some(Loc(x1, y1), (err3, x1, y1))) (dx-dy, a.X, a.Y))
+      
 
 let RectContains (corner1: Loc) (corner2: Loc) (point: Loc) =
    let maxX = max corner1.X corner2.X
@@ -48,9 +135,10 @@ let RectContains (corner1: Loc) (corner2: Loc) (point: Loc) =
    minX <= point.X && point.X <= maxX && minY <= point.Y && point.Y <= maxY
 
 type TerminalRect(position, size) =
+   new (x, y, width, height) = TerminalRect(Loc(x, y), Vector(width, height))
+
    member this.Position = position
    member this.Size = size
-   member this.Contains point = RectContains position (position + size) point
    member this.X = position.X
    member this.Y = position.Y
    member this.Width = size.X
@@ -60,21 +148,68 @@ type TerminalRect(position, size) =
    member this.Top = this.Y
    member this.Right = this.X + this.Width
    member this.Bottom = this.Y + this.Height
-
    member this.TopLeft = Loc(this.Left, this.Top)
    member this.TopRight = Loc(this.Right, this.Top)
    member this.BottomLeft = Loc(this.Left, this.Bottom)
    member this.BottomRight = Loc(this.Right, this.Bottom)
 
    member this.Center = new Loc((this.Left + this.Right) / 2, (this.Top + this.Bottom) / 2)
-
    member this.Area = size.X * size.Y
+   
+   member this.Row s = TerminalRect(0, 0, s, 1)
+   member this.Row (x, y, s) = TerminalRect(x, y, s, 1)
+   member this.Row (pos, s) = TerminalRect(pos, Vector(s, 1))
 
-type RogueColor = { Red: byte; Green: byte; Blue: byte }
+   member this.Contains point = RectContains position (position + size) point
+   
+let Intersection (a: TerminalRect) (b: TerminalRect) =
+   let left = max a.Left b.Left
+   let right = min a.Right b.Right
+   let top = max a.Top b.Top
+   let bottom = min a.Bottom b.Bottom
+   let width = max 0 (right-left)
+   let height = max 0 (bottom - top)
 
-let makeColor r g b = { Red = byte r; Green = byte g; Blue = byte b }
+   TerminalRect(left, top, width, height)
 
-let c = makeColor
+let Intersects (a: TerminalRect) (b: TerminalRect) =
+   a.Left <= b.Right && a.Right >= b.Left &&
+   a.Top <= b.Bottom && a.Bottom >= b.Top
+
+let CenterIn (main: TerminalRect) (toCenter: TerminalRect) =
+   TerminalRect(main.Position + (main.Size - toCenter.Size) / 2, toCenter.Size)
+
+
+[<Struct>]
+type RogueColor(r: byte, g: byte, b: byte) = 
+   member this.Red = r
+   member this.Green = g
+   member this.Blue = b
+   member this.ToInt32() = BitConverter.ToInt32([|byte 0; this.Red; this.Green; this.Blue|], 0)
+   override this.ToString() = r.ToString("x2") + g.ToString("x2") + b.ToString("x2")
+   new(color: int) =
+      let bytes = BitConverter.GetBytes(color)
+      RogueColor(bytes.[2], bytes.[1], bytes.[0])
+
+   static member Parse (str: string) =
+      match str with
+      | Int (s) -> Some(RogueColor(s))
+      | Hex (s) -> Some(RogueColor(s))
+      | _ -> let parts = str.Split([|','|])
+             if parts.Length = 3
+             then
+                let p = (parts.[0], parts.[1], parts.[2])
+                match p with
+                | Int r, Int g, Int b -> Some(RogueColor(byte r, byte g, byte b))
+                | Hex r, Hex g, Hex b -> Some(RogueColor(byte r, byte g, byte b))
+                | _ -> None
+             else None
+
+//let makeColor r g b = { Red = byte r; Green = byte g; Blue = byte b }
+
+type RogueMessage = { message: string; color: RogueColor }
+
+let c r g b = RogueColor(byte r, byte g, byte b)
 
 let lightRed = c 255 160 160
 let red = c 220 0 0

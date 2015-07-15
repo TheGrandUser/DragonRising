@@ -44,8 +44,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Plans.fs" />
-    <Compile Include="EntityComponents.fs" />
+    <Compile Include="DomainTypes.fs" />
+    <Compile Include="DomainFunctions.fs" />
+    <Compile Include="UITypes.fs" />
+    <Compile Include="UseCases.fs" />
     <None Include="Script.fsx" />
   </ItemGroup>
   <ItemGroup>
