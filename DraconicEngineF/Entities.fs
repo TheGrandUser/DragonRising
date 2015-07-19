@@ -2,68 +2,55 @@
 open CoreObjects
 open System
 open System.Collections.Generic
+open FSharpx.Stm
+open FSharpx.Extras
 
 type EntityId = EntityId of int
-type Entity = { name: string; location: Loc; id: EntityId }
+
+type ComponentSet = ComponentSet of Dictionary<Type, obj>
+
+type Entity = { name: string; location: Loc; id: EntityId; components: TVar<ComponentSet> }
+
+
+let setComponent e c = 
+   let {components = cs} = e
+   stm {
+      let! (ComponentSet cs') = readTVar cs
+      cs'.[c.GetType()] <- c
+      return c
+   } |> atomically
+
+let getComponent<'T> e = 
+   let {components = cs} = e
+   stm {
+      let! (ComponentSet cs') = readTVar cs
+      let (r, c) = cs'.TryGetValue(typedefof<'T>)
+      return
+         match (r, c) with
+         | true, (:? 'T as c') -> Some c'
+         | _, _ -> None
+   } |> atomically
+   
+let removeComponent<'T> e =
+   let {components = cs} = e
+   stm {
+      let! (ComponentSet cs') = readTVar cs
+      let (r, c) = cs'.TryGetValue(typedefof<'T>)
+      return cs'.Remove(typedefof<'T>)
+   } |> atomically
+
 type EntityFilter = Entity -> bool
 
-type CompReply<'T> = AsyncReplyChannel<'T option>
-type EnityMapMessage<'T> =
-| SetComp of EntityId * 'T
-| RemoveComp of EntityId
-| GetComp of EntityId * CompReply<'T>
+let nextId = newTVar 1
 
-type EntityMapping<'T> = EntityMapping of MailboxProcessor<EnityMapMessage<'T>>
-let private setTo (EntityMapping d) k v = SetComp (k, v) |> d.Post
-let private removeFrom (EntityMapping d) k = RemoveComp k |> d.Post
-//let private has (EntityMapping d) k = d.ContainsKey(k)
-let private getFrom (EntityMapping d) k = d.PostAndReply (fun r -> GetComp(k, r))
-let private getFromAsync (EntityMapping d) k = d.PostAndAsyncReply (fun r -> GetComp(k, r))
-//let private update (EntityMapping d) k v = d.[k] <- v
+let getNextId () = 
+   stm {
+      let! id = readTVar nextId
+      do! writeTVar nextId (id+1)
+      return EntityId id
+   } |> atomically
 
-let private onNext observer a =
-   match observer with
-   | Some o -> o a
-   | None -> ()
-
-type EntityUpdate<'T> =
-| ComponentAdded of EntityId * 'T
-| ComponentRemoving of EntityId * 'T
-| ComponentRemoved of EntityId * 'T
-
-let setComponent repository { id = i } c = setTo repository i c
-let getComponent repository { id = i } = getFrom repository i   
-let getComponentAsync repository { id = i } = getFromAsync repository i
-
-let removeComponent repository { id = i } =
-   match getFrom repository i with
-   | Some c ->
-      let c = getFrom repository i
-      //ComponentRemoving (i, c) |> onNext observer
-      removeFrom repository i
-      //ComponentRemoved (i, c) |> onNext observer
-      true
-   | None -> false
-
-type ListenerId = ListenerId of int
-type MappingListeningMessage<'T> =
-| Listen of ('T option -> unit) * ((unit -> unit) -> unit)
-| Stop of ListenerId
-
-let makeEntityPropMap<'T>() = EntityMapping (MailboxProcessor<EnityMapMessage<'T>>.Start(fun inbox ->
-   let rec messageLoop entityMap = async {
-         let! msg = inbox.Receive()
-         let newMap =
-            match msg with
-            | SetComp (i, c) -> 
-               entityMap |> Map.add i c
-            | RemoveComp i -> entityMap |> Map.remove i
-            | GetComp (i, r) ->
-               entityMap |> Map.tryFind i |> r.Reply
-               entityMap
-
-         return! messageLoop newMap
-   }
-   
-   messageLoop (Map.empty<EntityId, 'T>)
-   ))
+let makeEntity name (components: #seq<'T>) location =
+   let valueSelector = fun comp -> comp :> obj
+   let compsDict = System.Linq.Enumerable.ToDictionary<obj, Type>(components |> Seq.map valueSelector, (fun comp -> comp.GetType()))
+   { name = name; location = location; id = getNextId(); components = ComponentSet compsDict |> newTVar }

@@ -2,6 +2,61 @@
 open System
 open TryParser
 
+//let compGroup = AsyncGroup
+
+type RepoReply<'T> = AsyncReplyChannel<'T option>
+type RepositoryOp<'K,'T when 'K: comparison> =
+| SetItem of 'K * 'T
+| GetItem of 'K * RepoReply<'T>
+| GetMap of AsyncReplyChannel<Map<'K, 'T>>
+| RemoveItem of 'K
+
+let makeSetter (d: MailboxProcessor<RepositoryOp<'K, 'T>>) =
+   let setter k v = SetItem (k, v) |> d.Post
+   setter
+
+let makeMapGetter (d: MailboxProcessor<RepositoryOp<'K, 'T>>)=
+   let getter () = d.PostAndReply (fun r -> GetMap r)
+   getter
+let makeGetter (d: MailboxProcessor<RepositoryOp<'K, 'T>>) =
+   let getter k = d.PostAndReply (fun r-> GetItem (k, r))
+   getter
+
+let makeGetterAsync (d: MailboxProcessor<RepositoryOp<'K, 'T>>) =
+   let getter k = d.PostAndAsyncReply (fun r-> GetItem (k, r))
+   getter
+
+let makeRemover (d: MailboxProcessor<RepositoryOp<'K, 'T>>) =
+   let remover k = RemoveItem k |> d.Post
+   remover
+
+let makeRepository<'K, 'T when 'K: comparison> initial ct = 
+   MailboxProcessor<RepositoryOp<'K, 'T>>.Start((fun inbox ->
+
+      let items = new System.Collections.Generic.Dictionary<'K, 'T> ()
+      let setMap () = Lazy (fun () -> items |> Seq.map (fun kvp -> (kvp.Key, kvp.Value))  |> Map.ofSeq)
+      let mutable asMap = setMap ()
+      for (k, v) in initial do items.Add(k, v)
+
+      let rec messageLoop () = async {
+         let! msg = inbox.Receive()
+         let newMap =
+            match msg with
+            | SetItem (k, v) -> items.[k] <- v
+                                if asMap.IsValueCreated then asMap <- setMap ()
+            | RemoveItem k -> items.Remove(k) |> ignore
+                              if asMap.IsValueCreated then asMap <- setMap ()
+            | GetItem (k, r) ->
+                  let (found, item) = items.TryGetValue(k)
+                  r.Reply <| if found then Some item else None
+            | GetMap r -> asMap.Value |> r.Reply 
+
+         return! messageLoop ()
+      }
+
+      messageLoop ()
+   ), ct)
+
 type Stuff = Todo
 type Direction =
    | East
@@ -26,7 +81,7 @@ type Vector(x: int, y: int) =
    member this.LengthSquard = this.X * this.X + this.Y * this.Y
    member this.Length = sqrt(double (this.X * this.X + this.Y * this.Y))
    member this.RookLength = abs this.X + abs this.Y
-   member this.KingLength = max this.X this.Y
+   member this.KingLength = max (abs this.X) (abs this.Y)
    override this.ToString() = this.X.ToString() + ", " + this.Y.ToString()
    static member (+) (v1: Vector, v2: Vector) = Vector(v1.X + v2.X, v1.Y + v2.Y)
    static member (-) (a: Vector, b: Vector) = Vector(a.X - b.X, a.Y - b.Y)
@@ -60,6 +115,7 @@ type Vector(x: int, y: int) =
 type Loc(x: int, y: int) =
    member this.X = x
    member this.Y = y
+   override this.ToString() = this.X.ToString() + ", " + this.Y.ToString()
    static member (+) (l: Loc, v: Vector) = Loc(l.X + v.X, l.Y + v.Y)
    static member (+) (v: Vector, l: Loc) = Loc(l.X + v.X, l.Y + v.Y)
    static member (-) (l: Loc, v: Vector) = Loc(l.X - v.X, l.Y - v.Y)
@@ -87,13 +143,13 @@ let AreAdjacent (a: Loc) (b: Loc) =
    let diff = a - b
    diff.KingLength = 1
 
-let GetLineFromTo (a: Loc) (b: Loc) =
+let getLineFromToOld (a: Loc) (b: Loc) =
    let dx = abs(a.X - b.X)
    let dy = abs(a.Y - b.Y)
    let sx = sign (b.X - a.X)
    let sy = sign (b.Y - a.Y)
       
-   let length = max dx dy
+   let length = (max dx dy)-1
 
    let folder s i = 
       let (err, x0, y0) = s
@@ -111,7 +167,7 @@ let GetLineFromTo (a: Loc) (b: Loc) =
    |> List.scan folder (dx-dy, a.X, a.Y)
    |> List.map (fun (_, x, y) -> Loc(x, y))
 
-let GetLineFromTo2 (a: Loc) (b: Loc) =
+let getLineFromTo (a: Loc) (b: Loc) =
    let dx = abs(a.X - b.X)
    let dy = abs(a.Y - b.Y)
    let sx = sign (b.X - a.X)
@@ -126,13 +182,6 @@ let GetLineFromTo2 (a: Loc) (b: Loc) =
             let (err3, y1) = if e2 < dx then (err2+dx, y0+sy) else (err2, y0)
             Some(Loc(x1, y1), (err3, x1, y1))) (dx-dy, a.X, a.Y))
       
-
-let RectContains (corner1: Loc) (corner2: Loc) (point: Loc) =
-   let maxX = max corner1.X corner2.X
-   let minX = min corner1.X corner2.X
-   let maxY = max corner1.Y corner2.Y
-   let minY = min corner1.Y corner2.Y
-   minX <= point.X && point.X <= maxX && minY <= point.Y && point.Y <= maxY
 
 type TerminalRect(position, size) =
    new (x, y, width, height) = TerminalRect(Loc(x, y), Vector(width, height))
@@ -160,7 +209,7 @@ type TerminalRect(position, size) =
    member this.Row (x, y, s) = TerminalRect(x, y, s, 1)
    member this.Row (pos, s) = TerminalRect(pos, Vector(s, 1))
 
-   member this.Contains point = RectContains position (position + size) point
+   member this.Contains point = IsInRectangle position (position + size) point
    
 let Intersection (a: TerminalRect) (b: TerminalRect) =
    let left = max a.Left b.Left
@@ -293,7 +342,7 @@ let fromEscapeChar ch =
 type Character = { glyph: char; foreColor: RogueColor; backColor: RogueColor option }
 
 type Area =
-   | Cirlce of Loc * int
+   | Circle of Loc * int
    | Rectangle of Loc * Vector
    | Cone of Loc * Vector * int * int
    | Combined of Area * Area

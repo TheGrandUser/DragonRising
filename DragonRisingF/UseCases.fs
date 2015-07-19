@@ -18,16 +18,16 @@ let selectItemFromInventory itemFilter player: Async<Entity option> =
 
 let getCommandAction player command = 
    match command with
-   | WaitCommand -> turnAction Idle |> asAsync
+   | WaitCommand -> turnAction IdleAction |> asAsync
    | QuitCommand -> endGame |> asAsync
    | Abort -> noTurn |> asAsync
-   | MovementCommand dir -> turnAction (Move dir) |> asAsync
+   | MovementCommand dir -> turnAction (MoveAction { direction = dir }) |> asAsync
    | InteractWithCreatureCommand e -> noTurn |> asAsync
-   | AttackCommand e -> turnAction (Attack e) |> asAsync
+   | AttackCommand e -> turnAction (AttackEntityAction { target=e; weapon = None}) |> asAsync
    | DropItemCommand -> async {
       let! item = selectItemFromInventory all player
       return match item with
-               | Some i -> turnAction (DropItem i)
+               | Some i -> turnAction (PickUpItemAction { itemToPick = i })
                | None -> noTurn
       }
    | GoDownCommand -> noTurn |> asAsync
