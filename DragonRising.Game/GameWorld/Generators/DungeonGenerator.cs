@@ -134,7 +134,7 @@ namespace DragonRising.Generators
          }
       }
 
-      public Loc GetRandomLocationInRoom(TerminalRect room)
+      Loc GetRandomLocationInRoom(TerminalRect room)
       {
          var x = RogueGame.Current.GameRandom.Next(room.Left + 1, room.Right);
          var y = RogueGame.Current.GameRandom.Next(room.Top + 1, room.Bottom);
