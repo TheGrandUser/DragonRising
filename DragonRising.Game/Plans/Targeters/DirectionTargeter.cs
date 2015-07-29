@@ -31,7 +31,7 @@ namespace DragonRising.Plans.Targeters
       public IEnumerable<ITargeter> Targeters => targeters;
       public IEnumerable<IEffect> Effects => Enumerable.Empty<IEffect>();
 
-      public async Task<Option<TargetResult>> GetPlayerTargetingAsync(Loc origin, ImmutableStack<Either<Loc, Vector>> path)
+      public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
          var area = Area.Combine(this.queries.SelectMany(q => q.GetArea()).ToImmutableList());
 

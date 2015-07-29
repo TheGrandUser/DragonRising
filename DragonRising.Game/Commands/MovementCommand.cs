@@ -17,28 +17,26 @@ namespace DragonRising.Commands
 {
    public class MovementCommand : ActionCommand
    {
-      Direction direction;
+      Vector delta;
+      
+      public MovementCommand(Vector delta)
+      {
+         this.delta = delta.Unitize();
+      }
 
-      PlanRequirement requirement = new DirectionRequirement();
       public override PlanRequirement GetRequirement(Entity user) => NoRequirement.None;
       public override string Name => "Move";
-      public MovementCommand(Direction direction)
-      {
-         this.direction = direction;
-      }
 
       public override Either<ActionTaken, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment)
       {
          var dirFulfillment = fulfillment as DirectionFulfillment;
-         if(direction == Direction.None)
+         if(delta == Vector.Zero)
          {
             return ActionTaken.Abort;
          }
          
          var scene = World.Current.Scene;
-
-         var delta = Vector.FromDirection(direction);
-
+         
          var newLocation = executer.GetLocation() + delta;
 
          var blockage = scene.IsBlocked(newLocation, ignoreWhere: entity => entity == executer);

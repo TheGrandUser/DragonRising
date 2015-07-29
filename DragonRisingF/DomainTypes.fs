@@ -1,5 +1,7 @@
 ﻿module DragonRisingF.DomainTypes
+open DraconicEngineF
 open DraconicEngineF.CoreObjects
+open DraconicEngineF.DisplayCore
 open DraconicEngineF.Entities
 open FSharpx.Stm
 

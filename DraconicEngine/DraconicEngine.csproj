@@ -124,7 +124,6 @@
     <Compile Include="Terminals\Input\GestureSet.cs" />
     <Compile Include="Terminals\Input\IInputSystem.cs" />
     <Compile Include="Terminals\Input\IPlayerController.cs" />
-    <Compile Include="Terminals\Input\PackageMaker.cs" />
     <Compile Include="Terminals\Input\RogueKeyEvent.cs" />
     <Compile Include="Terminals\Input\RogueKeys.cs" />
     <Compile Include="Utilities\Loc.cs" />
@@ -157,6 +156,7 @@
     <Compile Include="RogueGame.cs" />
     <Compile Include="RogueMessage.cs" />
     <Compile Include="Services\ShadowCaster.cs" />
+    <Compile Include="Utilities\SceneView.cs" />
     <Compile Include="Utilities\TerminalRect.cs" />
     <Compile Include="Terminals\IReadableTerminal.cs" />
     <Compile Include="Terminals\ITerminal.cs" />

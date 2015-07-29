@@ -70,7 +70,7 @@ namespace DraconicEngine.GameViews
       {
          this.dialogPanel.Clear();
          this.dialogPanel.DrawBox(DrawBoxOptions.DoubleLines);
-
+         
          var margine = 2;
 
          for (int i = 0; i < this.lines.Count; i++)
@@ -80,14 +80,7 @@ namespace DraconicEngine.GameViews
 
          return Task.FromResult(0);
       }
-
-      public Option<IGameView> Finish()
-      {
-         return None;
-      }
-
-      public void Start()
-      {
-      }
+      
+      public void OnStart() { }
    }
 }

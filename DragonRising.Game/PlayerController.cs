@@ -66,8 +66,9 @@ namespace DragonRising
          }
       }
 
-      FocusEntitySceneView sceneView;
-
+      MyPlayingScreen screen;
+      SceneView sceneView;
+      IMessageService messageService;
 
       static IEnumerable<CommandGesture> ActionCommandGestures
       {
@@ -91,22 +92,24 @@ namespace DragonRising
          }
       }
 
-      static readonly CommandGesture moveCommandGesture = CreateCommand(kg => new MovementCommand(kg.Key.ToDirection()), GestureSet.Create8WayMove());
-      static readonly CommandGesture waitCommandGesture = Create(RogueCommands.Wait, GestureSet.Create(RogueKey.NumPad5));
+      static readonly CommandGesture2D moveCommandGesture = CreateEightWay((l, v) => new MovementCommand(v));
+      static readonly CommandGesture waitCommandGesture = Create(RogueCommands.Wait, RogueKey.NumPad5);
 
       static readonly CommandGesture pickUpCommandGesture = Create(new PickUpItemCommand(), RogueKey.G);
       static readonly CommandGesture dropCommandGesture = Create(new DropItemCommand(), RogueKey.D);
       static readonly CommandGesture useItemCommandGesture = Create(new UseItemCommand(), RogueKey.I);
 
-      static readonly CommandGesture lookCommandGesture = Create(new LookCommand(), RogueKey.L);
+      //static readonly CommandGesture lookCommandGesture = Create(new LookCommand(), RogueKey.L);
       static readonly CommandGesture2D mouseLookCommandGesture = CreateMousePointer((loc, delta) => new LookAtCommand(loc));
 
-      static readonly CommandGesture goDownGesture = Create(new GoDownCommand(), GestureSet.Create(RogueKey.OemComma, RogueModifierKeys.Shift));
+      static readonly CommandGesture goDownGesture = Create(new GoDownCommand(), RogueKey.OemComma, RogueModifierKeys.Shift);
 
-      static readonly CommandGesture quitCommandGesture = Create(RogueCommands.Quit, GestureSet.Create(RogueKey.Escape));
+      static readonly CommandGesture quitCommandGesture = Create(RogueCommands.Quit, RogueKey.Escape);
 
-      public PlayerController(FocusEntitySceneView sceneView)
+      public PlayerController(MyPlayingScreen screen, IMessageService messageService, SceneView sceneView)
       {
+         this.screen = screen;
+         this.messageService = messageService;
          this.sceneView = sceneView;
       }
 
@@ -396,25 +399,25 @@ namespace DragonRising
 
       public void SetLookAt(Loc? lookCursor)
       {
-         MyPlayingScreen.Current.ClearInfoMessages();
+         messageService.ClearInfoMessages();
 
          if (lookCursor.HasValue)
          {
-            var scenePoint = this.sceneView.ViewOffset + lookCursor.GetValueOrDefault();
+            var scenePoint = sceneView.ViewOffset + lookCursor.GetValueOrDefault();
 
             if (World.Current.Scene.IsVisible(scenePoint))
             {
-               MyPlayingScreen.Current.SetHighlight(lookCursor.Value);
+               screen.SetHighlight(lookCursor.Value);
 
                foreach (var entity in World.Current.Scene.EntityStore.Entities.Where(en => en.GetLocation() == scenePoint))
                {
-                  MyPlayingScreen.Current.AddInfoMessage(new RogueMessage(entity.Name, RogueColors.White));
+                  messageService.AddInfoMessage(new RogueMessage(entity.Name, RogueColors.White));
                }
             }
          }
          else
          {
-            MyPlayingScreen.Current.ClearHighlight();
+            screen.ClearHighlight();
          }
       }
 
@@ -440,10 +443,7 @@ namespace DragonRising
          SceneView sceneView,
          Option<Area> areaOfEffect)
       {
-         //string message, bool isLimitedToFoV = true, int? maxRange = null
-
-         MyPlayingScreen playingState = MyPlayingScreen.Current;
-         var targetTool = new LocationTargetingTool(startLocation, sceneView, playingState.ScenePanel, message, range);
+         var targetTool = new LocationTargetingTool(startLocation, sceneView, message, range);
 
          await RogueGame.Current.RunGameState(targetTool);
 
@@ -453,7 +453,6 @@ namespace DragonRising
       public static async Task<Option<Entity>> SelectTargetEntity(Loc origin, SelectionRange range,
          Predicate<Entity> filter, SceneView sceneView, Option<Area> areaOfEffect)
       {
-         MyPlayingScreen playingState = MyPlayingScreen.Current;
          var rangeSquared = range.Range * range.Range;
 
 
@@ -469,7 +468,7 @@ namespace DragonRising
             return None;
          }
 
-         var selectEntityTool = new SelectEntityTool(ImmutableList.CreateRange(entitiesInRange), sceneView, playingState.ScenePanel);
+         var selectEntityTool = new SelectEntityTool(ImmutableList.CreateRange(entitiesInRange), sceneView);
 
          await RogueGame.Current.RunGameState(selectEntityTool);
 
@@ -509,7 +508,7 @@ namespace DragonRising
 
          var results = await Targeter.HandleChildTargetersAsync(
             power.Targeters,
-            t => t.GetPlayerTargetingAsync(origin, ImmutableStack<Either<Loc, Vector>>.Empty));
+            t => t.GetPlayerTargetingAsync(sceneView, origin, ImmutableStack<Either<Loc, Vector>>.Empty));
 
          return results.Match(
             Some: r => Some(new FinalizedPlan(r, power.Queries, power.Effects)),

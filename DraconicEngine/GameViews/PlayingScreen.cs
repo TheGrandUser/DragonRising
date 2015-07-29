@@ -46,6 +46,7 @@ namespace DraconicEngine.GameViews
             }
             else if (playerTurn == PlayerTurnResult.Quit)
             {
+               OnFinished();
                this.Save();
                return TickResult.Finished;
             }
@@ -105,24 +106,13 @@ namespace DraconicEngine.GameViews
 
       public GameViewType Type { get { return GameViewType.Screen; } }
 
-      public virtual void Start()
+      public virtual void OnStart()
       {
-         Current = this;
       }
-
-      public Option<IGameView> Finish()
+      
+      protected virtual void OnFinished()
       {
-         Current = null;
-
-         return OnFinished();
       }
-
-      protected virtual Option<IGameView> OnFinished()
-      {
-         return None;
-      }
-
-      public static PlayingScreen Current { get; private set; }
    }
 
    public interface IAsyncInterruption

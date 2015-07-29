@@ -29,19 +29,12 @@ using DragonRising.Rules.ExplorationRules;
 
 namespace DragonRising.Views
 {
-   class MyPlayingScreen : PlayingScreen
+   public class MyPlayingScreen : PlayingScreen
    {
       public static readonly int BarWidth = 20;
       public static readonly int PanelHeight = 9;
       public static readonly int PanelY = DragonRisingGame.ScreenHeight - PanelHeight;
-
-      GameEnd? gameEnd;
-
-      public void GameHasEnded(GameEnd gameEnd)
-      {
-         this.gameEnd = gameEnd;
-      }
-
+      
       public static readonly int SceneHeight = DragonRisingGame.ScreenHeight - PanelHeight - 1;
 
       public static readonly int MessageX = BarWidth + 2;
@@ -56,7 +49,7 @@ namespace DragonRising.Views
       HighlightWidget highlightWidget;
       MessagesWidget infoWidget;
       SceneWidget sceneWidget;
-      FocusEntitySceneView sceneView;
+      SceneView sceneView;
       LifeDeathMonitorService lifeDeathMonitorService;
 
       StatTracker statTracker;
@@ -69,7 +62,6 @@ namespace DragonRising.Views
       public SceneView SceneView => sceneView;
 
       IMessageService messageService;
-      List<RogueMessage> infoMessages = new List<RogueMessage>();
       private Terminal rootTerminal;
       
       string gameName;
@@ -89,7 +81,7 @@ namespace DragonRising.Views
          this.rootTerminal = DragonRisingGame.Current.RootTerminal;
 
          var scenePanel = rootTerminal[1, 1, DragonRisingGame.ScreenWidth - 2, SceneHeight];
-         this.sceneView = new FocusEntitySceneView(this.World, scenePanel, player);
+         this.sceneView = new SceneView(scenePanel);
 
          this.statsPanel = rootTerminal[0, PanelY, DragonRisingGame.ScreenWidth, PanelHeight];
          this.sceneWidget = new SceneWidget(world, this.sceneView, scenePanel);
@@ -104,9 +96,9 @@ namespace DragonRising.Views
             () => LevelingPolicy.XpForNextLevel(player.GetLevel()?.Value ?? 0),
             RogueColors.Purple, RogueColors.DarkPurple);
 
-         this.infoWidget = new MessagesWidget(this.statsPanel[1, 2, BarWidth, this.statsPanel.Size.Y - 3], this.infoMessages, MessagePriority.ShowOldest);
+         this.infoWidget = new MessagesWidget(this.statsPanel[1, 2, BarWidth, this.statsPanel.Size.Y - 3], messageService.InfoMessages, MessagePriority.ShowOldest);
 
-         this.messageWidget = new MessagesWidget(this.statsPanel[MessageX, 1, MessageWidth, MessageHeight], this.messageService.Messages, MessagePriority.ShowNewest);
+         this.messageWidget = new MessagesWidget(this.statsPanel[MessageX, 1, MessageWidth, MessageHeight], messageService.EventMessages, MessagePriority.ShowNewest);
 
          this.highlightWidget = new HighlightWidget(this.sceneWidget.Panel[RogueColors.Black, RogueColors.LightCyan]);
          
@@ -121,12 +113,15 @@ namespace DragonRising.Views
          this.Widgets.Add(messageWidget);
          this.Widgets.Add(highlightWidget);
          this.Widgets.Add(infoWidget);
-
-         this.PlayerController = new PlayerController(sceneView) { PlayerCreature = player };
+         
+         this.PlayerController = new PlayerController(this, messageService, sceneView) { PlayerCreature = player };
          this.lifeDeathMonitorService = new LifeDeathMonitorService(ServiceLocator.Current.GetInstance<IEventAggregator>());
-         this.statTracker = new StatTracker(ServiceLocator.Current.GetInstance<IEventAggregator>());
+         this.statTracker = new StatTracker(this, ServiceLocator.Current.GetInstance<IEventAggregator>());
          
          SetupRules(rulesManager);
+
+         World.Current = World;
+         this.messageService.PostMessage("Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.", RogueColors.Red);
       }
 
       private void SetupRules(IRulesManager rulesManager)
@@ -161,49 +156,22 @@ namespace DragonRising.Views
       {
          return new GameEndScreen();
       }
-
-      public override void Start()
+      
+      protected override void OnFinished()
       {
-         base.Start();
-         MyPlayingScreen.Current = this;
-         World.Current = World;
-
-         this.messageService.PostMessage("Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.", RogueColors.Red);
-      }
-
-      protected override Option<IGameView> OnFinished()
-      {
-         this.statTracker.Dispose();
-         this.lifeDeathMonitorService.Dispose();
+         statTracker.Dispose();
+         lifeDeathMonitorService.Dispose();
          
          SaveManager.Current.SaveGame(this.gameName, this.World);
-
-         MyPlayingScreen.Current = null;
+         
          World.Current = null;
 
          this.World.Dispose();
-
-         return None;
       }
-
-      public static new MyPlayingScreen Current { get; private set; }
-
+      
       protected override EntityEngine Engine => this.World.EntityEngine;
 
-      public void ClearInfoMessages()
-      {
-         this.infoMessages.Clear();
-      }
-
-      public void AddInfoMessage(RogueMessage message)
-      {
-         this.infoMessages.Add(message);
-      }
-
-      public void ClearHighlight()
-      {
-         this.highlightWidget.Enabled = false;
-      }
+      public void ClearHighlight() { this.highlightWidget.Enabled = false; }
       public void SetHighlight(Loc scenePoint)
       {
 
@@ -213,7 +181,7 @@ namespace DragonRising.Views
 
       protected override bool IsGameEndState()
       {
-         return gameEnd.HasValue;
+         return !this.World.Player.GetComponent<CombatantComponent>().IsAlive;
       }
 
       protected override bool IsUnderPlayerControl()

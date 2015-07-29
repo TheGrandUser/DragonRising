@@ -1,11 +1,13 @@
 ﻿module DragonRising.Generators
 
+open DraconicEngineF
+open DraconicEngineF.DisplayCore
 open DraconicEngineF.CoreObjects
 open DraconicEngineF.Entities
 open DraconicEngineF.ItemSelection
 open DragonRisingF.DomainTypes
-//open DragonRisingF.DomainFunctions
 
+//open DragonRisingF.DomainFunctions
 let createRoom makeClearTile { width = w; tiles = t } (room : TerminalRect) = 
    for y = room.Top + 1 to room.Bottom - 1 do
       let stride = y * w
@@ -21,29 +23,33 @@ let createVTunnel makeClearTile { width = w; tiles = t } y1 y2 x =
    for y = y1 to y2 do
       t.[x + y * w] <- makeClearTile()
 
-let getRandomLocationInRoom (r: System.Random) (room: TerminalRect) =
-   let x = r.Next(room.Left+1, room.Right)
-   let y = r.Next(room.Top+1, room.Bottom)
-   Loc (x, y)
+let getRandomLocationInRoom (r : System.Random) (room : TerminalRect) = 
+   let x = r.Next(room.Left + 1, room.Right)
+   let y = r.Next(room.Top + 1, room.Bottom)
+   Loc(x, y)
 
-let doEntityGeneration r level entityGen countPerLevel room =
+let doEntityGeneration r level entityGen countPerLevel room = 
    let count = fromDungeonLevel 0 level countPerLevel
-   let rec gen i (acc: Entity list) =
+   
+   let rec gen i (acc : Entity list) = 
       let location = getRandomLocationInRoom r room
       if (acc |> List.exists (fun e -> e.location = location)) then acc
-      else
+      else 
          let entity = entityGen level
-         if i < count then
-            gen (i+1) ({entity with location = location } :: acc)
+         if i < count then gen (i + 1) ({ entity with location = location } :: acc)
          else acc
    gen 0 []
-   
+
 module DungeonGenerator = 
    let makeMap r popGen itemGen makeFillTile makeClearTile level width height = 
       let roomMaxSize = 10
       let roomMinSize = 6
       let maxRooms = 30
-      let map = {width =width; height=height; tiles = Array.init (width*height) makeFillTile }
+      
+      let map = 
+         { width = width
+           height = height
+           tiles = Array.init (width * height) makeFillTile }
       
       let itemsPerRoomByLevel = 
          [ (1, 1)
@@ -86,17 +92,33 @@ module DungeonGenerator =
          let newRoom = TerminalRect(x, y, w, h)
          
          let newRooms = 
-            (if List.exists (fun room -> Intersects room newRoom) rooms = false then makeRoom (rooms, monsters, items) newRoom
+            (if List.exists (fun room -> Intersects room newRoom) rooms = false then 
+                makeRoom (rooms, monsters, items) newRoom
              else (rooms, monsters, items))
          if i < maxRooms then makeRooms (i + 1) newRooms
          else newRooms
       
       let (allRooms, allMonsters, allItems) = makeRooms 0 ([], [], [])
       
-      let seenC = { glyph = '<'; foreColor = white; backColor = None }
-      let exploredC = { glyph = '<'; foreColor = white; backColor = None }
-      let stairs = makeEntity "Stais" [ { seen = seenC; explored = Some exploredC } ] (List.head allRooms).Center
+      let seenC = 
+         { glyph = Glyph.LessThan
+           color = 
+              { foreColor = RogueColors.white
+                backColor = None } }
       
-      let firstRoom = allRooms |> List.rev |> List.head
+      let exploredC = 
+         { glyph = Glyph.LessThan
+           color = 
+              { foreColor = RogueColors.white
+                backColor = None } }
+      
+      let drawnComp = { seen = seenC; explored = Some exploredC }
 
+      let stairs = createNewEntity "Stairs" [drawnComp] (allRooms |> List.head).Center
+      
+      let firstRoom = 
+         allRooms
+         |> List.rev
+         |> List.head
+      
       (firstRoom.Center, stairs, allMonsters, allItems)

@@ -1,4 +1,8 @@
-﻿module DraconicEngineF.Entities
+﻿#if INTERACTIVE
+module Entities
+#else
+module DraconicEngineF.Entities
+#endif
 open CoreObjects
 open System
 open System.Collections.Generic
@@ -30,6 +34,13 @@ let getComponent<'T> e =
          | true, (:? 'T as c') -> Some c'
          | _, _ -> None
    } |> atomically
+
+let getAllComponents e =
+   let {components = cs} = e
+   stm {
+      let! (ComponentSet cs') = readTVar cs
+      return Seq.toList cs'.Values
+   } |> atomically
    
 let removeComponent<'T> e =
    let {components = cs} = e
@@ -50,7 +61,14 @@ let getNextId () =
       return EntityId id
    } |> atomically
 
-let makeEntity name (components: #seq<'T>) location =
+let createNewEntity name (components: #seq<'T>) location =
    let valueSelector = fun comp -> comp :> obj
    let compsDict = System.Linq.Enumerable.ToDictionary<obj, Type>(components |> Seq.map valueSelector, (fun comp -> comp.GetType()))
    { name = name; location = location; id = getNextId(); components = ComponentSet compsDict |> newTVar }
+
+let makeEntity name id l comps =
+   let valueSelector = fun comp -> comp :> obj
+   let compsDict = System.Linq.Enumerable.ToDictionary<obj, Type>(comps |> List.map valueSelector, (fun comp -> comp.GetType()))
+   { name = name; id = EntityId id; location=l; components = ComponentSet compsDict |> newTVar }
+
+let idToInt (EntityId id) = id

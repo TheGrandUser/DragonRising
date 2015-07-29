@@ -21,11 +21,13 @@ namespace DragonRising.Views
    {
       public GameViewType Type { get { return GameViewType.Tool; } }
 
+      ITerminal scenePanel;
       PlayerController playerController;
 
-      public LookTool(Loc startPoint, PlayerController playerController)
+      public LookTool(Loc startPoint, ITerminal scenePanel, PlayerController playerController)
       {
          this.lastPoint = startPoint;
+         this.scenePanel = scenePanel;
          this.playerController = playerController;
       }
 
@@ -37,7 +39,7 @@ namespace DragonRising.Views
 
       static IEnumerable<CommandGesture> Gestures => EnumerableEx.Return(moveCursorGesture);
 
-      static readonly CommandGesture2D moveCursorGesture = CreateMouseKey2D(LookActions.MoveCursor);
+      static readonly CommandGesture2D moveCursorGesture = CreateEightWay(LookActions.MoveCursor);
 
       static readonly CommandGesture endGesture = CreateGesture(LookActions.End, GestureSet.Create(RogueKey.Escape, RogueKey.Enter, RogueKey.Space));
 
@@ -54,7 +56,7 @@ namespace DragonRising.Views
                lastPoint + input.As2D().Delta;
             lastPoint = point;
 
-            Loc? localPoint = MyPlayingScreen.Current.ScenePanel.RootVecToLocalVec(point);
+            Loc? localPoint = scenePanel.RootVecToLocalVec(point);
 
             this.playerController.SetLookAt(localPoint);
 
@@ -62,6 +64,7 @@ namespace DragonRising.Views
          }
          else // End
          {
+            this.playerController.SetLookAt(null);
             return TickResult.Finished;
          }
       }
@@ -70,14 +73,8 @@ namespace DragonRising.Views
       {
          return Task.FromResult(0);
       }
-
-      public Option<IGameView> Finish()
-      {
-         this.playerController.SetLookAt(null);
-         return None;
-      }
-
-      public void Start()
+      
+      public void OnStart()
       {
       }
    }

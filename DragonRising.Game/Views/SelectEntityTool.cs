@@ -31,13 +31,11 @@ namespace DragonRising.Views
 
       public GameViewType Type { get { return GameViewType.Tool; } }
 
-      public SelectEntityTool(IImmutableList<SeeableNode> availableEntities, SceneView sceneView, ITerminal scenePanel)
+      public SelectEntityTool(IImmutableList<SeeableNode> availableEntities, SceneView sceneView)
       {
-         
-
          this.availableEntities = availableEntities;
          this.sceneView = sceneView;
-         this.sceneTerminal = scenePanel;
+         this.sceneTerminal = sceneView.Panel;
       }
 
       enum TargetAction
@@ -53,10 +51,7 @@ namespace DragonRising.Views
       // mouse point
       // accept
 
-      CommandGesture1D cylce = Create1D(
-         TargetAction.Cylce,
-         g => g.Modifiers == RogueModifierKeys.None ? g.Key.ToCycle() : 0,
-         GestureSet.Create4WayMove());
+      CommandGesture1D cylce = Create1D(TargetAction.Cylce, g => g.Key.ToCycle(), GestureSet.Create4WayMove());
 
       CommandGesture cancel = CreateGesture(TargetAction.Cancel, GestureSet.Create(RogueKey.Escape));
 
@@ -121,7 +116,7 @@ namespace DragonRising.Views
             case TargetAction.Point:
                var inputResult2D = inputResult.As2D();
                var rootPoint = inputResult2D.Point.Value;
-               var localPoint = MyPlayingScreen.Current.ScenePanel.RootVecToLocalVec(rootPoint);
+               var localPoint = sceneTerminal.RootVecToLocalVec(rootPoint);
                if (localPoint.HasValue)
                {
                   var scenePoint = this.sceneView.ViewOffset + localPoint;
@@ -165,13 +160,8 @@ namespace DragonRising.Views
          
          return Task.FromResult(0);
       }
-
-      public Option<IGameView> Finish()
-      {
-         return None;
-      }
-
-      public void Start()
+      
+      public void OnStart()
       {
       }
    }

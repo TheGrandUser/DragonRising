@@ -40,13 +40,13 @@ namespace DragonRising.Views
       ITerminal sceneTerminal;
       SelectionRange selectionRange;
 
-      public LocationTargetingTool(Loc startLocation, SceneView sceneView, ITerminal sceneTerminal, string message, SelectionRange selectionRange)
+      public LocationTargetingTool(Loc startLocation, SceneView sceneView, string message, SelectionRange selectionRange)
       {
          this.startLocation = this.location = startLocation;
          this.sceneView = sceneView;
          this.selectionRange = selectionRange;
 
-         this.sceneTerminal = sceneTerminal;
+         this.sceneTerminal = sceneView.Panel;
       }
 
       public async Task<TickResult> Tick()
@@ -99,13 +99,8 @@ namespace DragonRising.Views
 
          return Task.FromResult(0);
       }
-
-      public Option<IGameView> Finish()
-      {
-         return None;
-      }
-
-      public void Start()
+      
+      public void OnStart()
       {
       }
    }
