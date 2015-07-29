@@ -22,6 +22,8 @@ namespace DraconicEngine
       /// </summary>
       public static readonly Vector Zero = new Vector(0, 0);
 
+      public Vector Unitize() => new Vector(Sign(X), Sign(Y));
+
       /// <summary>
       /// Gets the unit Vector.
       /// </summary>

@@ -9,12 +9,66 @@ using DraconicEngine;
 
 namespace DraconicEngine.Input
 {
+   public class RogueKeyGesture
+   {
+      public RogueKey Key { get; private set; }
+      public RogueModifierKeys Modifiers { get; private set; }
+
+      public RogueKeyGesture(RogueKey key, RogueModifierKeys modifiers)
+      {
+         this.Key = key;
+         this.Modifiers = modifiers;
+      }
+
+      public bool Matches(RogueKeyEvent rogueKeyEvent)
+      {
+         return this.Key == rogueKeyEvent.Key &&
+            this.Modifiers == rogueKeyEvent.Modifiers;
+      }
+   }
+
+   public class RogueMouseGesture
+   {
+      public RogueMouseAction MouseAction { get; }
+      public RogueModifierKeys Modifiers { get; }
+
+      public RogueMouseGesture(RogueMouseAction mouseAction, RogueModifierKeys modifiers)
+      {
+         this.MouseAction = mouseAction;
+         this.Modifiers = modifiers;
+      }
+
+      public bool Matches(RogueMouseGesture gesture)
+      {
+         if (gesture == null)
+         {
+            return false;
+         }
+
+         return this.MouseAction == gesture.MouseAction && this.Modifiers == gesture.Modifiers;
+      }
+   }
+
+   public enum RogueMouseAction
+   {
+      None = 0,
+      LeftClick = 1,
+      RightClick = 2,
+      MiddleClick = 3,
+      WheelClick = 4,
+      LeftDoubleClick = 5,
+      RightDoubleClick = 6,
+      MiddleDoubleClick = 7,
+      Movement = 8,
+      WheelMove = 9,
+   }
+
    public class GestureSet
    {
       public GestureSet(ImmutableList<RogueKeyGesture> keyGestures, RogueMouseGesture mouseGesture)
       {
-         this.KeyGestures = keyGestures;
-         this.MouseGesture = mouseGesture;
+         KeyGestures = keyGestures;
+         MouseGesture = mouseGesture;
       }
 
       public ImmutableList<RogueKeyGesture> KeyGestures { get; set; }

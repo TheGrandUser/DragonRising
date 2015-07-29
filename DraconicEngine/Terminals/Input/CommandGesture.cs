@@ -13,158 +13,83 @@ namespace DraconicEngine.Input
 {
    public abstract class CommandGesture
    {
-      public ImmutableList<RogueKeyGesture> KeyGestures { get; protected set; }
-      public RogueMouseGesture MouseGesture { get; protected set; }
-
-      protected CommandGesture(GestureSet gestureSet)
-      {
-         this.KeyGestures = gestureSet.KeyGestures;
-         this.MouseGesture = gestureSet.MouseGesture;
-      }
-
+      protected CommandGesture(GestureSet gestureSet) { GestureSet = gestureSet; }
+      public GestureSet GestureSet { get; }
    }
-
-   public static class CommandGestureFactory
-   {
-      public static CommandGesture1D Create1D<TValue>(TValue value, Func<RogueKeyGesture, int> keyValue, GestureSet gestureSet)
-      {
-         return new CommandGesture1D(PackageBuilder.Create1D(value, keyValue), gestureSet);
-      }
-      public static CommandGesture2D CreateMouseKey2D(RogueCommand command)
-      {
-         
-         return new CommandGesture2D(PackageBuilder.Create2D(
-            (loc, delta) => command,
-            k => k.Key.IsEightWayMovementKey() ? k.Key.ToMovementVec() : Vector.Zero),
-            GestureSet.CreateMouseMoveAnd8WayMove());
-      }
-
-      public static CommandGesture2D CreateMouseKey2D(Func<Loc?, Vector, RogueCommand> generateCommand)
-      {
-         return new CommandGesture2D(PackageBuilder.Create2D(
-            generateCommand,
-            k => k.Key.IsEightWayMovementKey() ? k.Key.ToMovementVec() : Vector.Zero),
-            GestureSet.CreateMouseMoveAnd8WayMove());
-      }
-
-      public static CommandGesture2D CreateMouseKey2D<T>(T value)
-      {
-         var command = new ValueCommand<T>(value);
-         return new CommandGesture2D(PackageBuilder.Create2D(
-            (loc, delta) => command,
-            k => k.Key.IsEightWayMovementKey() ? k.Key.ToMovementVec() : Vector.Zero),
-            GestureSet.CreateMouseMoveAnd8WayMove());
-      }
-
-      public static CommandGesture2D CreateMousePointer(Func<Loc?, Vector, RogueCommand> mouseMoveFunc)
-      {
-         var packageMaker = PackageBuilder.Create2D(mouseMoveFunc, key => Vector.Zero);
-         return new CommandGesture2D(packageMaker, GestureSet.Create(RogueMouseAction.Movement));
-      }
-      public static CommandGesture2D CreateMousePointer<TValue>(TValue value)
-      {
-         var packageMaker = PackageBuilder.Create2D(value);
-         return new CommandGesture2D(packageMaker, GestureSet.Create(RogueMouseAction.Movement));
-      }
-
-      public static CommandGesture Create(RogueCommand value, GestureSet gestureSet)
-      {
-         return new CommandGestureSingle(PackageBuilder.Create(value), gestureSet);
-      }
-
-      public static CommandGesture CreateGesture<TValue>(TValue value, GestureSet gestureSet)
-      {
-         return new CommandGestureSingle(PackageBuilder.Create(new ValueCommand<TValue>(value)), gestureSet);
-      }
-
-      public static CommandGesture Create(RogueCommand value, RogueKey key)
-      {
-         return new CommandGestureSingle(PackageBuilder.Create(value), GestureSet.Create(key));
-      }
-
-      public static CommandGesture Create(Func<RogueCommand> value, GestureSet gestureSet)
-      {
-         return new CommandGestureSingle(PackageBuilder.Create(value), gestureSet);
-      }
-
-      public static CommandGesture Create(Func<RogueKeyGesture, RogueCommand> keyValue, GestureSet gestureSet)
-      {
-         return new CommandGestureSingle(PackageBuilder.Create(keyValue), gestureSet);
-      }
-
-      public static CommandGesture CreateCommand(Func<RogueKeyGesture, RogueCommand> actionSelector, GestureSet gestureSet)
-      {
-         return new CommandGestureSingle(PackageBuilder.Create(actionSelector), gestureSet);
-      }
-   }
-
 
    public class CommandGestureSingle : CommandGesture
    {
-      PackageMaker packageMaker;
-
-      internal CommandGestureSingle(PackageMaker packageMaker, GestureSet gestureSet)
-         : base(gestureSet)
-      {
-         this.packageMaker = packageMaker;
-      }
-
-      public RogueCommand GetPackage(RogueKeyGesture keyGesture)
-      {
-         return this.packageMaker.GetPackage(keyGesture);
-      }
-
-      public RogueCommand GetPackage(RogueMouseGesture mouseGesture)
-      {
-         return this.packageMaker.GetPackage(mouseGesture);
-      }
+      public CommandGestureSingle(RogueCommand command, GestureSet gestureSet) : base(gestureSet) { Command = command; }
+      public RogueCommand Command { get; }
    }
 
    public class CommandGesture1D : CommandGesture
    {
-      PackageMaker1D packageMaker;
+      Func<int, RogueCommand> getValue;
+      Func<RogueKeyGesture, int> keyToDelta;
 
-      internal CommandGesture1D(PackageMaker1D packageMaker, GestureSet gestureSet)
-         : base(gestureSet)
+      internal CommandGesture1D(
+         Func<int, RogueCommand> getValue,
+         Func<RogueKeyGesture, int> keyToDelta,
+         GestureSet gestureSet) : base(gestureSet)
       {
-         this.packageMaker = packageMaker;
+         if (getValue == null)
+         {
+            throw new ArgumentNullException(nameof(getValue));
+         }
+         this.getValue = getValue;
+         this.keyToDelta = keyToDelta;
       }
 
-      public RogueCommand GetPackage(int delta)
-      {
-         return this.packageMaker.GetPackage(delta);
-      }
-
-      public RogueCommand GetPackage(RogueKeyGesture keyGesture)
-      {
-         return this.packageMaker.GetPackage(keyGesture);
-      }
-
-      public int GetValue(RogueKeyGesture keyGesture)
-      {
-         return this.packageMaker.GetValue1D(keyGesture);
-      }
+      public int KeyToDelta(RogueKeyGesture keyGesture) => keyToDelta?.Invoke(keyGesture) ?? 0;
+      public RogueCommand GetValue(int delta) => getValue(delta);
    }
-
 
    public class CommandGesture2D : CommandGesture
    {
-      PackageMaker2D packageMaker;
+      Func<Loc?, Vector, RogueCommand> getValue;
+      Func<RogueKeyGesture, Vector> keyToDelta;
 
-      internal CommandGesture2D(PackageMaker2D packageMaker, GestureSet gestureSet)
-         : base(gestureSet)
+      internal CommandGesture2D(
+         Func<Loc?, Vector, RogueCommand> getValue,
+         Func<RogueKeyGesture, Vector> keyToDelta,
+         GestureSet gestureSet) : base(gestureSet)
       {
-         this.packageMaker = packageMaker;
+         if (getValue == null)
+         {
+            throw new ArgumentNullException(nameof(getValue));
+         }
+         this.getValue = getValue;
+         this.keyToDelta = keyToDelta;
       }
 
-      public RogueCommand GetPackage(Loc? point, Vector delta)
+      public Vector KeyToDelta(RogueKeyGesture keyGesture) => keyToDelta?.Invoke(keyGesture) ?? Vector.Zero;
+      public RogueCommand GetValue(Loc? value, Vector delta) => getValue(value, delta);
+   }
+
+   public static class CommandGestureFactory
+   {
+      public static CommandGesture CreateGesture<TValue>(TValue value, GestureSet gestureSet) => new CommandGestureSingle(new ValueCommand<TValue>(value), gestureSet);
+      public static CommandGesture Create(RogueCommand value, RogueKey key, RogueModifierKeys modifiers = RogueModifierKeys.None) => new CommandGestureSingle(value, GestureSet.Create(key, modifiers));
+
+      public static CommandGesture1D Create1D<TValue>(TValue value, Func<RogueKeyGesture, int> keyValue, GestureSet gestureSet)
       {
-         return packageMaker.GetPackage(point, delta);
+         return new CommandGesture1D(_ => new ValueCommand<TValue>(value), keyValue, gestureSet);
       }
 
-      public Vector GetDirectionFromKeys(RogueKeyGesture keyGesture)
+      public static CommandGesture2D CreateEightWay(Func<Loc?, Vector, RogueCommand> commandMaker)
       {
-         return this.packageMaker.GetValue2D(keyGesture);
+         return new CommandGesture2D(
+            commandMaker,
+            k => k.Key.IsEightWayMovementKey() ? k.Key.ToMovementVec() : Vector.Zero,
+            GestureSet.CreateMouseMoveAnd8WayMove());
       }
+      public static CommandGesture2D CreateEightWay<T>(T value) => CreateEightWay((loc, delta) => new ValueCommand<T>(value));
+
+      public static CommandGesture2D CreateMousePointer(Func<Loc?, Vector, RogueCommand> mouseMoveFunc)
+      {
+         return new CommandGesture2D(mouseMoveFunc, key => Vector.Zero, GestureSet.Create(RogueMouseAction.Movement));
+      }
+      public static CommandGesture2D CreateMousePointer<TValue>(TValue value) => CreateMousePointer(new ValueCommand<TValue>(value));
    }
 }

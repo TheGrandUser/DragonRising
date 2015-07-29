@@ -16,16 +16,20 @@ namespace DragonRising.Commands
 {
    public class LookCommand : AsyncCommand
    {
+      Entity player;
+      ITerminal scenePanel;
+      PlayerController playerController;
 
-      public LookCommand()
+      public LookCommand(Entity player, ITerminal scenePanel, PlayerController playerController)
       {
+         this.player = player;
+         this.scenePanel = scenePanel;
+         this.playerController = playerController;
       }
 
       public override async Task Do()
       {
-         MyPlayingScreen playingState = MyPlayingScreen.Current;
-
-         var lookTool = new LookTool(playingState.World.Scene.FocusEntity.GetLocation(), playingState.PlayerController);
+         var lookTool = new LookTool(player.GetLocation(), scenePanel, playerController);
          
          await RogueGame.Current.RunGameState(lookTool);
       }

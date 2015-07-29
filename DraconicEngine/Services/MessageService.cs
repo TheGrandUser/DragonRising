@@ -6,29 +6,33 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine
 {
-    public interface IMessageService
-    {
-        IEnumerable<RogueMessage> Messages { get; }
-        void PostMessage(string message, RogueColor color);
-    }
+   public interface IMessageService
+   {
+      IEnumerable<RogueMessage> EventMessages { get; }
+      void PostMessage(string message, RogueColor color);
 
-    public static class MessageService
-    {
-        static IMessageService currentService;
+      IEnumerable<RogueMessage> InfoMessages { get; }
+      void AddInfoMessage(RogueMessage message);
+      void ClearInfoMessages();
+   }
 
-        public static IMessageService Current { get { return currentService; } }
+   public static class MessageService
+   {
+      static IMessageService currentService;
 
-        public static void SetMessageService(IMessageService messageService)
-        {
-            currentService = messageService;
-        }
-    }
+      public static IMessageService Current { get { return currentService; } }
 
-    public static class MessageServiceExtensions
-    {
-        public static void PostMessage(this IMessageService messageService, string message)
-        {
-            messageService.PostMessage(message, RogueColors.White);
-        }
-    }
+      public static void SetMessageService(IMessageService messageService)
+      {
+         currentService = messageService;
+      }
+   }
+
+   public static class MessageServiceExtensions
+   {
+      public static void PostMessage(this IMessageService messageService, string message)
+      {
+         messageService.PostMessage(message, RogueColors.White);
+      }
+   }
 }

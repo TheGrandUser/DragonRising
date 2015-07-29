@@ -1,4 +1,8 @@
-﻿module ShadowCaster
+﻿#if INTERACTIVE
+module ShadowCaster
+#else
+module DraconicEngineF.ShadowCaster
+#endif
 
 open DraconicEngineF.CoreObjects
 

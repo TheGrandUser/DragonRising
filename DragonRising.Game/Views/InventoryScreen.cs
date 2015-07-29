@@ -97,13 +97,8 @@ namespace DragonRising.Views
 
          return Task.FromResult(0);
       }
-
-      public Option<IGameView> Finish()
-      {
-         return None;
-      }
-
-      public void Start()
+      
+      public void OnStart()
       {
       }
    }

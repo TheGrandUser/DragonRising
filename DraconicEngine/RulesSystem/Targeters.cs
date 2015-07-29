@@ -70,7 +70,7 @@ namespace DraconicEngine.RulesSystem
    
    public interface ILocationBasedTargeter : ITargeter
    {
-      Task<Option<TargetResult>> GetPlayerTargetingAsync(Loc origin, ImmutableStack<Either<Loc, Vector>> path);
+      Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path);
    }
 
    public interface IDirectionBasedTargetter : ITargeter

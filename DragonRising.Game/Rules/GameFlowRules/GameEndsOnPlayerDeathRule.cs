@@ -24,9 +24,7 @@ namespace DragonRising.Rules.GameFlowRules
          player.As<DrawnComponent>(dc => dc.SeenCharacter = new Character(Glyph.Percent, RogueColors.DarkRed));
          player.Blocks = false;
          player.As<BehaviorComponent>(bc => bc.ClearBehaviors());
-
-         MyPlayingScreen.Current.GameHasEnded(GameEnd.Failure);
-
+         
          return RuleResult.Empty;
       }
       

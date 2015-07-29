@@ -12,9 +12,6 @@ namespace DraconicEngine.Input
       public RogueKey Key { get; set; }
       public char? Char { get; set; }
       public RogueModifierKeys Modifiers { get; set; }
-      public bool IsShiftDown { get { return Modifiers.HasFlag(RogueModifierKeys.Shift); } }
-      public bool IsControlDown { get { return Modifiers.HasFlag(RogueModifierKeys.Control); } }
-      public bool IsAltDown { get { return Modifiers.HasFlag(RogueModifierKeys.Alt); } }
    }
 
    public static class RogueKeyExtensions

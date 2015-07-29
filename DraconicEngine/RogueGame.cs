@@ -38,17 +38,15 @@ namespace DraconicEngine
          gameStates.Push(gameState.Value);
          gameStateAdded.OnNext(gameState.Value);
 
-         Task drawTask = gameStates.Count == 1 ? StartDrawLoop() : Task.FromResult(0);
+         Task drawTask = gameStates.Count == 1 ? StartDrawLoop() : Task.CompletedTask;
 
-         gameState.Value.Start();
+         gameState.Value.OnStart();
 
          await TurnLoop(gameState);
-
-         var nextState = gameState.Value.Finish();
+         
          gameStates.Pop();
          gameStateRemoved.OnNext(gameState.Value);
-
-
+         
          await drawTask;
       }
 

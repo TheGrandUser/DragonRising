@@ -122,10 +122,8 @@ namespace DragonRising.Views
          await RogueGame.Current.RunGameState(playingState);
       }
 
-      public void Start() { }
-
-      public Option<IGameView> Finish() { return None; }
-
+      public void OnStart() { }
+      
       enum MenuCommands
       {
          Up,

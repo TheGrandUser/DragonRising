@@ -1,4 +1,9 @@
-﻿module DraconicEngineF.ItemSelection
+﻿#if INTERACTIVE
+module ItemSelection
+#else
+module DraconicEngineF.ItemSelection
+#endif
+
 open System
 open System.Collections.Generic
  

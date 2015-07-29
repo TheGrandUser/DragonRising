@@ -28,24 +28,15 @@ namespace DraconicEngine.GameViews
       DoesNothing,
       CloseState,
    }
-
-   public enum MouseButton
-   {
-      Left,
-      Right,
-      Middle,
-   }
-
+   
    public interface IGameView
    {
       GameViewType Type { get; }
 
       Task<TickResult> Tick();
       Task Draw();
-
-      Option<IGameView> Finish();
-
-      void Start();
+      
+      void OnStart();
    }
 
    public interface IGameView<TData> : IGameView
@@ -60,13 +51,8 @@ namespace DraconicEngine.GameViews
       public abstract Task<TickResult> Tick();
 
       public abstract Task Draw();
-
-      public virtual Option<IGameView> Finish()
-      {
-         return None;
-      }
-
-      public virtual void Start()
+      
+      public virtual void OnStart()
       {
       }
    }

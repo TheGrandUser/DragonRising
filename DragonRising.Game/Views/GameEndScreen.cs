@@ -54,13 +54,8 @@ namespace DragonRising.Views
       }
 
       public GameViewType Type { get { return GameViewType.Dialog; } }
-
-      public Option<IGameView> Finish()
-      {
-         return None;
-      }
-
-      public void Start()
+      
+      public void OnStart()
       {
       }
    }

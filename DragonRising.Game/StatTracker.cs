@@ -19,12 +19,14 @@ namespace DragonRising
    public sealed class StatTracker : IDisposable
    {
       SubscriptionToken subscription;
-      
+      MyPlayingScreen screen;
+
       int monstersKilled = 0;
       public int MonstersKilled { get { return monstersKilled; } }
 
-      public StatTracker(IEventAggregator eventAggregator)
+      public StatTracker(MyPlayingScreen screen, IEventAggregator eventAggregator)
       {
+         this.screen = screen;
          var @event = eventAggregator.GetEvent<CreatureKilledPubSubEvent>();
          this.subscription = @event.Subscribe(OnCreatureKilled);
       }
@@ -57,7 +59,7 @@ namespace DragonRising
 
                   MessageService.Current.PostMessage("Your battle skills grow stronger! You reached level " + playerLevel, RogueColors.Yellow);
 
-                  MyPlayingScreen.Current.AddAsyncInterruption(
+                  screen.AddAsyncInterruption(
                      ChooseLevelUpBenefit,
                      ChooseLevelUpBenefitStillApplies);
                }

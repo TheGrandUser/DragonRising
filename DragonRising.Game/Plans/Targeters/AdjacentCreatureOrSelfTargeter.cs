@@ -35,15 +35,13 @@ namespace DragonRising.Plans.Targeters
       public IEnumerable<IEffect> Effects => effects;
       public IEnumerable<ITargeter> Targeters => targeters;
 
-      public async Task<Option<TargetResult>> GetPlayerTargetingAsync(Loc origin, ImmutableStack<Either<Loc, Vector>> path)
+      public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
-         var playingState = MyPlayingScreen.Current;
-
          var range = new SelectionRange(1, RangeLimits.None);
 
          var area = Area.Combine(this.queries.SelectMany(q => q.GetArea()));
 
-         var location = await PlayerController.SelectTargetLocation(origin, "Select an adjacent creature", range, playingState.SceneView, area);
+         var location = await PlayerController.SelectTargetLocation(origin, "Select an adjacent creature", range, sceneView, area);
 
          if (location.HasValue)
          {
@@ -51,7 +49,7 @@ namespace DragonRising.Plans.Targeters
 
             var childResults = await Targeter.HandleChildTargetersAsync(
                this.targeters,
-               t => t.GetPlayerTargetingAsync(location.Value, newPath));
+               t => t.GetPlayerTargetingAsync(sceneView, location.Value, newPath));
 
             var result = childResults.Match(
                Some: rs => Some<TargetResult>(new LocationTargetResult(location.Value, this, rs)),
