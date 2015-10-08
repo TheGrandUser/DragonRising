@@ -16,7 +16,7 @@ namespace DraconicEngine.GameViews
       List<CharacterString> lines = new List<CharacterString>();
       ITerminal dialogPanel;
 
-      public GameViewType Type { get { return GameViewType.Dialog; } }
+      public GameViewType Type { get { return GameViewType.PartialScreen; } }
 
       public ConfirmDialog(string message, ITerminal hostPanel)
       {
@@ -47,7 +47,7 @@ namespace DraconicEngine.GameViews
 
       public bool Result { get; private set; }
 
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          while (true)
          {
@@ -80,7 +80,5 @@ namespace DraconicEngine.GameViews
 
          return Task.FromResult(0);
       }
-      
-      public void OnStart() { }
    }
 }

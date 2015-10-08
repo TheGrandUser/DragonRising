@@ -20,21 +20,21 @@ using DragonRising.Widgets;
 
 namespace DragonRising.Views
 {
-   class SelectEntityTool : IGameView<Entity>
+   class SelectEntityTool : IGameView
    {
       IImmutableList<SeeableNode> availableEntities;
-      SceneView sceneView;
+      Vector viewOffset;
       ITerminal sceneTerminal;
 
-      Entity result;
-      public Entity Result { get { return result; } }
+      Option<Entity> result = None;
+      public Option<Entity> Result { get { return result; } }
 
-      public GameViewType Type { get { return GameViewType.Tool; } }
+      public GameViewType Type { get { return GameViewType.PartialScreen; } }
 
       public SelectEntityTool(IImmutableList<SeeableNode> availableEntities, SceneView sceneView)
       {
          this.availableEntities = availableEntities;
-         this.sceneView = sceneView;
+         this.viewOffset = sceneView.ViewOffset;
          this.sceneTerminal = sceneView.Panel;
       }
 
@@ -52,13 +52,9 @@ namespace DragonRising.Views
       // accept
 
       CommandGesture1D cylce = Create1D(TargetAction.Cylce, g => g.Key.ToCycle(), GestureSet.Create4WayMove());
-
       CommandGesture cancel = CreateGesture(TargetAction.Cancel, GestureSet.Create(RogueKey.Escape));
-
       CommandGesture2D point = CreateMousePointer(TargetAction.Point);
-
-      CommandGesture accept = CreateGesture(TargetAction.Accept,
-         GestureSet.Create(RogueMouseAction.LeftClick, RogueKey.Enter, RogueKey.Space));
+      CommandGesture accept = CreateGesture(TargetAction.Accept, GestureSet.Create(RogueMouseAction.LeftClick, RogueKey.Enter, RogueKey.Space));
 
 
       IEnumerable<CommandGesture> Gestures
@@ -75,7 +71,7 @@ namespace DragonRising.Views
       int lastSelectedIndex = 0;
       int? currentSelectedIndex = 0;
 
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          var inputResult = await InputSystem.Current.GetCommandAsync(this.Gestures, CancellationToken.None);
          var command = inputResult.Command as ValueCommand<TargetAction>;
@@ -119,7 +115,7 @@ namespace DragonRising.Views
                var localPoint = sceneTerminal.RootVecToLocalVec(rootPoint);
                if (localPoint.HasValue)
                {
-                  var scenePoint = this.sceneView.ViewOffset + localPoint;
+                  var scenePoint = viewOffset + localPoint;
 
                   var entity = this.availableEntities.FirstOrDefault(e => e.Entity.Location == scenePoint);
 
@@ -145,7 +141,7 @@ namespace DragonRising.Views
          int index = 0;
          foreach(var node in this.availableEntities)
          {
-            Loc displayLocation = node.Entity.Location - this.sceneView.ViewOffset;
+            Loc displayLocation = node.Entity.Location - viewOffset;
 
             var foreColor = index == this.currentSelectedIndex ? node.Drawn.SeenCharacter.ForeColor : RogueColors.Gray;
 
@@ -159,10 +155,6 @@ namespace DragonRising.Views
          }
          
          return Task.FromResult(0);
-      }
-      
-      public void OnStart()
-      {
       }
    }
 }

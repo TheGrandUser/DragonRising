@@ -21,12 +21,15 @@ namespace DragonRising.Views
 {
    class MainMenuScreen : IGameView
    {
+      ISaveManager saveManager;
       delegate Task<TickResult> MenuCommand();
 
       MenuWidget<MenuCommand> menu;
 
-      public MainMenuScreen()
+      public MainMenuScreen(ISaveManager saveManager)
       {
+         this.saveManager = saveManager;
+
          var menuItems = new[] {
             new MenuItem<MenuCommand>("Continue Game", this.ContinueGame, this.CanContinueGame),
             new MenuItem<MenuCommand>("New Game", this.NewGame),
@@ -40,11 +43,9 @@ namespace DragonRising.Views
          var y = DragonRisingGame.ScreenHeight - height - 5;
 
          menu = new MenuWidget<MenuCommand>(DragonRisingGame.Current.RootTerminal[x, y, width, height], "", false, menuItems);
-
-
       }
 
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          var result = await this.menu.Tick();
 
@@ -66,17 +67,17 @@ namespace DragonRising.Views
          return Task.FromResult(0);
       }
 
-      public GameViewType Type { get { return GameViewType.Screen; } }
+      public GameViewType Type { get { return GameViewType.WholeScreen; } }
 
       async Task<TickResult> ContinueGame()
       {
-         string lastSave = SaveManager.Current.LastSaveGame;
+         string lastSave = saveManager.LastSaveGame;
          await PlayLoadedGame(lastSave);
 
          return TickResult.Continue;
       }
 
-      bool CanContinueGame() => !string.IsNullOrEmpty(SaveManager.Current.LastSaveGame);
+      bool CanContinueGame() => !string.IsNullOrEmpty(saveManager.LastSaveGame);
 
       async Task<TickResult> NewGame()
       {
@@ -87,7 +88,7 @@ namespace DragonRising.Views
          if (newGameScreen.World != null)
          {
             var world = newGameScreen.World;
-            var playingState = new MyPlayingScreen(world, newGameScreen.GameName);
+            var playingState = new MyPlayingScreen(world, newGameScreen.GameName, saveManager);
 
             await RogueGame.Current.RunGameState(playingState);
          }
@@ -96,7 +97,7 @@ namespace DragonRising.Views
 
       async Task<TickResult> LoadGame()
       {
-         var loadGameScreen = new LoadGameScreen();
+         var loadGameScreen = new LoadGameScreen(saveManager);
 
          await RogueGame.Current.RunGameState(loadGameScreen);
 
@@ -108,48 +109,46 @@ namespace DragonRising.Views
          return TickResult.Continue;
       }
 
-      bool CanLoadGame() => SaveManager.Current.GetSaveGames().Any();
+      bool CanLoadGame() => saveManager.GetSaveGames().Any();
 
       Task<TickResult> Exit() { return Task.FromResult(TickResult.Finished); }
 
       async Task PlayLoadedGame(string gameName)
       {
-         var world = await SaveManager.Current.LoadGame(gameName);
+         var world = await saveManager.LoadGame(gameName);
          world.Scene.ClearFoV();
 
-         var playingState = new MyPlayingScreen(world, gameName);
+         var playingState = new MyPlayingScreen(world, gameName, saveManager);
 
          await RogueGame.Current.RunGameState(playingState);
       }
-
-      public void OnStart() { }
       
-      enum MenuCommands
-      {
-         Up,
-         Down,
-         Select,
-         MouseSelect,
-         MousePoint,
-      }
+      //enum MenuCommands
+      //{
+      //   Up,
+      //   Down,
+      //   Select,
+      //   MouseSelect,
+      //   MousePoint,
+      //}
 
-      CommandGesture upGesture = CreateGesture(MenuCommands.Up, GestureSet.Create(RogueKey.Up, RogueKey.NumPad8));
-      CommandGesture downGesture = CreateGesture(MenuCommands.Down, GestureSet.Create(RogueKey.Down, RogueKey.NumPad2));
-      CommandGesture selectGesture = CreateGesture(MenuCommands.Select, GestureSet.Create(RogueKey.Enter, RogueKey.Space));
+      //CommandGesture upGesture = CreateGesture(MenuCommands.Up, GestureSet.Create(RogueKey.Up, RogueKey.NumPad8));
+      //CommandGesture downGesture = CreateGesture(MenuCommands.Down, GestureSet.Create(RogueKey.Down, RogueKey.NumPad2));
+      //CommandGesture selectGesture = CreateGesture(MenuCommands.Select, GestureSet.Create(RogueKey.Enter, RogueKey.Space));
 
-      CommandGesture mouseSelectGesture = CreateGesture(MenuCommands.MouseSelect, GestureSet.Create(RogueMouseAction.LeftClick));
-      CommandGesture mousePointGesture = CreateGesture(MenuCommands.MousePoint, GestureSet.Create(RogueMouseAction.Movement));
+      //CommandGesture mouseSelectGesture = CreateGesture(MenuCommands.MouseSelect, GestureSet.Create(RogueMouseAction.LeftClick));
+      //CommandGesture mousePointGesture = CreateGesture(MenuCommands.MousePoint, GestureSet.Create(RogueMouseAction.Movement));
 
-      IEnumerable<CommandGesture> Gestures
-      {
-         get
-         {
-            yield return upGesture;
-            yield return downGesture;
-            yield return selectGesture;
-            //yield return mouseSelectGesture;
-            //yield return mousePointGesture;
-         }
-      }
+      //IEnumerable<CommandGesture> Gestures
+      //{
+      //   get
+      //   {
+      //      yield return upGesture;
+      //      yield return downGesture;
+      //      yield return selectGesture;
+      //      //yield return mouseSelectGesture;
+      //      //yield return mousePointGesture;
+      //   }
+      //}
    }
 }

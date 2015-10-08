@@ -2,7 +2,6 @@
 
 open DraconicEngineF
 open DraconicEngineF.DisplayCore
-open DraconicEngineF.CoreObjects
 open DraconicEngineF.Entities
 open DraconicEngineF.ItemSelection
 open DragonRisingF.DomainTypes
@@ -33,15 +32,17 @@ let doEntityGeneration r level entityGen countPerLevel room =
    
    let rec gen i (acc : Entity list) = 
       let location = getRandomLocationInRoom r room
-      if (acc |> List.exists (fun e -> e.location = location)) then acc
+      if (acc |> List.exists (fun e -> getLocation e = location)) then acc
       else 
          let entity = entityGen level
-         if i < count then gen (i + 1) ({ entity with location = location } :: acc)
+         if i < count then
+            setLocation entity location
+            gen (i + 1) (entity :: acc)
          else acc
    gen 0 []
 
 module DungeonGenerator = 
-   let makeMap r popGen itemGen makeFillTile makeClearTile level width height = 
+   let makeMap r tileTypes popGen itemGen makeFillTile makeClearTile level width height = 
       let roomMaxSize = 10
       let roomMinSize = 6
       let maxRooms = 30
@@ -49,7 +50,8 @@ module DungeonGenerator =
       let map = 
          { width = width
            height = height
-           tiles = Array.init (width * height) makeFillTile }
+           tiles = Array.init (width * height) makeFillTile
+           tileTypes = tileTypes }
       
       let itemsPerRoomByLevel = 
          [ (1, 1)
@@ -89,7 +91,7 @@ module DungeonGenerator =
          let h = r.Next(roomMinSize, roomMaxSize + 1)
          let x = r.Next(0, width - w - 1)
          let y = r.Next(0, height - h - 1)
-         let newRoom = TerminalRect(x, y, w, h)
+         let newRoom = rect x y w h
          
          let newRooms = 
             (if List.exists (fun room -> Intersects room newRoom) rooms = false then 
@@ -114,7 +116,7 @@ module DungeonGenerator =
       
       let drawnComp = { seen = seenC; explored = Some exploredC }
 
-      let stairs = createNewEntity "Stairs" [drawnComp] (allRooms |> List.head).Center
+      let stairs = createNewEntity "Stairs" false [drawnComp] (allRooms |> List.head).Center
       
       let firstRoom = 
          allRooms
@@ -122,3 +124,5 @@ module DungeonGenerator =
          |> List.head
       
       (firstRoom.Center, stairs, allMonsters, allItems)
+
+

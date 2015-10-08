@@ -110,19 +110,21 @@ namespace DragonRising.Widgets
          var availableItemHeight = terminal.Size.Y - messageArea;
 
          this.itemsPerPage = availableItemHeight / spacingPerItem;
-         if(items.Length > itemsPerPage)
+         if (items.Length > itemsPerPage)
          {
             availableItemHeight -= pageArea;
             this.itemsPerPage = availableItemHeight / spacingPerItem;
          }
-         
+
+
          this.pageCount = (this.menuItems.Count / itemsPerPage) + (this.menuItems.Count % itemsPerPage == 0 ? 0 : 1);
 
          this.messagePanel = terminal[3, messageY];
          this.itemsPanel = terminal[3, firstItemY];
          this.pagePanel = terminal[3, terminal.Size.Y - pageYFromBottom];
 
-         this.currentMenuItem = menuItems.Select((mi, i) => new { mi, i }).First(mi => mi.mi.CanExecute()).i;
+         this.currentMenuItem = menuItems.FindIndex(mi => mi.CanExecute());
+         this.currentMenuPage = currentMenuItem / itemsPerPage;
       }
 
       public async Task<Option<TValue>> Tick()
@@ -163,9 +165,8 @@ namespace DragonRising.Widgets
                .Where(mi => mi.mi.CanExecute()).Select(me => me.i)
                .ToList();
 
-            var currentValidIndex = validItems.IndexOf(currentMenuItem);
-
-            ++currentValidIndex;
+            var currentValidIndex = validItems.IndexOf(currentMenuItem) + 1;
+            
             if (currentValidIndex >= validItems.Count)
             {
                currentValidIndex = validItems.Count - 1;

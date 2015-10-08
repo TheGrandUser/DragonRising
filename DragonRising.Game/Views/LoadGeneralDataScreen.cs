@@ -44,25 +44,21 @@ namespace DragonRising.Views
          var x = (DragonRisingGame.ScreenWidth - width) / 2;
          var y = DragonRisingGame.ScreenHeight - height - 5;
 
-         this.messageTerminal = DragonRisingGame.Current.RootTerminal[x, y, width, height];
+         this.messageTerminal = DragonRisingGame.Current.RootTerminal[x, y, width, height][RogueColors.LightGray];
       }
 
-      public GameViewType Type { get { return GameViewType.Screen; } }
+      public GameViewType Type { get { return GameViewType.WholeScreen; } }
 
       public Task Draw()
       {
          RogueGame.Current.RootTerminal.Clear();
 
-         this.messageTerminal[3, 3][RogueColors.LightGray].Write(message);
+         this.messageTerminal.Write(message);
 
          return Task.FromResult(0);
       }
       
-      public void OnStart()
-      {
-      }
-
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          if (loaders.Count == 0)
          {

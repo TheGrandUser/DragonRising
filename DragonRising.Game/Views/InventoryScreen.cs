@@ -14,7 +14,7 @@ using DragonRising.GameWorld.Components;
 
 namespace DragonRising.Views
 {
-   class InventoryScreen : IGameView<int?>
+   class InventoryScreen : IGameView
    {
       InventoryComponent inventory;
 
@@ -25,7 +25,7 @@ namespace DragonRising.Views
       private  int? result;
       public int? Result { get { return this.result; } }
 
-      public GameViewType Type { get { return GameViewType.Screen; } }
+      public GameViewType Type { get { return GameViewType.WholeScreen; } }
 
       public InventoryScreen(InventoryComponent inventory, Option<string> message)
       {
@@ -43,7 +43,7 @@ namespace DragonRising.Views
          this.itemsTerminal = rootTerminal[(Loc)margin, screenSize - margin * 2];
       }
 
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          var keyEvent = await InputSystem.Current.GetKeyPressAsync();
 
@@ -95,11 +95,7 @@ namespace DragonRising.Views
             }
          }
 
-         return Task.FromResult(0);
-      }
-      
-      public void OnStart()
-      {
+         return Task.CompletedTask;
       }
    }
 }

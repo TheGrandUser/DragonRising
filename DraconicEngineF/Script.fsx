@@ -1,14 +1,28 @@
 ﻿// Learn more about F# at http://fsharp.org. See the 'F# Tutorial' project
 // for more guidance on F# programming.
 System.IO.Directory.SetCurrentDirectory(__SOURCE_DIRECTORY__)
-//#load "Util.fs"
-//#load "CoreObjects.fs"
+
 #r "bin/debug/FSharpx.Collections.dll"
 #r "bin/debug/FSharpx.Extras.dll"
-#r "bin/debug/DraconicEngineF.dll"
-open DraconicEngineF.CoreObjects
-open DraconicEngineF.Entities
-open DraconicEngineF.ItemSelection
+#r "bin/debug/System.Reactive.Core.dll"
+#r "bin/debug/System.Reactive.Interfaces.dll"
+#r "bin/debug/System.Reactive.Linq.dll"
+
+#load "Util.fs"
+#load "DisplayCore.fs"
+#load "CoreTypes.fs"
+#load "Entities.fs"
+#load "ItemSelection.fs"
+#load "GenerationTools.fs"
+#load "Terminal.fs"
+#load "InputTypes.fs"
+#load "Game.fs"
+
+open CoreTypes
+open Entities
+open ItemSelection
+open GenerationTools
+open Game
 open FSharpx.Stm
 open FSharpx.Extras
 // Define your library scripting code here
@@ -53,14 +67,14 @@ IsInRectangle origin loc1 loc2
 IsInRectangle origin loc2 loc1
 let loc3 = loc1 + Vector(1, 0)
 
-AreAdjacent loc1 loc2
-AreAdjacent loc1 loc3
+areAdjacent loc1 loc2
+areAdjacent loc1 loc3
 
 getLineFromTo loc1 loc2
 
-let rect1 = TerminalRect (loc1, vec1)
+let rect1 = { position = loc1; size = vec1 }
 let (loc4, loc5) = (loc3 - vec1, loc3 + (Vector (2, 1)))
-let rect2 = TerminalRect (loc4, (loc5-loc4))
+let rect2 = { position = loc4; size = loc5-loc4 }
 
 Intersects rect1 rect2
 Intersection rect1 rect2
@@ -77,6 +91,6 @@ type creatureComp = { hp: int; }
 
 let playerComps = [{hp = 20}] |> List.toSeq |> Seq.map (fun i -> i :> obj)
 let playerLoc = Loc(3, 4)
-let player = makeEntity "Player" playerComps playerLoc
+let player = createNewEntity "Player" true playerComps playerLoc
 
 let comps = getComponent<creatureComp> player

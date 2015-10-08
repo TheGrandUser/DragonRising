@@ -36,15 +36,8 @@ namespace DragonRising.Plans.Queries
 
       public IEnumerable<IEffect> Effects => effects;
       
-      public Option<Area> GetArea()
-      {
-         return new CirlceArea(range, Loc.Zero);
-      }
-
-      public Option<Area> GetArea(Loc origin)
-      {
-         return new CirlceArea(range, origin);
-      }
+      public Option<Area> GetArea() => new CirlceArea(range, Loc.Zero);
+      public Option<Area> GetArea(Loc origin) => new CirlceArea(range, origin);
 
       public IEnumerable<Fact> GetFacts(Entity user, Loc loc)
       {

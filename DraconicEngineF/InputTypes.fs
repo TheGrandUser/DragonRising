@@ -281,6 +281,27 @@ let getKeyGestureReady commandGesture keyGesture =
    | CommandGesture1D (_, k2d, d2v) -> keyGesture |> k2d |> d2v
    | CommandGesture2D (_, k2d, d2v) -> keyGesture |> k2d |> d2v
 
+let makeSimpleGestures keys: RogueKeyGesture list = keys |> List.map (fun k -> (k, RogueModifierKeys.None))
+
+let fourWayMove = 
+   [RogueKey.Up; RogueKey.Down; RogueKey.Left; RogueKey.Right; RogueKey.NumPad2; RogueKey.NumPad4; RogueKey.NumPad6; RogueKey.NumPad8]
+   |> List.map (fun k -> (k, RogueModifierKeys.None))
+
+let eightWayMove = 
+   [RogueKey.Up; RogueKey.Down; RogueKey.Left; RogueKey.Right; RogueKey.NumPad2; RogueKey.NumPad4; RogueKey.NumPad6; RogueKey.NumPad8]
+   |> List.map (fun k -> (k, RogueModifierKeys.None))
+
+let toCycle (key, _) =
+   match key with
+   | RogueKey.Up
+   | RogueKey.Right
+   | RogueKey.NumPad8
+   | RogueKey.NumPad6 -> 1
+   | RogueKey.Down
+   | RogueKey.Left
+   | RogueKey.NumPad2
+   | RogueKey.NumPad4 -> -1
+   | _ -> 0
 
 let toTask ct obs =
    TaskObservableExtensions.ToTask (obs, ct)

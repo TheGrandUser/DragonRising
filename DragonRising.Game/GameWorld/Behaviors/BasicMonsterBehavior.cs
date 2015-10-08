@@ -47,7 +47,7 @@ namespace DragonRising.GameWorld.Behaviors
          return action ?? ActionTaken.Idle;
       }
       
-      ActionTaken MoveTowards(Entity owner, Loc targetLocation)
+      static ActionTaken MoveTowards(Entity owner, Loc targetLocation)
       {
          var directionVec = targetLocation - owner.Location;
 

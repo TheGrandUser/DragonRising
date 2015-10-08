@@ -24,9 +24,9 @@ namespace DragonRising.Views
 
       public string message = "Please select a save game";
 
-      public LoadGameScreen()
+      public LoadGameScreen(ISaveManager saveManager)
       {
-         this.saveNames = SaveManager.Current.GetSaveGames().ToList();
+         this.saveNames = saveManager.GetSaveGames().ToList();
 
          var height = this.saveNames.Count + 3 * 2 + 3;
          var width = this.saveNames.StartWith(message)
@@ -39,7 +39,7 @@ namespace DragonRising.Views
 
          this.optionsTerminal = DragonRisingGame.Current.RootTerminal[x, y, width, height];
       }
-      public GameViewType Type { get { return GameViewType.Screen; } }
+      public GameViewType Type { get { return GameViewType.WholeScreen; } }
 
       public string FilePath { get; private set; }
 
@@ -75,7 +75,7 @@ namespace DragonRising.Views
 
       public string SelectedGame { get; set; }
 
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          while (true)
          {
@@ -145,11 +145,5 @@ namespace DragonRising.Views
 
          return Task.FromResult(0);
       }
-      
-      public void OnStart()
-      {
-      }
-
-
    }
 }

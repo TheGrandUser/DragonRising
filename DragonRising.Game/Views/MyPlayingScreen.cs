@@ -6,7 +6,6 @@ using DraconicEngine.Input;
 using DraconicEngine.Terminals;
 using DraconicEngine.Widgets;
 using DragonRising.GameWorld.Systems;
-using DragonRising.Services;
 using LanguageExt;
 using static LanguageExt.Prelude;
 using System;
@@ -42,6 +41,7 @@ namespace DragonRising.Views
       public static readonly int MessageHeight = PanelHeight - 2;
 
       ITerminal statsPanel;
+      ISaveManager saveManager;
 
       BarWidget hpBarWidget;
       BarWidget xpBarWidget;
@@ -50,10 +50,7 @@ namespace DragonRising.Views
       MessagesWidget infoWidget;
       SceneWidget sceneWidget;
       SceneView sceneView;
-      LifeDeathMonitorService lifeDeathMonitorService;
-
-      StatTracker statTracker;
-
+      
       Queue<IAsyncInterruption> interruptions = new Queue<IAsyncInterruption>();
 
       public World World { get; set; }
@@ -68,9 +65,10 @@ namespace DragonRising.Views
 
       public PlayerController PlayerController { get; set; }
 
-      public MyPlayingScreen(World world, string gameName)
+      public MyPlayingScreen(World world, string gameName, ISaveManager saveManager)
       {
          this.World = world;
+         this.saveManager = saveManager;
 
          var player = world.Player;
          this.gameName = gameName;
@@ -115,8 +113,6 @@ namespace DragonRising.Views
          this.Widgets.Add(infoWidget);
          
          this.PlayerController = new PlayerController(this, messageService, sceneView) { PlayerCreature = player };
-         this.lifeDeathMonitorService = new LifeDeathMonitorService(ServiceLocator.Current.GetInstance<IEventAggregator>());
-         this.statTracker = new StatTracker(this, ServiceLocator.Current.GetInstance<IEventAggregator>());
          
          SetupRules(rulesManager);
 
@@ -143,6 +139,7 @@ namespace DragonRising.Views
          rulesManager.AddRule(new ReportStatusRemovedRule());
          rulesManager.AddRule(new UseItemRule());
          rulesManager.AddRule(new UsePortalRule());
+         rulesManager.AddRule(new EntityKilledRule(this.World, this));
       }
 
       protected override void PreSceneDraw()
@@ -156,14 +153,14 @@ namespace DragonRising.Views
       {
          return new GameEndScreen();
       }
-      
+
+      protected override void Save()
+      {
+         saveManager.SaveGame(this.gameName, this.World);
+      }
+
       protected override void OnFinished()
       {
-         statTracker.Dispose();
-         lifeDeathMonitorService.Dispose();
-         
-         SaveManager.Current.SaveGame(this.gameName, this.World);
-         
          World.Current = null;
 
          this.World.Dispose();

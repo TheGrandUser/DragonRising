@@ -11,26 +11,6 @@ using System.Threading.Tasks;
 
 namespace DragonRising.GameWorld.Events
 {
-   class AttackHitEvent : Fact
-   {
-      public AttackEntityAction Attack { get; }
-
-      public AttackHitEvent(AttackEntityAction attack)
-      {
-         Attack = attack;
-      }
-   }
-
-   class AttackMissedEvent : Fact
-   {
-      public AttackEntityAction Attack { get; }
-
-      public AttackMissedEvent(AttackEntityAction attack)
-      {
-         Attack = attack;
-      }
-   }
-   
    sealed class InflictDamageEvent : Fact
    {
       public InflictDamageEvent(Entity target, Damage damage, Entity initiator)
@@ -39,14 +19,24 @@ namespace DragonRising.GameWorld.Events
          Target = target;
          Damage = damage;
       }
-      
+
       public Entity Initiator { get; }
       public Entity Target { get; }
       public Damage Damage { get; }
 
    }
-   
-   class Damage
+
+   sealed class AttackMissedEvent : Fact
+   {
+      public AttackEntityAction Attack { get; }
+
+      public AttackMissedEvent(AttackEntityAction attack)
+      {
+         Attack = attack;
+      }
+   }
+
+   sealed class Damage
    {
       public Damage(int amount, string type = "Normal")
       {

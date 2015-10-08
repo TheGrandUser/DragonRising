@@ -10,10 +10,8 @@ namespace DraconicEngine.GameViews
 {
    public enum GameViewType
    {
-      Screen,
-      Dialog,
-      Tool,
-      Effect,
+      WholeScreen,
+      PartialScreen,
    }
 
    public enum TickResult
@@ -33,27 +31,7 @@ namespace DraconicEngine.GameViews
    {
       GameViewType Type { get; }
 
-      Task<TickResult> Tick();
+      Task<TickResult> DoLogic();
       Task Draw();
-      
-      void OnStart();
-   }
-
-   public interface IGameView<TData> : IGameView
-   {
-      TData Result { get; }
-   }
-
-   public abstract class GameView : IGameView
-   {
-      public abstract GameViewType Type { get; }
-
-      public abstract Task<TickResult> Tick();
-
-      public abstract Task Draw();
-      
-      public virtual void OnStart()
-      {
-      }
    }
 }

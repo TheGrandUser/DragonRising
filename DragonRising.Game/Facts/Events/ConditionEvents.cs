@@ -12,7 +12,7 @@ using DragonRising.GameWorld.Conditions;
 
 namespace DragonRising.GameWorld.Events
 {
-   class AddConditionEvent :Fact
+   class AddConditionEvent : Fact
    {
       public AddConditionEvent(Some<Entity> entity, ICondition condition, int? duration = null)
       {
@@ -25,7 +25,7 @@ namespace DragonRising.GameWorld.Events
       public ICondition Condition { get; }
       public int? Duration { get; }
    }
-   
+
    class ConditionExpiredEvent : Fact
    {
       public ConditionExpiredEvent(Some<Entity> entity, ICondition condition)

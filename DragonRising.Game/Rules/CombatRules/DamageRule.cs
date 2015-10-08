@@ -33,11 +33,7 @@ namespace DragonRising.Rules.CombatRules
          {
             targetCombatant.IsAlive = false;
             targetCombatant.Owner.SetBlocks(false);
-
-            var eventAggregator = ServiceLocator.Current.GetInstance<IEventAggregator>();
-            var creatureKilledEvent = eventAggregator.GetEvent<CreatureKilledPubSubEvent>();
-            creatureKilledEvent.Publish(targetCombatant.Owner, "Entity", damageParameters.Initiator);
-
+            
             return
                new RuleResult(
                   new CreatureKilledEvent(

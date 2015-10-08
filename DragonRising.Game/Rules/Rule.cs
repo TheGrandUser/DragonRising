@@ -23,12 +23,7 @@ namespace DragonRising.Rules
       public bool Filter(Fact fact) => Filter((TFact)fact);
       public virtual bool UseFilter => false;
 
-      public RuleResult Do(Fact fact)
-      {
-         var @event = (TFact)fact;
-
-         return Do(@event);
-      }
+      public RuleResult Do(Fact fact) => Do((TFact)fact);
 
       public abstract RuleResult Do(TFact gameEvent);
 

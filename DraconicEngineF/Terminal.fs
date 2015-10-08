@@ -3,6 +3,7 @@ module Terminal
 #else
 module DraconicEngineF.Terminal
 #endif
+
 open System
 open System.Collections.Generic
 
@@ -21,13 +22,13 @@ let makeTerminal width height =
 let flipNegativePosition t (pos: Loc) =
    let (width, height) = 
       match t with
-      | WindowTerminal (_, _, bounds) -> (bounds.Size.X, bounds.Size.Y)
+      | WindowTerminal (_, _, bounds) -> (bounds.size.X, bounds.size.Y)
       | MainTerminal (_, size) -> (size.X, size.Y)
    let x = if pos.X < 0 then width + pos.X else pos.X
    let y = if pos.Y < 0 then height + pos.Y else pos.Y
    Loc (x, y)
 let getSize = function
-| WindowTerminal (_,_,bounds) -> bounds.Size
+| WindowTerminal (_,_,bounds) -> bounds.size
 | MainTerminal (_, size) -> size
 
 let rec getValue t (pos: Loc) =
@@ -54,14 +55,15 @@ let rec setValue (pos: Loc) t (value: Character) =
          true
 
 let writeCharacter = setValue originPos
-let writeCharacterString t (cs: CharacterString) = 
+let writeCharacterString (cs: CharacterString) t =  
    for i = 0 to cs.Characters.Length do
       let pos = Loc(i, 0)
       setValue pos t cs.Characters.[i] |> ignore
-let writeGlyph t glyph =
+let writeGlyph glyph t =
    match t with
    | WindowTerminal (parent, color, bounds) -> writeCharacter t { glyph = glyph; color = color }
    | MainTerminal (characters, size) -> writeCharacter t { glyph = glyph; color = defaultTileColor }
+let write str = CharacterString(str) |> writeCharacterString 
 
 let fill t glyph =
    match t with
@@ -77,13 +79,13 @@ let clear t = fill t Glyph.Space
 let checkBounds t x y =
    let size = 
       match t with
-      | WindowTerminal (_, _, bounds) -> bounds.Size
+      | WindowTerminal (_, _, bounds) -> bounds.size
       | MainTerminal (_, size) -> size
    x >= 0 && x < size.X && y >= 0 && y < size.Y
 
 let getTerminalSize t =
    match t with
-   | WindowTerminal (_, _, bounds) -> (bounds.Size.X, bounds.Size.Y)
+   | WindowTerminal (_, _, bounds) -> (bounds.size.X, bounds.size.Y)
    | MainTerminal (_, size) -> (size.X, size.Y)
 
 type Terminal with
@@ -93,7 +95,7 @@ type Terminal with
       | MainTerminal _ -> defaultTileColor
    member this.Size =
       match this with
-      | WindowTerminal (_, _, bounds) -> bounds.Size
+      | WindowTerminal (_, _, bounds) -> bounds.size
       | MainTerminal (_, size) -> size
    member this.LowerRight =
       match this with
@@ -106,30 +108,36 @@ type Terminal with
 
    member this.Item(foreColor: RogueColor) = 
       let color = { this.Color with foreColor = foreColor }
-      this.createWindowCore(color, TerminalRect(Loc(), this.Size))
+      this.createWindowCore(color, { position = Loc(); size = this.Size })
 
    member this.Item(foreColor: RogueColor, backColor: RogueColor option) = 
       let color = { foreColor = foreColor; backColor = backColor }
-      this.createWindowCore(color, TerminalRect(Loc(), this.Size))
+      this.createWindowCore(color, { position = Loc(); size = this.Size })
       
    member this.Item(color) = 
-      this.createWindowCore(color, TerminalRect(Loc(), this.Size))
+      this.createWindowCore(color, { position = Loc(); size = this.Size })
    member this.Item(x, y, width, height) =
       let pos = Loc (x, y)
       let size = Vector(width, height)
-      this.createWindowCore(this.Color, TerminalRect(flipNegativePosition this pos, size))
+      this.createWindowCore(this.Color, { position = flipNegativePosition this pos; size = size })
    member this.Item(pos, size) =
-      this.createWindowCore(this.Color, TerminalRect(flipNegativePosition this pos, size))
+      this.createWindowCore(this.Color, { position = flipNegativePosition this pos; size = size })
    member this.Item(pos) =
-      this.createWindowCore(this.Color, TerminalRect(flipNegativePosition this pos, this.LowerRight - pos))
+      this.createWindowCore(this.Color, { position = flipNegativePosition this pos; size = this.LowerRight - pos })
    member this.Item(x, y) =
       let pos = Loc(x, y)
-      this.createWindowCore(this.Color, TerminalRect(flipNegativePosition this pos, this.LowerRight - pos))
+      this.createWindowCore(this.Color, { position = flipNegativePosition this pos; size = this.LowerRight - pos })
+
+let fromPoint x y (terminal: Terminal) = terminal.[Loc(x, y)]
+let withRegion x y w h (terminal: Terminal) = terminal.[Loc(x, y), Vector(w, h)]
+let withForeColor (c: RogueColor) (terminal: Terminal) = terminal.[c]
+let withColor f b (terminal: Terminal) = terminal.[f, Some b]
+let lowerRight (terminal: Terminal) = terminal.LowerRight
 
 let t = MainTerminal (Array.init 16 (fun i -> character 'A'), Vector(4, 4))
 
 let writeLineChar (t: Terminal) (pos: Loc) glyph =
-   writeGlyph t.[pos] glyph
+   t.[pos] |> writeGlyph glyph
 
 let drawHorizontalLine t pos length (options: DrawBoxOptions) =
    let (left, middle, right) =
