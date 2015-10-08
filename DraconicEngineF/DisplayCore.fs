@@ -489,7 +489,7 @@ let toGlyphs (str:string) =
 let defaultForeColor = RogueColors.white
 let defaultTileColor = { foreColor= RogueColors.white; backColor=Some RogueColors.black}
 let character char = { glyph = (glyph char); color = defaultTileColor }
-
+let makeForeOnlyChar glyph color = { glyph = glyph; color = { foreColor = color; backColor = None } } 
 
 type CharacterString (text: string) =
    let characters = text |> toGlyphs |> Seq.map (fun g -> { glyph = g; color = { foreColor = defaultForeColor; backColor = None } }) |> Seq.toArray

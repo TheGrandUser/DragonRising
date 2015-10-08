@@ -16,7 +16,7 @@ using DraconicEngine.RulesSystem;
 
 namespace DragonRising.Views
 {
-   class LocationTargetingTool : IGameView<Loc?>
+   class LocationTargetingTool : IGameView
    {
       enum TargetAction
       {
@@ -35,7 +35,7 @@ namespace DragonRising.Views
       Loc startLocation;
       Loc location;
 
-      public GameViewType Type { get { return GameViewType.Tool; } }
+      public GameViewType Type { get { return GameViewType.PartialScreen; } }
 
       ITerminal sceneTerminal;
       SelectionRange selectionRange;
@@ -49,7 +49,7 @@ namespace DragonRising.Views
          this.sceneTerminal = sceneView.Panel;
       }
 
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          var keyEvent = await InputSystem.Current.GetKeyPressAsync();
          if (keyEvent.Key == RogueKey.Enter || keyEvent.Key == RogueKey.Space)
@@ -98,10 +98,6 @@ namespace DragonRising.Views
          }
 
          return Task.FromResult(0);
-      }
-      
-      public void OnStart()
-      {
       }
    }
 }

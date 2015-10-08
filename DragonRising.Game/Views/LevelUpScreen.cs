@@ -14,7 +14,7 @@ using DraconicEngine;
 
 namespace DragonRising.Views
 {
-   public class LevelUpScreen : GameView
+   public class LevelUpScreen : IGameView
    {
       MenuWidget<Benefit> menu;
 
@@ -28,11 +28,11 @@ namespace DragonRising.Views
             new MenuItem<Benefit>($"Agility (+1 defense from {combatant.Defense})", Benefit.Agility));
       }
       
-      public override GameViewType Type => GameViewType.Screen;
+      public GameViewType Type => GameViewType.WholeScreen;
 
       public Benefit Benefit { get; private set; }
 
-      public override Task Draw()
+      public Task Draw()
       {
          RogueGame.Current.RootTerminal.Clear();
 
@@ -41,7 +41,7 @@ namespace DragonRising.Views
          return Task.FromResult(0);
       }
       
-      public override async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          var result = await this.menu.Tick();
 

@@ -30,7 +30,7 @@ namespace DraconicEngine.GameViews
 
       public abstract void AddAsyncInterruption(IAsyncInterruption interruption);
 
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          if (this.IsUnderPlayerControl())
          {
@@ -46,8 +46,8 @@ namespace DraconicEngine.GameViews
             }
             else if (playerTurn == PlayerTurnResult.Quit)
             {
-               OnFinished();
                this.Save();
+               OnFinished();
                return TickResult.Finished;
             }
             else // Idle, already timed out
@@ -104,7 +104,7 @@ namespace DraconicEngine.GameViews
 
       protected abstract Some<IGameView> CreateEndScreen();
 
-      public GameViewType Type { get { return GameViewType.Screen; } }
+      public GameViewType Type { get { return GameViewType.WholeScreen; } }
 
       public virtual void OnStart()
       {

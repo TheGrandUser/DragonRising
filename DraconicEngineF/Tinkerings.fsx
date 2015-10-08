@@ -11,7 +11,7 @@
 
 #load "Util.fs"
 #load "DisplayCore.fs"
-#load "CoreObjects.fs"
+#load "CoreTypes.fs"
 #load "Entities.fs"
 
 open Entities
@@ -29,7 +29,7 @@ type WithFuncComponent = { doStuff: (int -> int); info: string } with interface 
    
 let something x = x * 2
 let playerGlyph = { glyph = Glyph.At; color = { foreColor=RogueColors.white; backColor = None } }
-let player = createNewEntity "Player" ([ { visionRadius=6 } :> IComponent; { seen=playerGlyph; explored=None} :> IComponent; { doStuff = something; info = "blahblah"} :> IComponent]) (Loc(2, 3))
+let player = createNewEntity "Player" true ([ { visionRadius=6 } :> IComponent; { seen=playerGlyph; explored=None} :> IComponent; { doStuff = something; info = "blahblah"} :> IComponent]) (Loc(2, 3))
 
 let makeTVarPickler (tp: Pickler<'T>) tag = 
    let reader s = tp.Read s tag |> newTVar
@@ -61,8 +61,9 @@ let componentPickler =
 let makeEntityPickler compPickler =
    Pickler.product makeEntity
    ^+ Pickler.field (fun e -> e.name) Pickler.string
+   ^+ Pickler.field (fun e -> getBlocks e) Pickler.bool
    ^+ Pickler.field (fun e -> e.id |> idToInt) Pickler.int
-   ^+ Pickler.field (fun e -> e.location) Pickler.auto<Loc>
+   ^+ Pickler.field (fun e -> getLocation e) Pickler.auto<Loc>
    ^. Pickler.field (fun e -> getAllComponents e) (Pickler.list compPickler)
 
       

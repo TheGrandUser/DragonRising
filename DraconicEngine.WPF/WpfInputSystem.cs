@@ -25,6 +25,11 @@ namespace DraconicEngine.WPF
       IObservable<Tuple<RogueMouseGesture, Loc>> mouseDown;
       IObservable<Tuple<RogueMouseGesture, Loc, int>> mouseWheel;
 
+      class testClass
+      {
+         public void M() { }
+      }
+
       public WpfInputSystem(Window window, TerminalControl terminalControl)
       {
          this.window = window;
@@ -36,6 +41,7 @@ namespace DraconicEngine.WPF
             let sceenPoint = args.GetPosition(this.terminalControl)
             let terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint)
             select Tuple.Create(new RogueMouseGesture((RogueMouseAction)args.ChangedButton, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint);
+         
          var mouseMove =
             from args in Observable.FromEvent<MouseEventHandler, MouseEventArgs>(h => this.window.MouseMove += h, h => this.window.MouseMove -= h)
             let sceenPoint = args.GetPosition(this.terminalControl)
@@ -45,8 +51,7 @@ namespace DraconicEngine.WPF
          this.mouseMove = new Subject<Tuple<RogueMouseGesture, Loc, Vector>>();
          mouseMove.Scan(
             Tuple.Create(new RogueMouseGesture(RogueMouseAction.Movement, RogueModifierKeys.None), new Loc(-1, -1), Vector.Zero),
-            (last, next) =>
-            Tuple.Create(next.Item1, next.Item2, next.Item2 - last.Item2))
+            (last, next) => Tuple.Create(next.Item1, next.Item2, next.Item2 - last.Item2))
             .Skip(1).Subscribe(this.mouseMove);
 
          this.mouseWheel =
@@ -88,10 +93,12 @@ namespace DraconicEngine.WPF
             let gesture = gestures.OfType<CommandGesture1D>().SingleOrDefault(d => args.Item1.Matches(d.GestureSet.MouseGesture))
             where gesture != null
             select new InputResult1D(gesture.GetValue(args.Item3), args.Item3);
-         
-         return await Observable.Merge(keyInputResults, mouseDownInputResults, mouseMoveInputResults, mouseWheelInputResults)
-            .FirstOrDefaultAsync()
-            .ToTask(cancelToken);
+
+         var obs = Observable.Merge(keyInputResults, mouseDownInputResults, mouseMoveInputResults, mouseWheelInputResults);
+         var firstObs = obs.FirstOrDefaultAsync();
+         //var commandTask = firstObs.ToTask(cancelToken);
+
+         return await firstObs;
       }
 
       static InputResult GetKeyGestureReady(CommandGesture toDo, RogueKeyGesture keyGesture)

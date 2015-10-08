@@ -1,138 +1,294 @@
-﻿module DragonRisingF.DomainTypes
+﻿#if INTERACTIVE
+module DomainTypes
+#else
+module DragonRisingF.DomainTypes
+#endif
+
 open DraconicEngineF
-open DraconicEngineF.CoreObjects
-open DraconicEngineF.DisplayCore
-open DraconicEngineF.Entities
+open DisplayCore
+open Entities
 open FSharpx.Stm
 
-type Alligence = Alligence of string
+type Alligence = 
+   | Alligence of string
+
 let neutral = Alligence "Neutral"
 
-type IFF =
-| Neutral
-| Enemy
-| Ally
+type IFF = 
+   | Neutral
+   | Enemy
+   | Ally
 
-type PlanChoice =
-| LocationChoice of Loc
-| EntityChoice of Entity
-| DirectionChoice of Direction
+type Condition = 
+   | Confused
+   | Slowed
 
+type Damage = { amount : int; kind : string }
+
+type Sense = 
+   | Sight
+   | Sound
+   | Touch
+   | Smell
+   | Taste
+   | Feeling
+type Sensed = 
+   { sense : Sense
+     kind : string
+     quality : string
+     strength : int }
+type SensoryEvent = { location : Loc; effects : Sensed list }
+     
+type AddConditionEvent = 
+   { target : Entity
+     newCondition : Condition
+     duration : int option }
+
+type ConditionExpiredEvent = 
+   { entity : Entity
+     expiringCondition : Condition }
+
+type ConditionRemovedEvent = 
+   { entity : Entity
+     removedCondition : Condition }
+
+type CreatureDamagedEvent = { creature : Entity; damage: Damage; damagingEntity: Entity option }
+type CreatureKilledEvent = 
+   { killedCreature : Entity
+     cause : string option
+     killingEntity : Entity option }
+
+     
+type AttackHitEvent = { attacker: Entity; target: Entity; weapon: Entity option; damage: Damage }
+type AttackMissedEvent = { attacker: Entity; target: Entity; weapon: Entity option }
+
+type CreatureHealedEvent = { creature : Entity; healer : Entity; amount : int }
+     
+type Fact =
+   | SensoryFact of SensoryEvent
+   | AttackHitResult of AttackHitEvent
+   | AttackMissResult of AttackMissedEvent
+   | CreatureDamage of CreatureDamagedEvent
+   | CreatureKilled of CreatureKilledEvent
+   | ConditionAddedFact of AddConditionEvent
+   | ConditionExpired of ConditionExpiredEvent
+   | ConditionRemoved of ConditionRemovedEvent
+   | LaterEvent of int * Fact
+
+type EffectId = int
+
+type IntExpression =
+   | ConstantInt of int
+   | StatLookup of int
+   | AddExpr of IntExpression * IntExpression
+   | SubtractExpr of IntExpression * IntExpression
+   | MultiplyExpr of IntExpression * IntExpression
+   | DivideExpr of IntExpression * IntExpression
+   | NegateExpr of IntExpression
+   //| Func1 of string * IntExpression
+   //| Func2 of string * IntExpression * IntExpression
+
+type EntityFilter =
+   | Any
+   | OnlyCreaturesFilter
+   | OnlyEnemiesFilter
+
+type EffectBluePrint =
+   | ApplyTemporaryCondition of string
+   | DamageEffect of IntExpression
+   | HealEffect of IntExpression
+   | SensoryEffect of Sensed list
+
+type QueryBlueprint =
+   | AffectAllInRangeQuery of IntExpression * EntityFilter * QueryBlueprint list * EffectBluePrint list
+   | SelectClosestCreatureQuery of IntExpression option * EntityFilter * QueryBlueprint list * EffectBluePrint list
+
+type TargeterBlueprint =
+   | AdjacentCreatureOrSelfTargeter of EntityFilter * TargeterBlueprint list * QueryBlueprint list * EffectBluePrint list
+   | DirectionTargeter of DirectionLimit * TargeterBlueprint list * QueryBlueprint list * EffectBluePrint list
+   | EntityInRangeTargeter of RangeLimits option * IntExpression * EntityFilter * TargeterBlueprint list * QueryBlueprint list * EffectBluePrint list
+   | LocationInRangeTargeter of RangeLimits option * IntExpression * TargeterBlueprint list * QueryBlueprint list * EffectBluePrint list
+
+type AreaEffect = (EffectId * (Area -> Fact list))
+type EntityEffect = (EffectId * (Entity -> Fact list))
+type LocationEffect = (EffectId * (Loc -> Fact list))
+
+type Effect =
+   | AreaEffect of AreaEffect
+   | EntityEffect of EntityEffect
+   | LocationEffect of LocationEffect
+and NextEffect =
+   | SimpleEffect of (Entity -> Effect)
+   | IntToEffect of (int -> Entity -> Effect)
+   | StringToEffect of (string -> Entity -> Effect)
+and PowerFailure = string * Entity * NextEffect -> Effect
+
+
+type PlanChoice = 
+   | LocationChoice of Loc
+   | EntityChoice of Entity
+   | DirectionChoice of Direction
 type FromLocation = Loc * PlanChoice list
 type FromDirection = Direction * Loc * PlanChoice list
 
-type EntityOrLocationEffect = | EntityEffect of string | LocationEffect of string
-type AreaEffect = AreaEffect of string
-
-type FromLocationQuery =
-| LocToLoc of (FromLocation -> Loc) * FromLocationQuery list * EntityOrLocationEffect list
-| LocToEntity of (FromLocation -> EntityId) * FromLocationQuery list * EntityOrLocationEffect list
-| LocToDirection of (FromLocation -> Direction) * FromDirecitonQuery
-| LocToArea of (FromLocation -> Area) * AreaEffect list
+type FromLocationQuery = 
+   | LocToLoc of (FromLocation -> Loc) * FromLocationQuery list * LocationEffect list
+   | LocToEntity of (FromLocation -> EntityId) * FromLocationQuery list * EntityEffect list
+   | LocToDirection of (FromLocation -> Direction) * FromDirecitonQuery
+   | LocToArea of (FromLocation -> Area) * AreaEffect list
 and FromDirecitonQuery = 
-| DirToLoc of (FromDirection -> Loc) * FromLocationQuery list * EntityOrLocationEffect list
-| DirToEntity of (FromDirection -> Entity) * FromLocationQuery list * EntityOrLocationEffect list
-| DirToArea of (FromDirection -> Area) * AreaEffect list
+   | DirToLoc of (FromDirection -> Loc) * FromLocationQuery list * LocationEffect list
+   | DirToEntity of (FromDirection -> Entity) * FromLocationQuery list * EntityEffect list
+   | DirToArea of (FromDirection -> Area) * AreaEffect list
 
 type FromLocationTargeter = 
-| TargetLocation of (FromLocation -> Async<Loc>) * FromLocationTargeter list * FromLocationQuery list * EntityOrLocationEffect list
-| TargetDirection of (FromLocation -> Async<Direction>) * FromDirecitonQuery
-| TargetEntity of (FromLocation -> Async<Entity>) * FromLocationTargeter list * FromLocationQuery list * EntityOrLocationEffect list
-and FromDirectionTargeter =
-| TargetLocation of (FromDirection -> Async<Loc>) * FromLocationTargeter list * FromLocationQuery list * EntityOrLocationEffect list
-| TargetEntity of (FromDirection -> Async<Entity>) * FromLocationTargeter list * FromLocationQuery list * EntityOrLocationEffect list
+   | TargetLocation of (FromLocation -> Async<Loc>) * FromLocationTargeter list * FromLocationQuery list * LocationEffect list
+   | TargetDirection of (FromLocation -> Async<Direction>) * FromDirectionTargeter list * FromDirecitonQuery list
+   | TargetEntity of (FromLocation -> Async<Entity>) * FromLocationTargeter list * FromLocationQuery list * EntityEffect list
+and FromDirectionTargeter = 
+   | TargetLocation of (FromDirection -> Async<Loc>) * FromLocationTargeter list * FromLocationQuery list * LocationEffect list
+   | TargetEntity of (FromDirection -> Async<Entity>) * FromLocationTargeter list * FromLocationQuery list * EntityEffect list
 
-type Plan = { targeters: FromLocationTargeter list; queries: FromLocationQuery list; effects: EntityOrLocationEffect list }
+type Plan = 
+   { targeters : FromLocationTargeter list
+     queries : FromLocationQuery list
+     effects : EntityEffect list }
 
-type FinalizedPlan = FinalizedPlan of Plan * Stuff
+type FinalizedPlan = | FinalizedPlan of Plan * Fact list
 
+type Spell = { name : string; plan : Plan }
 
-
-type Behavior = PlayerControled | JustPassBehavior | BasicMonsterBehavior | ConfusedBehavior
-type Condition = | Confused
-
-type BehaviorComponent = { behaviors: Behavior list }
-type CreatureComponent = { visionRadius: int }
-type ConditionComponent = { conditions: Condition list }
-type DrawnComponent = { seen: Character; explored: Character option }
-
-type EquipmentSlot = EquipmentSlot of string
-type EquipmentComponent = { weapon1: EntityId; weapon2: EntityId; equipped: Map<EquipmentSlot, EntityId> }
-
-type Spell = { name: string; plan: Plan }
-type UseInfo =
+type UseInfo = 
    | NormalUse of Plan
    | SpellUse of Spell
-type Charge = { maxCharges: int; charges: int }
-type Usable = { info: UseInfo; charge: Charge option }
 
-type EquipableInfo = EquipableUse of EquipmentSlot
-type Damage = { amount: int; kind: string }
-type WeaponInfo = { isTwoHanded: bool; damage: Damage; range: int option; }
-type ItemUseResult = | Used | Destroyed | NotUsed
+type Charge = { maxCharges : int; charges : int }
 
-type ItemComponent = 
-| Flavor
-| Usable of UseInfo * Charge option
-| Equipable of EquipableInfo
-| Weapon of EquipableInfo * WeaponInfo
+type Usable = { info : UseInfo; charge : Charge option }
+type EquipableSlot = 
+   | EquipmentSlot of string
+   | OneHanded
+   | TwoHanded
+type WeaponInfo = { isTwoHanded : bool; damage : Damage; range : int option }
+
+type ItemUseResult = 
+   | Used
+   | Destroyed
+   | NotUsed
 
 type Manipulation = string
-type ManipulatableComponent = 
-| SelfOnly of Manipulation
-| RequiresItem of Manipulation
 
+type TileId = | TileId of int
+
+type TileType = 
+   { id : TileId
+     name : string
+     description : string option
+     inView : Character
+     explored : Character
+     blocksMovement : bool
+     blocksSight : bool }
+
+type TileVisibility = 
+   | NotSeen
+   | Explored
+   | Seen
+
+type Tile = 
+   { tileId : TileId
+     visibility : TileVisibility }
+
+type Blockage = 
+   | NoBlock
+   | BlockingTile of TileType
+   | BlockingEntity of Entity
+   | OffMap
+
+type GameMap = { width : int; height : int; tiles : Tile array; tileTypes : TileId -> TileType }
+
+type EntityStore = | EntityStore of TVar<Entity list>
+
+type TimedEventsStore = TimedEventsStore of TVar<(Map<int, Fact list>)>
+
+type Scene = { focusEntity : Entity; stairs : Entity; map : GameMap; level : int; entityStore : EntityStore }
+type World = { scene : Scene; entities : EntityStore; timedEvents: TimedEventsStore } // alligences, factions, world map, big overarching stuff
+
+type MoveDetails = { initiator: Entity; direction : Direction }
+type DropItemDetails = { initiator: Entity; itemToDrop : Entity }
+type AttackEntityDetails = { initiator: Entity; target : Entity; weapon : Entity option }
+type CastSpellDetails = { initiator: Entity; spell : Spell; finalizedPlan : FinalizedPlan }
+type ManipulateEntityDetails = { initiator: Entity; target : Entity; item : Entity option }
+type PickUpItemDetails = { initiator: Entity; itemToPick : Entity }
+type UseItemDetails = { initiator: Entity; item : Entity; finalizedPlan : FinalizedPlan }
+
+type ActionTaken = 
+   | IdleAction
+   | MoveAction of MoveDetails
+   | DropItemAction of DropItemDetails
+   | AttackEntityAction of AttackEntityDetails
+   | CastSpellAction of CastSpellDetails
+   | ManipulateEntityAction of ManipulateEntityDetails
+   | PickUpItemAction of PickUpItemDetails
+   | UseItemAction of UseItemDetails
+   
+type BehaviorMessage = 
+   | PlanTurnMessage of World * AgentResponse<ActionTaken>
+   | StopBehavior
+
+type Behavior = Agent<BehaviorMessage>
+
+type BehaviorLogic = Entity -> World -> ActionTaken
+
+type BehaviorMaker = Entity -> Behavior
+
+type BehaviorComponent = | BehaviorComponent of (string * Behavior) list
+   
+type CombatantComponent = 
+   { power : int
+     defense : int }
+
+type ConditionComponent = 
+   { conditions : Condition list }
+   
+type CreatureComponent = 
+   { hp : int
+     maxHP : int
+     isAlive : bool
+     visionRadius : int
+     alligence : Alligence
+     xp: int }
+     
+type DrawnComponent = 
+   { seen : Character
+     explored : Character option }
+
+type EquipmentComponent = 
+   { weapon1 : EntityId
+     weapon2 : EntityId
+     equipped : Map<EquipableSlot, EntityId> }
+   
 type InventoryComponent = 
-| EmptyInventory of int
-| Inventory of int * Entity list
-| FullInventory of Entity list
+   | EmptyInventory of int
+   | Inventory of int * Entity list
+   | FullInventory of int * Entity list
+     
+type ItemComponent = 
+   | Flavor
+   | Usable of UseInfo * Charge option
+   | Equipable of EquipableSlot
+   | Weapon of EquipableSlot * WeaponInfo
 
-type MoveDetails = { direction: Direction }
-type DropItemDetails = { itemToDrop: Entity }
-type AttackEntityDetails = { target: Entity; weapon: Entity option }
-type CastSpellDetails = { spell: Spell; finalizedPlan: FinalizedPlan }
-type ManipulateEntityDetails = { target: Entity; item: Entity option }
-type PickUpItemDetails = { itemToPick: Entity }
-type UseItemDetails = { item: Entity; finalizedPlan: FinalizedPlan }
+type ManipulatableComponent = 
+   | SelfOnly of Manipulation
+   | RequiresItem of Manipulation
 
-type ActionTaken =
-| IdleAction
-| MoveAction of MoveDetails
-| DropItemAction of DropItemDetails
-| AttackEntityAction of AttackEntityDetails
-| CastSpellAction of CastSpellDetails
-| ManipulateEntityAction of ManipulateEntityDetails
-| PickUpItemAction of PickUpItemDetails
-| UseItemAction of UseItemDetails
+type CreatureLibrary = | CreatureLibrary of Map<string, Loc -> Entity> TVar
+type ItemLibrary = | ItemLibrary of Map<string, unit -> Entity> TVar
+type BehaviorLibrary = | BehaviorLibrary of Map<string, BehaviorMaker> TVar
+type SpellLibrary = | SpellLibrary of Map<string, Spell> TVar
+type TileLibrary = | TileLibrary of Map<TileId, TileType> TVar
 
-type Sense = | Sight | Sound | Touch | Smell | Taste | Feeling
-type Sensed = { sense: Sense; kind: string; quality: string; strength: int}
-type SensoryEvent = { location: Loc; effects: Sensed list }
-
-type AttackEvent =
-| AttackHit of AttackEntityDetails
-| AttackMissed of AttackEntityDetails
-
-type InflictDamageEvent = { target: Entity; damage: Damage }
-
-type AddConditionEvent = { target: Entity; newCondition: Condition; duration: int }
-type ConditionExpiredEvent = { entity: Entity; expireingCondition: Condition }
-type ConditionRemovedEvent = { entity: Entity; removedCondition: Condition }
-
-type CreatureKilledEvent = { creature: Entity; cause: string option; killingEntity: Entity option }
-type CreatureHealedEvent = { creature: Entity; healer: Entity; amount: int}
-
-type TileId = TileId of int
-type TileType = { id: TileId; name: string; description: string option; inView: Character; explored: Character; blocksMovement: bool; blocksSight: bool }
-type TileVisibility = | NotSeen | Explored | Seen
-type Tile = { tileId: TileId; visibility: TileVisibility }
-
-let makeTile id = { tileId = id; visibility = NotSeen }
-let voidId = TileId 0
-let beyondTheEdge = makeTile voidId
-
-type Blockage = | NoBlock | BlockingTile | BlockingEntity | OffMap
-
-type GameMap = { width: int; height: int; tiles: Tile array }
-type EntityStore = EntityStore of TVar<Entity list>
-type Scene = { focusEntity: Entity; stairs: Entity; map: GameMap; level: int; entityStore: EntityStore }
+type LevelUpBenefit =
+| Constitution
+| Strength
+| Agility

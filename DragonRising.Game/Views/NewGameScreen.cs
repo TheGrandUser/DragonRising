@@ -7,7 +7,6 @@ using DraconicEngine.Terminals;
 using DraconicEngine.Widgets;
 using DragonRising.GameWorld.Components;
 using DragonRising.Generators;
-using DragonRising.Services;
 using DragonRising.Storage;
 using LanguageExt;
 using static LanguageExt.Prelude;
@@ -22,7 +21,7 @@ namespace DragonRising.Views
 {
    class NewGameScreen : IGameView
    {
-      public GameViewType Type => GameViewType.Screen;
+      public GameViewType Type => GameViewType.WholeScreen;
 
       string nameInProgress;
 
@@ -57,12 +56,7 @@ namespace DragonRising.Views
          return Task.FromResult(0);
       }
       
-      public void OnStart()
-      {
-
-      }
-
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          var keyPress = await InputSystem.Current.GetKeyPressAsync();
 

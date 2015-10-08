@@ -32,7 +32,7 @@ namespace DragonRising.Rules
                   {
                      factsToProcess.Enqueue(newFact);
                   }
-                  if (!result.Interupt)
+                  if (result.Interupt)
                   {
                      break;
                   }

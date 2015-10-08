@@ -1,7 +1,9 @@
 ﻿module DragonRisingF.UITypes
-open DraconicEngineF.CoreObjects
+open DraconicEngineF
+open DraconicEngineF.Terminal
 open DraconicEngineF.Entities
 open DragonRisingF.DomainTypes
+
 
 type NeedsItemFulfillment = NeedsItemFulfillment of bool
 
@@ -45,3 +47,17 @@ type RogueCommand =
 | ManipulateCommand of Entity
 | PickUpItemCommand
 | UseItemCommand of (Entity -> bool)
+
+//type Widget = { panel: Terminal; draw: unit -> unit; tick: (unit -> Async<TickResult>) option }
+
+type MenuItem<'T> = { name: string; canExecute: unit -> bool; value: 'T }
+type MenuNavigation = | Up | Down | Select | Cancel
+type MenuResult<'T> = 
+   | NoResult
+   | SomeResult of 'T
+   | CancelledResult
+
+let menuItem name value canExecute = { name = name; canExecute = canExecute; value = value}
+let simpleMenuItem name value = { name = name; canExecute = (fun () -> true); value = value}
+
+type MainMenuCommand = | Exit | ContinueGame | NewGame | LoadGame

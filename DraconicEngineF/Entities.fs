@@ -3,7 +3,7 @@ module Entities
 #else
 module DraconicEngineF.Entities
 #endif
-open CoreObjects
+open CoreTypes
 open System
 open System.Collections.Generic
 open FSharpx.Stm
@@ -13,8 +13,13 @@ type EntityId = EntityId of int
 
 type ComponentSet = ComponentSet of Dictionary<Type, obj>
 
-type Entity = { name: string; location: Loc; id: EntityId; components: TVar<ComponentSet> }
+type Entity = { name: string; location: TVar<Loc>; id: EntityId; components: TVar<ComponentSet>; blocks: TVar<bool> }
 
+let getLocation { location = l } = readTVar l |> atomically
+let setLocation { location = l } newLoc = writeTVar l newLoc |> atomically
+
+let getBlocks { blocks = l } = readTVar l |> atomically
+let setBlocks { blocks = l } newLoc = writeTVar l newLoc |> atomically
 
 let setComponent e c = 
    let {components = cs} = e
@@ -61,14 +66,25 @@ let getNextId () =
       return EntityId id
    } |> atomically
 
-let createNewEntity name (components: #seq<'T>) location =
+let createNewEntity name blocks (components : #seq<'T>) location = 
    let valueSelector = fun comp -> comp :> obj
-   let compsDict = System.Linq.Enumerable.ToDictionary<obj, Type>(components |> Seq.map valueSelector, (fun comp -> comp.GetType()))
-   { name = name; location = location; id = getNextId(); components = ComponentSet compsDict |> newTVar }
+   let compsDict = 
+      System.Linq.Enumerable.ToDictionary<obj, Type>(components |> Seq.map valueSelector, (fun comp -> comp.GetType()))
+   { name = name
+     location = newTVar location
+     id = getNextId()
+     components = ComponentSet compsDict |> newTVar
+     blocks = newTVar blocks }
 
-let makeEntity name id l comps =
+let makeEntity name b id l comps = 
    let valueSelector = fun comp -> comp :> obj
-   let compsDict = System.Linq.Enumerable.ToDictionary<obj, Type>(comps |> List.map valueSelector, (fun comp -> comp.GetType()))
-   { name = name; id = EntityId id; location=l; components = ComponentSet compsDict |> newTVar }
+   let compsDict = 
+      System.Linq.Enumerable.ToDictionary<obj, Type>(comps |> List.map valueSelector, (fun comp -> comp.GetType()))
+   { name = name
+     id = EntityId id
+     location = newTVar l
+     components = ComponentSet compsDict |> newTVar
+     blocks = newTVar b }
+
 
 let idToInt (EntityId id) = id

@@ -4,7 +4,7 @@ module ShadowCaster
 module DraconicEngineF.ShadowCaster
 #endif
 
-open DraconicEngineF.CoreObjects
+open DraconicEngineF.CoreTypes
 
 type ColumnPortion = 
    { x : int

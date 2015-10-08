@@ -19,7 +19,7 @@ namespace DragonRising.Views
 {
    class LookTool : IGameView
    {
-      public GameViewType Type { get { return GameViewType.Tool; } }
+      public GameViewType Type { get { return GameViewType.PartialScreen; } }
 
       ITerminal scenePanel;
       PlayerController playerController;
@@ -44,7 +44,7 @@ namespace DragonRising.Views
       static readonly CommandGesture endGesture = CreateGesture(LookActions.End, GestureSet.Create(RogueKey.Escape, RogueKey.Enter, RogueKey.Space));
 
       Loc lastPoint;
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          var input = await InputSystem.Current.GetCommandAsync(Gestures, CancellationToken.None);
 
@@ -72,10 +72,6 @@ namespace DragonRising.Views
       public Task Draw()
       {
          return Task.FromResult(0);
-      }
-      
-      public void OnStart()
-      {
       }
    }
 }

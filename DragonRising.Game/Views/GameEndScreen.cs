@@ -16,31 +16,21 @@ namespace DragonRising.Views
    class GameEndScreen : IGameView
    {
       ITerminal messageTerminal;
-
-      List<Widget> widgets = new List<Widget>();
-      public List<Widget> Widgets { get { return widgets; } }
-
+      
       string message = "Game Over (Press Enter to continue)";
 
       public GameEndScreen()
       {
          var lowerRight = RogueGame.Current.RootTerminal.LowerRight;
          var messageSize = new Vector(message.Length + 4, 5);
-
          var messagePosition = (lowerRight - messageSize) / 2;
-
          this.messageTerminal = RogueGame.Current.RootTerminal[RogueColors.White, RogueColors.Black][messagePosition, messageSize];
       }
 
-      public async Task<TickResult> Tick()
+      public async Task<TickResult> DoLogic()
       {
          var keyEvent = await InputSystem.Current.GetKeyPressAsync();
-
-         if (keyEvent.Key == RogueKey.Enter)
-         {
-            return TickResult.Finished;
-         }
-         return TickResult.Continue;
+         return keyEvent.Key == RogueKey.Enter ? TickResult.Finished : TickResult.Continue;
       }
 
       public Task Draw()
@@ -50,13 +40,9 @@ namespace DragonRising.Views
          messageTerminal.DrawBox(DrawBoxOptions.DoubleLines);
          messageTerminal[2, 2].Write(message);
 
-         return Task.FromResult(0);
+         return Task.CompletedTask;
       }
 
-      public GameViewType Type { get { return GameViewType.Dialog; } }
-      
-      public void OnStart()
-      {
-      }
+      public GameViewType Type { get { return GameViewType.PartialScreen; } }
    }
 }
