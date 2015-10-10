@@ -63,8 +63,6 @@ namespace DraconicEngine.EntitySystem
       [JsonProperty]
       public bool Blocks { get; set; } = false;
 
-      public bool IsDisposed { get { return false; } }
-
       public void AddComponent(Component component)
       {
          components.Add(component.GetType().Name, component);
@@ -73,21 +71,10 @@ namespace DraconicEngine.EntitySystem
          componentAdded.OnNext(component);
       }
 
-      public bool HasComponent(Type type)
-      {
-         if (this.IsDisposed)
-         {
-            throw new ObjectDisposedException("CompositeObject");
-         }
-         return this.components.ContainsKey(type.Name);
-      }
+      public bool HasComponent(Type type) => this.components.ContainsKey(type.Name);
 
       public Component GetComponent(Type type)
       {
-         if (this.IsDisposed)
-         {
-            throw new ObjectDisposedException("CompositeObject");
-         }
          Component component;
          if (components.TryGetValue(type.Name, out component))
          {
@@ -100,11 +87,6 @@ namespace DraconicEngine.EntitySystem
 
       public Option<Component> TryGetComponent(Type type)
       {
-
-         if (this.IsDisposed)
-         {
-            throw new ObjectDisposedException("CompositeObject");
-         }
          Component component;
          if (components.TryGetValue(type.Name, out component))
          {
@@ -117,10 +99,6 @@ namespace DraconicEngine.EntitySystem
 
       public void RemoveComponent(Type type)
       {
-         if (this.IsDisposed)
-         {
-            throw new ObjectDisposedException("CompositeObject");
-         }
          if (components.ContainsKey(type.Name))
          {
             var component = components[type.Name];
@@ -143,6 +121,11 @@ namespace DraconicEngine.EntitySystem
             Location = fresh ? Location : Loc.Zero
          };
 
+         foreach (var stat in this.stats)
+         {
+            newEntity.stats.Add(stat.Key, stat.Value);
+         }
+
          foreach (var kvp in this.components)
          {
             var newComp = kvp.Value.Clone(fresh);
@@ -154,18 +137,14 @@ namespace DraconicEngine.EntitySystem
       }
 
       public void AddStat(CharacterStat stat) => stats.Add(stat.Name, stat);
-      public bool HasStat(string name)
-      {
-         return stats.ContainsKey(name);
-      }
+      public bool HasStat(string name) => stats.ContainsKey(name);
 
       public CharacterStat GetStat(string name) => stats[name];
       public CharacterStat<T> GetStat<T>(string name)
       {
          if (stats.ContainsKey(name))
          {
-            var stat = stats[name];
-            return (CharacterStat<T>)stat;
+            return (CharacterStat<T>)stats[name];
          }
          else
          {
@@ -174,7 +153,6 @@ namespace DraconicEngine.EntitySystem
 
             return stat;
          }
-
       }
 
       void PostSerialize()
@@ -184,17 +162,9 @@ namespace DraconicEngine.EntitySystem
 
    public static class EntityExtensions
    {
-      public static bool HasComponent<T>(this Entity self)
-         where T : Component
-      {
-         return self.HasComponent(typeof(T));
-      }
+      public static bool HasComponent<T>(this Entity self) where T : Component => self.HasComponent(typeof(T));
 
-      public static T GetComponent<T>(this Entity self)
-         where T : Component
-      {
-         return (T)self.GetComponent(typeof(T));
-      }
+      public static T GetComponent<T>(this Entity self) where T : Component => (T)self.GetComponent(typeof(T));
 
       public static T GetComponentOrDefault<T>(this Entity self)
          where T : Component
@@ -206,21 +176,9 @@ namespace DraconicEngine.EntitySystem
          return default(T);
       }
 
-      public static Option<T> TryGetComponent<T>(this Entity self)
-         where T : Component
-      {
-         var result = self.TryGetComponent(typeof(T));
+      public static Option<T> TryGetComponent<T>(this Entity self) where T : Component => self.TryGetComponent(typeof(T)).Map(comp => (T)comp);
 
-         return result.Match(
-            Some: comp => (T)comp,
-            None: () => (T)null);
-      }
-
-      public static void RemoveComponent<T>(this Entity self)
-         where T : Component
-      {
-         self.RemoveComponent(typeof(T));
-      }
+      public static void RemoveComponent<T>(this Entity self) where T : Component => self.RemoveComponent(typeof(T));
 
       public static CharacterStat<T> AddStat<T>(this Entity self, string name, T value = default(T))
       {
@@ -237,27 +195,15 @@ namespace DraconicEngine.EntitySystem
       [JsonProperty]
       public string Name { get; }
 
-      protected CharacterStat(string name)
-      {
-         Name = name;
-      }
+      protected CharacterStat(string name) { Name = name; }
 
-      protected CharacterStat(SerializationInfo information, StreamingContext context)
-      {
-         Name = information.GetString("Name");
-      }
+      protected CharacterStat(SerializationInfo information, StreamingContext context) { Name = information.GetString("Name"); }
 
-      public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-      {
-         info.AddValue("Name", Name);
-      }
+      public virtual void GetObjectData(SerializationInfo info, StreamingContext context) => info.AddValue("Name", Name);
 
       public abstract object GetValue();
 
-      public static CharacterStat<T> Make<T>(string name, T value)
-      {
-         return new CharacterStat<T>(name, value);
-      }
+      public static CharacterStat<T> Make<T>(string name, T value) => new CharacterStat<T>(name, value);
    }
 
    public class CharacterStat<T> : CharacterStat

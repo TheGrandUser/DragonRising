@@ -60,17 +60,16 @@ namespace DragonRising.Views
       
       public async Task<TickResult> DoLogic()
       {
-         if (loaders.Count == 0)
+         while (loaders.Count > 0)
          {
-            return TickResult.Finished;
+            var loader = this.loaders.Dequeue();
+
+            message = loader.Message;
+
+            await loader.Load();
          }
-         var loader = this.loaders.Dequeue();
 
-         message = loader.Message;
-
-         await loader.Load();
-
-         return loaders.Count > 0 ? TickResult.Continue : TickResult.Finished;
+         return TickResult.Finished;
       }
    }
 

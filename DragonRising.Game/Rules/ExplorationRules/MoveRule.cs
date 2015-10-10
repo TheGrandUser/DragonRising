@@ -15,19 +15,19 @@ using DragonRising.GameWorld;
 
 namespace DragonRising.Rules.ExplorationRules
 {
-   public class MoveInDirectionRule : Rule<MoveInDirectionAction>
-   {
-      public override RuleResult Do(MoveInDirectionAction action)
-      {
-         var newLocation = action.Mover.Location + Vector.FromDirection(action.Dir);
-         if (World.Current.Scene.IsBlocked(newLocation) == Blockage.None)
-         {
-            action.Mover.Location = newLocation;
-         }
+   //public class MoveInDirectionRule : Rule<MoveInDirectionAction>
+   //{
+   //   public override RuleResult Do(MoveInDirectionAction action)
+   //   {
+   //      var newLocation = action.Mover.Location + Vector.FromDirection(action.Dir);
+   //      if (World.Current.Scene.IsBlocked(newLocation) == Blockage.None)
+   //      {
+   //         action.Mover.Location = newLocation;
+   //      }
 
-         return RuleResult.Empty;
-      }
-   }
+   //      return RuleResult.Empty;
+   //   }
+   //}
 
    public class MoveToRule : Rule<MoveToAction>
    {

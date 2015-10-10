@@ -37,7 +37,7 @@ namespace DragonRising.Views
          End
       }
 
-      static IEnumerable<CommandGesture> Gestures => EnumerableEx.Return(moveCursorGesture);
+      static IEnumerable<CommandGesture> Gestures => EnumerableEx.Return(moveCursorGesture).StartWith(endGesture);
 
       static readonly CommandGesture2D moveCursorGesture = CreateEightWay(LookActions.MoveCursor);
 
@@ -46,26 +46,27 @@ namespace DragonRising.Views
       Loc lastPoint;
       public async Task<TickResult> DoLogic()
       {
-         var input = await InputSystem.Current.GetCommandAsync(Gestures, CancellationToken.None);
-
-         var command = (ValueCommand<LookActions>)input.Command;
-
-         if (command.Value == LookActions.MoveCursor)
+         while (true)
          {
-            var point =
-               lastPoint + input.As2D().Delta;
-            lastPoint = point;
+            var input = await InputSystem.Current.GetCommandAsync(Gestures, CancellationToken.None);
 
-            Loc? localPoint = scenePanel.RootVecToLocalVec(point);
+            var command = (ValueCommand<LookActions>)input.Command;
 
-            this.playerController.SetLookAt(localPoint);
+            if (command.Value == LookActions.MoveCursor)
+            {
+               var point =
+                  lastPoint + input.As2D().Delta;
+               lastPoint = point;
 
-            return TickResult.Continue;
-         }
-         else // End
-         {
-            this.playerController.SetLookAt(null);
-            return TickResult.Finished;
+               Loc? localPoint = scenePanel.RootVecToLocalVec(point);
+
+               this.playerController.SetLookAt(localPoint);
+            }
+            else // End
+            {
+               this.playerController.SetLookAt(null);
+               return TickResult.Finished;
+            }
          }
       }
       

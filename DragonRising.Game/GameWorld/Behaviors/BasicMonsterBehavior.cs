@@ -40,7 +40,10 @@ namespace DragonRising.GameWorld.Behaviors
                {
                   action = new AttackEntityAction(owner, player, None);
                }
-               action = MoveTowards(owner, player.Location);
+               else
+               {
+                  action = MoveTowards(owner, player.Location);
+               }
             }
          }
 
@@ -52,9 +55,7 @@ namespace DragonRising.GameWorld.Behaviors
          var directionVec = targetLocation - owner.Location;
 
          Vector[] moveAttempts = directionVec.PathFindAttempts().ToArray();
-
-         Direction dir = Direction.None;
-
+         
          foreach (var moveVec in moveAttempts)
          {
             var newLoc = owner.Location + moveVec;
@@ -62,7 +63,7 @@ namespace DragonRising.GameWorld.Behaviors
 
             if (blockage == Blockage.None)
             {
-               return new MoveInDirectionAction(owner, moveVec.ToDirection());
+               return new MoveToAction(owner, newLoc);
             }
             else if (blockage == Blockage.Entity)
             {
@@ -75,8 +76,6 @@ namespace DragonRising.GameWorld.Behaviors
 
                   if (AlligenceManager.Current.AreEnemies(creatureComp.Alligence, myCreatureComp.Alligence))
                   {
-                     dir = moveVec.ToDirection();
-
                      return new AttackEntityAction(owner, blocker, None);
                   }
                }

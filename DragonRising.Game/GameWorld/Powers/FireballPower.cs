@@ -25,18 +25,12 @@ namespace DragonRising.GameWorld.Powers
    {
       private readonly LocationInRangeTargeter targeter;
 
-      public override IEnumerable<ILocationBasedTargeter> Targeters
-      {
-         get
-         {
-            yield return targeter;
-         }
-      }
+      public override IEnumerable<ILocationBasedTargeter> Targeters => EnumerableEx.Return(targeter);
       
       public FireballPower(int radius = 3, int damage = 12, int senseIntensity = 12)
          : base("Fireball")
       {
-         this.targeter = LocationInRangeTargeter.Build(new SelectionRange(null, RangeLimits.LineOfEffect))
+         targeter = LocationInRangeTargeter.Build(new SelectionRange(null, RangeLimits.LineOfEffect))
                .Add(new AffectAllInRangeQuery(radius,
                   OnlyCreaturesFilter.Instance,
                   new DamageEffect(new Damage(damage, "Fire"))))

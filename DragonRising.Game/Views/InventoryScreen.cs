@@ -45,22 +45,23 @@ namespace DragonRising.Views
 
       public async Task<TickResult> DoLogic()
       {
-         var keyEvent = await InputSystem.Current.GetKeyPressAsync();
-
-         int index = keyEvent.Key - RogueKey.A;
-
-         if (index >= 0 && index < this.inventory.Items.Count)
+         while (true)
          {
-            this.result = index;
-            return TickResult.Finished;
-         }
-         else if (keyEvent.Key == RogueKey.Escape)
-         {
-            this.result = null;
-            return TickResult.Finished;
-         }
+            var keyEvent = await InputSystem.Current.GetKeyPressAsync();
 
-         return TickResult.Continue;
+            int index = keyEvent.Key - RogueKey.A;
+
+            if (index >= 0 && index < this.inventory.Items.Count)
+            {
+               this.result = index;
+               return TickResult.Finished;
+            }
+            else if (keyEvent.Key == RogueKey.Escape)
+            {
+               this.result = null;
+               return TickResult.Finished;
+            }
+         }
       }
 
       public Task Draw()

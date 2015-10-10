@@ -129,7 +129,6 @@ namespace DragonRising.Views
          rulesManager.AddRule(new DropItemRule());
          rulesManager.AddRule(new GameEndsOnPlayerDeathRule());
          rulesManager.AddRule(new ManipulateEntityRule());
-         rulesManager.AddRule(new MoveInDirectionRule());
          rulesManager.AddRule(new MoveToRule());
          rulesManager.AddRule(new OnConfusedStatusAddedRule());
          rulesManager.AddRule(new OnConfusedStatusRemovedRule());

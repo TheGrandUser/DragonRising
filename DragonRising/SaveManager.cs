@@ -636,7 +636,7 @@ namespace DragonRising
    {
       public override bool CanConvert(Type objectType)
       {
-         return typeof(EffectPlan).IsAssignableFrom(objectType);
+         return typeof(Spell).IsAssignableFrom(objectType);
       }
 
       public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

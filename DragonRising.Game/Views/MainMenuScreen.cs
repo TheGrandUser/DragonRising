@@ -24,7 +24,7 @@ namespace DragonRising.Views
       ISaveManager saveManager;
       delegate Task<TickResult> MenuCommand();
 
-      MenuWidget<MenuCommand> menu;
+      CancellableMenuWidget<MenuCommand> menu;
 
       public MainMenuScreen(ISaveManager saveManager)
       {
@@ -42,7 +42,7 @@ namespace DragonRising.Views
          var x = (DragonRisingGame.ScreenWidth - width) / 2;
          var y = DragonRisingGame.ScreenHeight - height - 5;
 
-         menu = new MenuWidget<MenuCommand>(DragonRisingGame.Current.RootTerminal[x, y, width, height], "", false, menuItems);
+         menu = new CancellableMenuWidget<MenuCommand>(DragonRisingGame.Current.RootTerminal[x, y, width, height], "", false, menuItems);
       }
 
       public async Task<TickResult> DoLogic()

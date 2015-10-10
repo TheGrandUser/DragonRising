@@ -51,32 +51,34 @@ namespace DragonRising.Views
 
       public async Task<TickResult> DoLogic()
       {
-         var keyEvent = await InputSystem.Current.GetKeyPressAsync();
-         if (keyEvent.Key == RogueKey.Enter || keyEvent.Key == RogueKey.Space)
+         while (true)
          {
-            if (!selectionRange.Range.HasValue || Loc.IsDistanceWithin(startLocation, location, selectionRange.Range.Value))
+            var keyEvent = await InputSystem.Current.GetKeyPressAsync();
+            if (keyEvent.Key == RogueKey.Enter || keyEvent.Key == RogueKey.Space)
             {
-               if (
-                  (!selectionRange.Limits.HasFlag(RangeLimits.LineOfEffect) || World.Current.Scene.IsUnblockedBetween(startLocation, location)) &&
-                  (!selectionRange.Limits.HasFlag(RangeLimits.LineOfSight) || World.Current.Scene.IsVisible(location)))
+               if (!selectionRange.Range.HasValue || Loc.IsDistanceWithin(startLocation, location, selectionRange.Range.Value))
                {
-                  result = location;
-                  return TickResult.Finished;
+                  if (
+                     (!selectionRange.Limits.HasFlag(RangeLimits.LineOfEffect) || World.Current.Scene.IsUnblockedBetween(startLocation, location)) &&
+                     (!selectionRange.Limits.HasFlag(RangeLimits.LineOfSight) || World.Current.Scene.IsVisible(location)))
+                  {
+                     result = location;
+                     return TickResult.Finished;
+                  }
                }
             }
-         }
-         else if (keyEvent.Key == RogueKey.Escape)
-         {
-            result = null;
-            return TickResult.Finished;
-         }
-         else if (keyEvent.Key.IsEightWayMovementKey())
-         {
-            Vector offset = keyEvent.Key.ToMovementVec();
+            else if (keyEvent.Key == RogueKey.Escape)
+            {
+               result = null;
+               return TickResult.Finished;
+            }
+            else if (keyEvent.Key.IsEightWayMovementKey())
+            {
+               Vector offset = keyEvent.Key.ToMovementVec();
 
-            location += offset;
+               location += offset;
+            }
          }
-         return TickResult.Continue;
       }
 
       public Task Draw()

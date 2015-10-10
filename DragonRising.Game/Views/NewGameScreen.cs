@@ -58,35 +58,36 @@ namespace DragonRising.Views
       
       public async Task<TickResult> DoLogic()
       {
-         var keyPress = await InputSystem.Current.GetKeyPressAsync();
-
-         if (keyPress.Key == RogueKey.Enter)
+         while (true)
          {
-            if (nameInProgress != string.Empty)
-            {
-               CreateNew(nameInProgress);
+            var keyPress = await InputSystem.Current.GetKeyPressAsync();
 
+            if (keyPress.Key == RogueKey.Enter)
+            {
+               if (nameInProgress != string.Empty)
+               {
+                  CreateNew(nameInProgress);
+
+                  return TickResult.Finished;
+               }
+               return TickResult.Continue;
+            }
+            else if (keyPress.Key == RogueKey.Escape)
+            {
                return TickResult.Finished;
             }
-            return TickResult.Continue;
-         }
-         else if (keyPress.Key == RogueKey.Escape)
-         {
-            return TickResult.Finished;
-         }
-         else if (keyPress.Key == RogueKey.Backspace || keyPress.Key == RogueKey.Delete)
-         {
-            if (this.nameInProgress != string.Empty)
+            else if (keyPress.Key == RogueKey.Backspace || keyPress.Key == RogueKey.Delete)
             {
-               this.nameInProgress = this.nameInProgress.Substring(0, this.nameInProgress.Length - 1);
+               if (this.nameInProgress != string.Empty)
+               {
+                  this.nameInProgress = this.nameInProgress.Substring(0, this.nameInProgress.Length - 1);
+               }
+            }
+            else if (keyPress.Char.HasValue && Character.IsGlyph(keyPress.Char.Value))
+            {
+               this.nameInProgress += keyPress.Char.Value;
             }
          }
-         else if (keyPress.Char.HasValue && Character.IsGlyph(keyPress.Char.Value))
-         {
-            this.nameInProgress += keyPress.Char.Value;
-         }
-
-         return TickResult.Continue;
       }
 
       public World World { get; set; }

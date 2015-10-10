@@ -73,67 +73,68 @@ namespace DragonRising.Views
 
       public async Task<TickResult> DoLogic()
       {
-         var inputResult = await InputSystem.Current.GetCommandAsync(this.Gestures, CancellationToken.None);
-         var command = inputResult.Command as ValueCommand<TargetAction>;
-
-         switch (command.Value)
+         while (true)
          {
-            case TargetAction.Cylce:
-               var inputResult1D = inputResult.As1D();
-               if (inputResult1D.Delta > 0)
-               {
-                  if (currentSelectedIndex != null)
-                  {
-                     lastSelectedIndex++;
-                  }
-               }
-               else if (inputResult1D.Delta < 0)
-               {
-                  if (currentSelectedIndex != null)
-                  {
-                     lastSelectedIndex--;
-                  }
-               }
+            var inputResult = await InputSystem.Current.GetCommandAsync(this.Gestures, CancellationToken.None);
+            var command = inputResult.Command as ValueCommand<TargetAction>;
 
-               lastSelectedIndex = (lastSelectedIndex + this.availableEntities.Count) % this.availableEntities.Count;
+            switch (command.Value)
+            {
+               case TargetAction.Cylce:
+                  var inputResult1D = inputResult.As1D();
+                  if (inputResult1D.Delta > 0)
+                  {
+                     if (currentSelectedIndex != null)
+                     {
+                        lastSelectedIndex++;
+                     }
+                  }
+                  else if (inputResult1D.Delta < 0)
+                  {
+                     if (currentSelectedIndex != null)
+                     {
+                        lastSelectedIndex--;
+                     }
+                  }
 
-               currentSelectedIndex = lastSelectedIndex;
-               break;
-            case TargetAction.Accept:
-               if (this.currentSelectedIndex.HasValue && this.currentSelectedIndex.Value < this.availableEntities.Count)
-               {
-                  this.result = this.availableEntities[this.currentSelectedIndex.Value].Entity;
+                  lastSelectedIndex = (lastSelectedIndex + this.availableEntities.Count) % this.availableEntities.Count;
+
+                  currentSelectedIndex = lastSelectedIndex;
+                  break;
+               case TargetAction.Accept:
+                  if (this.currentSelectedIndex.HasValue && this.currentSelectedIndex.Value < this.availableEntities.Count)
+                  {
+                     this.result = this.availableEntities[this.currentSelectedIndex.Value].Entity;
+                     return TickResult.Finished;
+                  }
+                  break;
+               case TargetAction.Cancel:
+                  this.result = null;
                   return TickResult.Finished;
-               }
-               break;
-            case TargetAction.Cancel:
-               this.result = null;
-               return TickResult.Finished;
-            case TargetAction.Point:
-               var inputResult2D = inputResult.As2D();
-               var rootPoint = inputResult2D.Point.Value;
-               var localPoint = sceneTerminal.RootVecToLocalVec(rootPoint);
-               if (localPoint.HasValue)
-               {
-                  var scenePoint = viewOffset + localPoint;
-
-                  var entity = this.availableEntities.FirstOrDefault(e => e.Entity.Location == scenePoint);
-
-                  if (entity != null)
+               case TargetAction.Point:
+                  var inputResult2D = inputResult.As2D();
+                  var rootPoint = inputResult2D.Point.Value;
+                  var localPoint = sceneTerminal.RootVecToLocalVec(rootPoint);
+                  if (localPoint.HasValue)
                   {
-                     this.currentSelectedIndex = this.lastSelectedIndex = this.availableEntities.IndexOf(entity);
+                     var scenePoint = viewOffset + localPoint;
+
+                     var entity = this.availableEntities.FirstOrDefault(e => e.Entity.Location == scenePoint);
+
+                     if (entity != null)
+                     {
+                        this.currentSelectedIndex = this.lastSelectedIndex = this.availableEntities.IndexOf(entity);
+                     }
+                     else
+                     {
+                        this.currentSelectedIndex = null;
+                     }
                   }
-                  else
-                  {
-                     this.currentSelectedIndex = null;
-                  }
-               }
-               break;
-            default:
-               break;
+                  break;
+               default:
+                  break;
+            }
          }
-
-         return TickResult.Continue;
       }
 
       public Task Draw()

@@ -43,15 +43,8 @@ namespace DragonRising.Views
       
       public async Task<TickResult> DoLogic()
       {
-         var result = await this.menu.Tick();
-
-         return result.Match(
-            Some: benefit =>
-            {
-               this.Benefit = benefit;
-               return TickResult.Finished;
-            },
-            None: () => TickResult.Continue);
+         this.Benefit = await this.menu.Tick();
+         return TickResult.Finished;
       }
    }
 
