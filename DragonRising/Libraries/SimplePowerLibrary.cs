@@ -14,20 +14,11 @@ namespace DragonRising.Libraries
    {
       Dictionary<string, EffectPlan> usages = new Dictionary<string, EffectPlan>(StringComparer.InvariantCultureIgnoreCase);
 
-      public void Add(EffectPlan power)
-      {
-         usages.Add(power.Name, power);
-      }
+      public void Add(EffectPlan power) => usages.Add(power.Name, power);
 
-      public bool Contains(string name)
-      {
-         return usages.ContainsKey(name);
-      }
+      public bool Contains(string name) => usages.ContainsKey(name);
 
-      public EffectPlan Get(string name)
-      {
-         return usages[name];
-      }
+      public EffectPlan Get(string name) => usages[name];
    }
 
    class SimpleSpellLibrary : ISpellLibrary

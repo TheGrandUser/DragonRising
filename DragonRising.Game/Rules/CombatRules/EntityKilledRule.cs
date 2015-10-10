@@ -40,11 +40,10 @@ namespace DragonRising.Rules.CombatRules
          {
             MessageService.Current.PostMessage("You have died!", RogueColors.Red);
          }
-         gameEvent.KillingEntity
-            .Where(killer => killer == world.Player)
-            .IfSome(player =>
+
+         if (gameEvent.KillingEntity.Match(killer => killer == world.Player, () => false))
          {
-            gameEvent.CreatureKilled.Name = "remains of " + gameEvent.CreatureKilled.Name;
+            var player = world.Player;
 
             MonstersKilled++;
 
@@ -60,20 +59,21 @@ namespace DragonRising.Rules.CombatRules
             var playerLevel = player.GetLevel();
 
             MessageService.Current.PostMessage($"{monster.Name} is dead! You gain {monsterXP} experience points", RogueColors.Orange);
+            gameEvent.CreatureKilled.Name = "remains of " + gameEvent.CreatureKilled.Name;
 
             var levelUpXp = LevelingPolicy.XpForNextLevel(playerLevel.Value);
             if (playerXP >= levelUpXp)
             {
                playerLevel.Value += 1;
                playerXP.Value -= levelUpXp;
-               
+
                MessageService.Current.PostMessage("Your battle skills grow stronger! You reached level " + playerLevel, RogueColors.Yellow);
 
                screen.AddAsyncInterruption(
                   ChooseLevelUpBenefit,
                   ChooseLevelUpBenefitStillApplies);
             }
-         });
+         }
 
          return RuleResult.Empty;
       }

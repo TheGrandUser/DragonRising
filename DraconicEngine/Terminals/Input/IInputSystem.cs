@@ -46,6 +46,13 @@ namespace DraconicEngine.Input
 
       Task<RogueKeyEvent> GetKeyPressAsync();
       bool IsKeyPressed(RogueKey key);
+
+      IObservable<RogueKeyEvent> KeyDownStream { get; }
+      IObservable<RogueKeyEvent> KeyUpStream { get; }
+
+      IObservable<Tuple<RogueMouseGesture, Loc, Vector>> MouseMove { get; }
+      IObservable<Tuple<RogueMouseGesture, Loc>> MouseDown { get; }
+      IObservable<Tuple<RogueMouseGesture, Loc, int>> MouseWheel { get; }
    }
 
    public static class InputSystem

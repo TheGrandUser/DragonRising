@@ -53,8 +53,7 @@ namespace DraconicEngine
                {
                   await gameState.Draw();
                }
-
-               Debug.WriteLine("Draw finished");
+               
                msg.DrawFinished.SetResult(unit);
                drawFinished.OnNext(unit);
             }
@@ -142,7 +141,6 @@ namespace DraconicEngine
 
                await drawAgent.SendAsync(new DrawMessage() { Message = "Draw", DrawFinished = drawFinish }, ct);
                await drawFinish.Task;
-               Debug.WriteLine("Draw finished, now presenting");
 
                Present();
 

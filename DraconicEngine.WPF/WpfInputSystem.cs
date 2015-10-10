@@ -20,15 +20,25 @@ namespace DraconicEngine.WPF
       Window window;
       TerminalControl terminalControl;
 
-      Subject<KeyEventArgs> keyDownRaw = new Subject<KeyEventArgs>();
-      Subject<MouseButtonEventArgs> mouseDownRaw = new Subject<MouseButtonEventArgs>();
-      Subject<MouseEventArgs> mouseMoveRaw = new Subject<MouseEventArgs>();
-      Subject<MouseWheelEventArgs> mouseWheelRaw = new Subject<MouseWheelEventArgs>();
+      //Subject<KeyEventArgs> keyDownRaw = new Subject<KeyEventArgs>();
+      //Subject<KeyEventArgs> keyUpRaw = new Subject<KeyEventArgs>();
+      //Subject<MouseButtonEventArgs> mouseDownRaw = new Subject<MouseButtonEventArgs>();
+      Subject<Tuple<RogueMouseGesture, Loc>> mouseMoveRaw = new Subject<System.Tuple<RogueMouseGesture, Loc>>();
+      //Subject<MouseWheelEventArgs> mouseWheelRaw = new Subject<MouseWheelEventArgs>();
 
-      IObservable<RogueKeyEvent> keyDown;
-      Subject<Tuple<RogueMouseGesture, Loc, Vector>> mouseMove;
-      IObservable<Tuple<RogueMouseGesture, Loc>> mouseDown;
-      IObservable<Tuple<RogueMouseGesture, Loc, int>> mouseWheel;
+
+
+      Subject<RogueKeyEvent> keyDown = new Subject<RogueKeyEvent>();
+      Subject<RogueKeyEvent> keyUp = new Subject<RogueKeyEvent>();
+      Subject<Tuple<RogueMouseGesture, Loc, Vector>> mouseMove = new Subject<System.Tuple<RogueMouseGesture, Loc, Vector>>();
+      Subject<Tuple<RogueMouseGesture, Loc>> mouseDown = new Subject<System.Tuple<RogueMouseGesture, Loc>>();
+      Subject<Tuple<RogueMouseGesture, Loc, int>> mouseWheel = new Subject<System.Tuple<RogueMouseGesture, Loc, int>>();
+
+      public IObservable<RogueKeyEvent> KeyDownStream => keyDown;
+      public IObservable<RogueKeyEvent> KeyUpStream => keyUp;
+      public IObservable<Tuple<RogueMouseGesture, Loc, Vector>> MouseMove => mouseMove;
+      public IObservable<Tuple<RogueMouseGesture, Loc>> MouseDown => mouseDown;
+      public IObservable<Tuple<RogueMouseGesture, Loc, int>> MouseWheel => mouseWheel;
 
       class testClass
       {
@@ -41,43 +51,40 @@ namespace DraconicEngine.WPF
          this.terminalControl = terminalControl;
 
          window.KeyDown += Window_KeyDown;
+         window.KeyUp += Window_KeyUp;
          window.MouseDown += Window_MouseDown;
          window.MouseMove += Window_MouseMove;
          window.MouseWheel += Window_MouseWheel;
-
-         this.keyDown = keyDownRaw.Select(args => args.ToRogueKeyEvent());
-         this.mouseDown =
-            from args in mouseDownRaw
-            let sceenPoint = args.GetPosition(this.terminalControl)
-            let terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint)
-            select Tuple(new RogueMouseGesture((RogueMouseAction)args.ChangedButton, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint);
          
-         var mouseMove =
-            from args in mouseMoveRaw
-            let sceenPoint = args.GetPosition(this.terminalControl)
-            let terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint)
-            select Tuple(new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint);
-
-         this.mouseMove = new Subject<Tuple<RogueMouseGesture, Loc, Vector>>();
-         mouseMove.Scan(
+         mouseMoveRaw.Scan(
             Tuple(new RogueMouseGesture(RogueMouseAction.Movement, RogueModifierKeys.None), new Loc(-1, -1), Vector.Zero),
             (last, next) => Tuple(next.Item1, next.Item2, next.Item2 - last.Item2))
-            .Skip(1).Subscribe(this.mouseMove);
-
-         this.mouseWheel =
-            from args in mouseWheelRaw
-            let sceenPoint = args.GetPosition(this.terminalControl)
-            let terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint)
-            select Tuple(new RogueMouseGesture(RogueMouseAction.WheelMove, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint, args.Delta);
+            .Skip(1).Subscribe(mouseMove);
       }
 
-      private void Window_KeyDown(object sender, KeyEventArgs e) => keyDownRaw.OnNext(e);
-      private void Window_MouseDown(object sender, MouseButtonEventArgs e) => mouseDownRaw.OnNext(e);
-      private void Window_MouseMove(object sender, MouseEventArgs e) => mouseMoveRaw.OnNext(e);
-      private void Window_MouseWheel(object sender, MouseWheelEventArgs e) => mouseWheelRaw.OnNext(e);
+      private void Window_KeyDown(object sender, KeyEventArgs e) => keyDown.OnNext(e.ToRogueKeyEvent());
+      private void Window_KeyUp(object sender, KeyEventArgs e) => keyUp.OnNext(e.ToRogueKeyEvent());
+      private void Window_MouseDown(object sender, MouseButtonEventArgs args)
+      {
+         var sceenPoint = args.GetPosition(this.terminalControl);
+         var terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint);
+         mouseDown.OnNext(Tuple(new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint));
+      }
+      private void Window_MouseMove(object sender, MouseEventArgs args)
+      {
+         var sceenPoint = args.GetPosition(this.terminalControl);
+         var terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint);
+         mouseMoveRaw.OnNext(Tuple(new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint));
+      }
+      private void Window_MouseWheel(object sender, MouseWheelEventArgs args)
+      {
+         var sceenPoint = args.GetPosition(this.terminalControl);
+         var terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint);
+         mouseWheel.OnNext(Tuple(new RogueMouseGesture(RogueMouseAction.WheelMove, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint, args.Delta));
+      }
 
       public bool IsKeyPressed(RogueKey key) => Keyboard.GetKeyStates(key.ToWpfKey()).HasFlag(KeyStates.Down);
-      
+
       public async Task<RogueKeyEvent> GetKeyPressAsync() => await keyDown.FirstAsync();
 
       public async Task<InputResult> GetCommandAsync(IEnumerable<CommandGesture> commandGestures, CancellationToken cancelToken)
@@ -91,13 +98,13 @@ namespace DraconicEngine.WPF
              where g1.GestureSet.MouseGesture.Matches(g2.GestureSet.MouseGesture)
              select new { g1, g2 }).ToArray();
 
-         foreach(var gesturePair in doubledUpGestures)
+         foreach (var gesturePair in doubledUpGestures)
          {
             Debug.WriteLine(gesturePair);
          }
 
 
-         var keyInputResults = 
+         var keyInputResults =
             from args in keyDown
             from gesture in gestures
             let matchingGesture = gesture.GestureSet.KeyGestures.FirstOrDefault(kg => kg.Matches(args))

@@ -16,7 +16,7 @@ namespace DragonRising.Views
    class GameEndScreen : IGameView
    {
       ITerminal messageTerminal;
-      
+
       string message = "Game Over (Press Enter to continue)";
 
       public GameEndScreen()
@@ -29,8 +29,14 @@ namespace DragonRising.Views
 
       public async Task<TickResult> DoLogic()
       {
-         var keyEvent = await InputSystem.Current.GetKeyPressAsync();
-         return keyEvent.Key == RogueKey.Enter ? TickResult.Finished : TickResult.Continue;
+         while (true)
+         {
+            var keyEvent = await InputSystem.Current.GetKeyPressAsync();
+            if (keyEvent.Key == RogueKey.Enter || keyEvent.Key == RogueKey.Escape)
+            {
+               return TickResult.Finished;
+            }
+         }
       }
 
       public Task Draw()

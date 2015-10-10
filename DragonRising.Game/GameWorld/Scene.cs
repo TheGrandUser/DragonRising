@@ -88,6 +88,7 @@ namespace DragonRising
          get { return focusEntity; }
          set
          {
+            if (!this.EntityStore.Entities.Contains(value)) { throw new InvalidOperationException($"Entity {value.Name} is not in the scene's entity store"); }
             if (this.focusEntity != value)
             {
                this.focusEntity = value;

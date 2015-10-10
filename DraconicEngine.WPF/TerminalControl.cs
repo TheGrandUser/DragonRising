@@ -61,7 +61,7 @@ namespace DraconicEngine.WPF
       }
 
       private const int TilePadding = 0;
-      
+
       //Typeface typeface = new Typeface("Courier New");
       Typeface typeface = new Typeface("Consolas");
       private GlyphSheet glyphSheet;
@@ -118,7 +118,7 @@ namespace DraconicEngine.WPF
       protected override void OnRender(DrawingContext drawingContext)
       {
          Rect workingRect = invalidRect ?? new Rect(this.RenderSize);
-         
+
          drawingContext.DrawRectangle(blackBrush, null, workingRect);
 
          if (this.terminal != null)
@@ -138,7 +138,7 @@ namespace DraconicEngine.WPF
                for (int x = left; x < right; x++)
                {
                   Character character = terminal.Get(x, y);
-                  
+
                   // fill the background if needed
                   if (character.BackColor.HasValue)
                   {
@@ -168,7 +168,7 @@ namespace DraconicEngine.WPF
                      }
 
                      drawingContext.DrawRectangle(new SolidColorBrush(character.BackColor.GetValueOrDefault().ToSystemColor()), null,
-                        new Rect(fillLeft, fillTop, width, height)); 
+                        new Rect(fillLeft, fillTop, width, height));
                   }
 
                   // don't draw if it's a blank glyph
@@ -247,13 +247,13 @@ namespace DraconicEngine.WPF
          {
             terminalX = 0;
          }
-         else if (screenLocation.X > (this.Terminal.Size.X-1) * this.glyphSheet.Width + TilePadding)
+         else if (screenLocation.X > (this.Terminal.Size.X - 1) * this.glyphSheet.Width + TilePadding)
          {
             terminalX = this.Terminal.Size.X - 1;
          }
          else
          {
-            terminalX = (int)Math.Floor((screenLocation.X - TilePadding) / this.glyphSheet.Width);
+            terminalX = (int)Math.Floor((screenLocation.X - TilePadding) / this.glyphSheet.Width) - 1;
          }
 
          int terminalY;
@@ -267,7 +267,7 @@ namespace DraconicEngine.WPF
          }
          else
          {
-            terminalY = (int)Math.Floor((screenLocation.Y - TilePadding) / this.glyphSheet.Height);
+            terminalY = (int)Math.Floor((screenLocation.Y - TilePadding) / this.glyphSheet.Height) - 1;
          }
 
          return new Loc(terminalX, terminalY);

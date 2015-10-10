@@ -12,17 +12,17 @@ using DragonRising.Rules;
 
 namespace DragonRising.GameWorld.Actions
 {
-   public class MoveInDirectionAction : ActionTaken
-   {
-      public Entity Mover { get; }
-      public Direction Dir { get; }
+   //public class MoveInDirectionAction : ActionTaken
+   //{
+   //   public Entity Mover { get; }
+   //   public Direction Dir { get; }
 
-      public MoveInDirectionAction(Entity mover, Direction dir)
-      {
-         Mover = mover;
-         this.Dir = dir;
-      }
-   }
+   //   public MoveInDirectionAction(Entity mover, Direction dir)
+   //   {
+   //      Mover = mover;
+   //      this.Dir = dir;
+   //   }
+   //}
 
    public class MoveToAction : ActionTaken
    {
