@@ -28,14 +28,14 @@ namespace DragonRising.Generators
          monsters = new Dictionary<Entity, Either<double, IEnumerable<Tuple<double, int>>>>()
          {
             { Library.Current.Entities.Get("Orc"), Make(0.8) },
-            { Library.Current.Entities.Get("Troll"), Make(tuple(0.15, 3), tuple(.30, 5), tuple(.60, 7)) }
+            { Library.Current.Entities.Get("Troll"), Make(Tuple(0.15, 3), Tuple(.30, 5), Tuple(.60, 7)) }
          };
 
          this.monstersPerRoomByLevel = new List<Tuple<int, int>>
          {
-            tuple(2,1),
-            tuple(3,4),
-            tuple(5,6),
+            Tuple(2,1),
+            Tuple(3,4),
+            Tuple(5,6),
          };
       }
 

@@ -19,10 +19,10 @@ namespace DragonRising
       public override async Task Start()
       {
          var loadDataState = new LoadGeneralDataScreen();
-         await RogueGame.Current.RunGameState(loadDataState);
+         await RunGameState(loadDataState);
 
          var mainMenu = new MainMenuScreen(SaveManager.Current);
-         await RogueGame.Current.RunGameState(mainMenu);
+         await RunGameState(mainMenu);
       }
    }
 }

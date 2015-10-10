@@ -47,8 +47,8 @@ namespace DragonRising
          this.unityContainer.RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager());
 
          unityContainer.RegisterType<IRulesManager, RulesManager>(new ContainerControlledLifetimeManager());
-         this.unityContainer.RegisterInstance<IInputSystem>(this.inputSystem);
-         this.unityContainer.RegisterInstance<IMessageService>(this.messageService);
+         this.unityContainer.RegisterInstance(inputSystem);
+         this.unityContainer.RegisterInstance(messageService);
 
          this.game = new DragonRisingGame()
          {

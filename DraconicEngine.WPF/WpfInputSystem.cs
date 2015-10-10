@@ -20,6 +20,11 @@ namespace DraconicEngine.WPF
       Window window;
       TerminalControl terminalControl;
 
+      Subject<KeyEventArgs> keyDownRaw = new Subject<KeyEventArgs>();
+      Subject<MouseButtonEventArgs> mouseDownRaw = new Subject<MouseButtonEventArgs>();
+      Subject<MouseEventArgs> mouseMoveRaw = new Subject<MouseEventArgs>();
+      Subject<MouseWheelEventArgs> mouseWheelRaw = new Subject<MouseWheelEventArgs>();
+
       IObservable<RogueKeyEvent> keyDown;
       Subject<Tuple<RogueMouseGesture, Loc, Vector>> mouseMove;
       IObservable<Tuple<RogueMouseGesture, Loc>> mouseDown;
@@ -35,31 +40,41 @@ namespace DraconicEngine.WPF
          this.window = window;
          this.terminalControl = terminalControl;
 
-         this.keyDown = Observable.FromEvent<KeyEventHandler, KeyEventArgs>(h => this.window.KeyDown += h, h => this.window.KeyDown -= h).Select(args => args.ToRogueKeyEvent());
+         window.KeyDown += Window_KeyDown;
+         window.MouseDown += Window_MouseDown;
+         window.MouseMove += Window_MouseMove;
+         window.MouseWheel += Window_MouseWheel;
+
+         this.keyDown = keyDownRaw.Select(args => args.ToRogueKeyEvent());
          this.mouseDown =
-            from args in Observable.FromEvent<MouseButtonEventHandler, MouseButtonEventArgs>(h => this.window.MouseDown += h, h => this.window.MouseDown -= h)
+            from args in mouseDownRaw
             let sceenPoint = args.GetPosition(this.terminalControl)
             let terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint)
-            select Tuple.Create(new RogueMouseGesture((RogueMouseAction)args.ChangedButton, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint);
+            select Tuple(new RogueMouseGesture((RogueMouseAction)args.ChangedButton, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint);
          
          var mouseMove =
-            from args in Observable.FromEvent<MouseEventHandler, MouseEventArgs>(h => this.window.MouseMove += h, h => this.window.MouseMove -= h)
+            from args in mouseMoveRaw
             let sceenPoint = args.GetPosition(this.terminalControl)
             let terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint)
-            select Tuple.Create(new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint);
+            select Tuple(new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint);
 
          this.mouseMove = new Subject<Tuple<RogueMouseGesture, Loc, Vector>>();
          mouseMove.Scan(
-            Tuple.Create(new RogueMouseGesture(RogueMouseAction.Movement, RogueModifierKeys.None), new Loc(-1, -1), Vector.Zero),
-            (last, next) => Tuple.Create(next.Item1, next.Item2, next.Item2 - last.Item2))
+            Tuple(new RogueMouseGesture(RogueMouseAction.Movement, RogueModifierKeys.None), new Loc(-1, -1), Vector.Zero),
+            (last, next) => Tuple(next.Item1, next.Item2, next.Item2 - last.Item2))
             .Skip(1).Subscribe(this.mouseMove);
 
          this.mouseWheel =
-            from args in Observable.FromEvent<MouseWheelEventHandler, MouseWheelEventArgs>(h => this.window.MouseWheel += h, h => this.window.MouseWheel -= h)
+            from args in mouseWheelRaw
             let sceenPoint = args.GetPosition(this.terminalControl)
             let terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint)
-            select Tuple.Create(new RogueMouseGesture(RogueMouseAction.WheelMove, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint, args.Delta);
+            select Tuple(new RogueMouseGesture(RogueMouseAction.WheelMove, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint, args.Delta);
       }
+
+      private void Window_KeyDown(object sender, KeyEventArgs e) => keyDownRaw.OnNext(e);
+      private void Window_MouseDown(object sender, MouseButtonEventArgs e) => mouseDownRaw.OnNext(e);
+      private void Window_MouseMove(object sender, MouseEventArgs e) => mouseMoveRaw.OnNext(e);
+      private void Window_MouseWheel(object sender, MouseWheelEventArgs e) => mouseWheelRaw.OnNext(e);
 
       public bool IsKeyPressed(RogueKey key) => Keyboard.GetKeyStates(key.ToWpfKey()).HasFlag(KeyStates.Down);
       
@@ -68,6 +83,19 @@ namespace DraconicEngine.WPF
       public async Task<InputResult> GetCommandAsync(IEnumerable<CommandGesture> commandGestures, CancellationToken cancelToken)
       {
          var gestures = commandGestures.ToList();
+
+         var doubledUpGestures =
+            (from g1 in gestures
+             from g2 in gestures.TakeWhile(g => g != g1)
+             where g1.GestureSet.MouseGesture != null && g2.GestureSet.MouseGesture != null
+             where g1.GestureSet.MouseGesture.Matches(g2.GestureSet.MouseGesture)
+             select new { g1, g2 }).ToArray();
+
+         foreach(var gesturePair in doubledUpGestures)
+         {
+            Debug.WriteLine(gesturePair);
+         }
+
 
          var keyInputResults = 
             from args in keyDown

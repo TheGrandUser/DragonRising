@@ -31,15 +31,15 @@ namespace DragonRising.Generators
 
          this.itemsPerRoomByLevel = new List<Tuple<int, int>>
          {
-            tuple(1,1),
-            tuple(2,4),
+            Tuple(1,1),
+            Tuple(2,4),
          };
 
          this.monstersPerRoomByLevel = new List<Tuple<int, int>>
          {
-            tuple(2,1),
-            tuple(3,4),
-            tuple(5,6),
+            Tuple(2,1),
+            Tuple(3,4),
+            Tuple(5,6),
          };
       }
 

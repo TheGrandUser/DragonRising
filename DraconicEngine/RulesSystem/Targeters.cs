@@ -42,7 +42,7 @@ namespace DraconicEngine.RulesSystem
             if (!result.Match(
                Some: r =>
                {
-                  results.Push(tuple(targeter, r));
+                  results.Push(Tuple(targeter, r));
                   return true;
                },
                None: () =>

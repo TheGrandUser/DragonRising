@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.EntitySystem;
 using DraconicEngine;
+using List = LanguageExt.List;
 
 namespace DragonRising.GameWorld.Components
 {
@@ -60,7 +61,7 @@ namespace DragonRising.GameWorld.Components
 
             if (wu.IsTwoHanded)
             {
-               var old = weapon1.cons(weapon2.cons(empty<Entity>()));
+               var old = weapon1.Cons(weapon2.Cons(List.empty<Entity>()));
 
                weapon1 = item;
                weapon2 = item;
@@ -71,14 +72,14 @@ namespace DragonRising.GameWorld.Components
             }
             else if (slot == EquipmentSlot.Held1)
             {
-               var old = weapon1.cons(empty<Entity>());
+               var old = weapon1.Cons(List.empty<Entity>());
                weapon1 = item;
                equipped[EquipmentSlot.Held1] = item;
                return old;
             }
             else
             {
-               var old = weapon2.cons(empty<Entity>());
+               var old = weapon2.Cons(List.empty<Entity>());
                weapon2 = item;
                equipped[EquipmentSlot.Held2] = item;
                return old;
@@ -93,7 +94,7 @@ namespace DragonRising.GameWorld.Components
 
             equipped[eq.Slot] = item;
 
-            return old;
+            return old.AsEnumerable();
          }
 
          return Enumerable.Empty<Entity>();

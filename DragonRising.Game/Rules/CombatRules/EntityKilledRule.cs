@@ -42,7 +42,7 @@ namespace DragonRising.Rules.CombatRules
          }
          gameEvent.KillingEntity
             .Where(killer => killer == world.Player)
-            .ForEach(player =>
+            .IfSome(player =>
          {
             gameEvent.CreatureKilled.Name = "remains of " + gameEvent.CreatureKilled.Name;
 

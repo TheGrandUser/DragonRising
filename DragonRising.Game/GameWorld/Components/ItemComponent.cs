@@ -84,6 +84,12 @@ namespace DragonRising.GameWorld.Components
          this.spell = spell;
       }
 
+      protected SpellUsable(SpellUsable original, bool fresh)
+         : base(original, fresh)
+      {
+         this.spell = original.spell;
+      }
+
       public override Fact GetFact(Entity user, FinalizedPlan plan)
       {
          return new CastSpellFact(user, spell, plan);
@@ -91,7 +97,7 @@ namespace DragonRising.GameWorld.Components
 
       protected override Usable CloneCore(bool fresh)
       {
-         throw new NotImplementedException();
+         return new SpellUsable(this, fresh);
       }
    }
 

@@ -41,7 +41,7 @@ namespace DragonRising.Plans.Targeters
       {
          var range = new SelectionRange(1, RangeLimits.None);
 
-         var area = Area.Combine(this.queries.SelectMany(q => q.GetArea()));
+         var area = Area.Combine(this.queries.SelectMany(q => q.GetArea().AsEnumerable()));
 
          var location = await PlayerController.SelectTargetEntity(
             origin,range,
