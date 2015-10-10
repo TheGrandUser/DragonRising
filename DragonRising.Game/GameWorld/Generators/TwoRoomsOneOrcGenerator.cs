@@ -13,35 +13,17 @@ using DragonRising.Generators;
 
 namespace DragonRising.GameWorld.Generators
 {
-   public class DungeonGenerator : IMapGenerator
+   public class TwoRoomsOneOrcGenerator : IMapGenerator
    {
+      IPopulationGenerator populationGenerator;
+
       static readonly int RoomMaxSize = 10;
       static readonly int RoomMinSize = 6;
-      static readonly int MaxRooms = 30;
-      
-      IPopulationGenerator populationGenerator;
-      IItemGenerator itemGenerator;
+      static readonly int MaxRooms = 2;
 
-      List<Tuple<int, int>> itemsPerRoomByLevel;
-      List<Tuple<int, int>> monstersPerRoomByLevel;
-
-      public DungeonGenerator(IPopulationGenerator populationGenerator, IItemGenerator itemGenerator)
+      public TwoRoomsOneOrcGenerator(IPopulationGenerator populationGenerator)
       {
          this.populationGenerator = populationGenerator;
-         this.itemGenerator = itemGenerator;
-
-         this.itemsPerRoomByLevel = new List<Tuple<int, int>>
-         {
-            Tuple(1,1),
-            Tuple(2,4),
-         };
-
-         this.monstersPerRoomByLevel = new List<Tuple<int, int>>
-         {
-            Tuple(2,1),
-            Tuple(3,4),
-            Tuple(5,6),
-         };
       }
 
       public Loc MakeMap(Scene scene)
@@ -52,6 +34,7 @@ namespace DragonRising.GameWorld.Generators
          var mapWidth = scene.MapWidth;
          var mapHeight = scene.MapHeight;
          var random = RogueGame.Current.GameRandom;
+
 
          foreach (var _ in Enumerable.Range(0, MaxRooms))
          {
@@ -107,31 +90,25 @@ namespace DragonRising.GameWorld.Generators
          return rooms.First().Center;
       }
 
+
       void PlaceEntities(Scene scene, TerminalRect room)
       {
-         DoGeneration(scene, room, this.populationGenerator.GenerarateMonster, monstersPerRoomByLevel);
+         DoGeneration(scene, room, this.populationGenerator.GenerarateMonster);
 
-         DoGeneration(scene, room, this.itemGenerator.GenerateItem, itemsPerRoomByLevel);
+         //DoGeneration(scene, room, this.itemGenerator.GenerateItem, itemsPerRoomByLevel);
       }
 
-      private void DoGeneration(Scene scene, TerminalRect room, Func<int, Entity> generator, IEnumerable<Tuple<int, int>> countPerLevel)
+      private void DoGeneration(Scene scene, TerminalRect room, Func<int, Entity> generator)
       {
-         var count = ItemSelection.FromDungeonLevel(scene.Level, countPerLevel).Match(
-            Some: maxCount => RogueGame.Current.GameRandom.Next(maxCount + 1),
-            None: () => 0);
-         
-         for (int i = 0; i < count; i++)
+         var location = GetRandomLocationInRoom(room);
+
+         if (scene.IsBlocked(location) == Blockage.None)
          {
-            var location = GetRandomLocationInRoom(room);
+            var entity = generator(scene.Level);
 
-            if (scene.IsBlocked(location) == Blockage.None)
-            {
-               var entity = generator(scene.Level);
+            entity.SetLocation(location);
 
-               entity.SetLocation(location);
-
-               scene.EntityStore.AddEntity(entity);
-            }
+            scene.EntityStore.AddEntity(entity);
          }
       }
 
