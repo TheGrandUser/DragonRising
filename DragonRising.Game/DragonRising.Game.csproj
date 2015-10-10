@@ -31,12 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="LanguageExt.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LanguageExt.1.6.2\lib\LanguageExt.Core.dll</HintPath>
       <Private>True</Private>
@@ -64,8 +58,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -133,6 +127,7 @@
     <Compile Include="GameWorld\Behaviors\JustPassBehavior.cs" />
     <Compile Include="GameWorld\Components\ConditionComponent.cs" />
     <Compile Include="GameWorld\CoreStats.cs" />
+    <Compile Include="GameWorld\Generators\TwoRoomsOneOrcGenerator.cs" />
     <Compile Include="GameWorld\Powers\ConfuseNearestPower.cs" />
     <Compile Include="GameWorld\Powers\HealPower.cs" />
     <Compile Include="GameWorld\Powers\LightningPower.cs" />

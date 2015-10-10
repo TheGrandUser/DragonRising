@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DragonRising.GameWorld.Generators;
 
 namespace DragonRising.GameWorld
 {
@@ -59,7 +60,8 @@ namespace DragonRising.GameWorld
          this.PopScene();
 
          var greenskins = new GreenskinsGenerator();
-         var generator = new DungeonGenerator(greenskins, new StandardItemGenerator());
+         //var generator = new DungeonGenerator(greenskins, new StandardItemGenerator());
+         var generator = new TwoRoomsOneOrcGenerator(greenskins);
 
          Scene newScene = new Scene(MapWidth, MapHeight, this.EntityEngine.CreateChildStore());
          newScene.FocusEntity = this.Player;
