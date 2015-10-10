@@ -82,7 +82,7 @@ namespace DraconicEngine.Input
          return new CommandGesture2D(
             commandMaker,
             k => k.Key.IsEightWayMovementKey() ? k.Key.ToMovementVec() : Vector.Zero,
-            GestureSet.CreateMouseMoveAnd8WayMove());
+            GestureSet.Create8WayMove());
       }
       public static CommandGesture2D CreateEightWay<T>(T value) => CreateEightWay((loc, delta) => new ValueCommand<T>(value));
 

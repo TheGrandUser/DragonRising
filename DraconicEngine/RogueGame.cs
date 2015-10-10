@@ -22,6 +22,7 @@ namespace DraconicEngine
       {
          public string Message { get; set; }
          public IGameView View { get; set; }
+         public TaskCompletionSource<Unit> DrawFinished { get; set; }
       }
 
       ActionBlock<DrawMessage> drawAgent;
@@ -53,6 +54,8 @@ namespace DraconicEngine
                   await gameState.Draw();
                }
 
+               Debug.WriteLine("Draw finished");
+               msg.DrawFinished.SetResult(unit);
                drawFinished.OnNext(unit);
             }
             else if (msg.Message == "Push")
@@ -103,13 +106,17 @@ namespace DraconicEngine
       {
          gameStates.Push(gameState.Value);
          gameStateAdded.OnNext(gameState.Value);
-         
-         if(gameStates.Count == 1)
+
+         await drawAgent.SendAsync(new DrawMessage() { Message = "Push", View = gameState.Value });
+
+         if (gameStates.Count == 1)
          {
             StartDrawLoop(cts.Token);
          }
 
          await TurnLoop(gameState);
+
+         await drawAgent.SendAsync(new DrawMessage() { Message = "Pop", View = gameState.Value });
 
          gameStates.Pop();
          gameStateRemoved.OnNext(gameState.Value);
@@ -131,10 +138,11 @@ namespace DraconicEngine
             {
                watch.Restart();
 
-               var drawFinish = drawFinished.FirstAsync().ToTask();
+               var drawFinish = new TaskCompletionSource<Unit>();
 
-               await drawAgent.SendAsync(new DrawMessage() { Message = "Draw" }, ct);
-               await drawFinish;
+               await drawAgent.SendAsync(new DrawMessage() { Message = "Draw", DrawFinished = drawFinish }, ct);
+               await drawFinish.Task;
+               Debug.WriteLine("Draw finished, now presenting");
 
                Present();
 

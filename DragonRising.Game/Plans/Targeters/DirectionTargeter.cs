@@ -33,7 +33,7 @@ namespace DragonRising.Plans.Targeters
 
       public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
-         var area = Area.Combine(this.queries.SelectMany(q => q.GetArea()).ToImmutableList());
+         var area = Area.Combine(this.queries.SelectMany(q => q.GetArea().AsEnumerable()).ToImmutableList());
 
          var direction = await PlayerController.SelectDirection(origin, "Select a direction", limits);
 

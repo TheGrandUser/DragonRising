@@ -45,7 +45,7 @@ namespace DragonRising
                if (this.playerCreature != null)
                {
                   this.playerCreature.TryGetComponent<BehaviorComponent>()
-                     .ForEach(bc => bc.RemoveBehavior(this.playerControlledBehavior));
+                     .IfSome(bc => bc.RemoveBehavior(this.playerControlledBehavior));
 
                   this.playerControlledBehavior = null;
                }

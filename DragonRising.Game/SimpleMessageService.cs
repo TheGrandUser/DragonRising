@@ -38,14 +38,8 @@ namespace DragonRising
          infoMessages.Add(message);
       }
       
-      public IEnumerable<RogueMessage> EventMessages { get { return eventMessages.AsEnumerable(); } }
+      public IEnumerable<RogueMessage> EventMessages => eventMessages.AsEnumerable();
 
-      public IEnumerable<RogueMessage> InfoMessages
-      {
-         get
-         {
-            throw new NotImplementedException();
-         }
-      }
+      public IEnumerable<RogueMessage> InfoMessages => infoMessages.AsEnumerable();
    }
 }

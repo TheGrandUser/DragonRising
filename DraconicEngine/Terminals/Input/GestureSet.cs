@@ -100,20 +100,7 @@ namespace DraconicEngine.Input
          return new GestureSet(ImmutableList.Create(new RogueKeyGesture(firstKey, RogueModifierKeys.None))
             .AddRange(keys.Select(k => new RogueKeyGesture(k, RogueModifierKeys.None))), null);
       }
-
-      public static GestureSet CreateMouseMoveAnd8WayMove()
-      {
-         return Create(RogueMouseAction.Movement,
-            RogueKey.Up, RogueKey.NumPad8,
-            RogueKey.Down, RogueKey.NumPad2,
-            RogueKey.Left, RogueKey.NumPad4,
-            RogueKey.Right, RogueKey.NumPad6,
-            RogueKey.NumPad1,
-            RogueKey.NumPad3,
-            RogueKey.NumPad7,
-            RogueKey.NumPad9);
-      }
-
+      
       public static GestureSet Create8WayMove()
       {
          return Create(
