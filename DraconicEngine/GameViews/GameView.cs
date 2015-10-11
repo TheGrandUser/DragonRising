@@ -27,11 +27,23 @@ namespace DraconicEngine.GameViews
       CloseState,
    }
    
-   public interface IGameView
+   public interface IGameView<T>
    {
-      GameViewType Type { get; }
+      Task<T> DoLogic();
 
-      Task<TickResult> DoLogic();
-      Task Draw();
+      void Draw();
+      GameViewType Type { get; }
+   }
+
+   public class DrawInfo
+   {
+      public DrawInfo(Action draw, GameViewType type)
+      {
+         Draw = draw;
+         Type = type;
+      }
+
+      public Action Draw { get; }
+      public GameViewType Type { get; }
    }
 }

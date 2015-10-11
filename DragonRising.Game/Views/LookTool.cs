@@ -17,7 +17,7 @@ using System.Threading;
 
 namespace DragonRising.Views
 {
-   class LookTool : IGameView
+   class LookTool : IGameView<Unit>
    {
       public GameViewType Type { get { return GameViewType.PartialScreen; } }
 
@@ -44,7 +44,7 @@ namespace DragonRising.Views
       static readonly CommandGesture endGesture = CreateGesture(LookActions.End, GestureSet.Create(RogueKey.Escape, RogueKey.Enter, RogueKey.Space));
 
       Loc lastPoint;
-      public async Task<TickResult> DoLogic()
+      public async Task<Unit> DoLogic()
       {
          while (true)
          {
@@ -65,14 +65,13 @@ namespace DragonRising.Views
             else // End
             {
                this.playerController.SetLookAt(null);
-               return TickResult.Finished;
+               return unit;
             }
          }
       }
       
-      public Task Draw()
+      public void Draw()
       {
-         return Task.FromResult(0);
       }
    }
 }

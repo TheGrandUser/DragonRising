@@ -21,14 +21,14 @@ namespace DraconicEngine
       class DrawMessage
       {
          public string Message { get; set; }
-         public IGameView View { get; set; }
+         public DrawInfo DrawInfo { get; set; }
          public TaskCompletionSource<Unit> DrawFinished { get; set; }
       }
 
       ActionBlock<DrawMessage> drawAgent;
       class DrawMessageHandler
       {
-         Stack<IGameView> gameStates = new Stack<IGameView>();
+         Stack<DrawInfo> gameStates = new Stack<DrawInfo>();
          IObserver<Unit> drawStarted;
          IObserver<Unit> drawFinished;
 
@@ -38,20 +38,22 @@ namespace DraconicEngine
             this.drawFinished = drawFinished;
          }
 
-         public async Task HandleMessage(DrawMessage msg)
+         public void HandleMessage(DrawMessage msg)
          {
             if (msg.Message == "Draw")
             {
                drawStarted.OnNext(unit);
 
+               RogueGame.Current.RootTerminal.Clear();
+               
                var screen = gameStates.FirstOrDefault(state => state.Type == GameViewType.WholeScreen);
                if (screen != null)
                {
-                  await screen.Draw();
+                  screen.Draw();
                }
                foreach (var gameState in gameStates.TakeWhile(gs => gs.Type == GameViewType.PartialScreen).Reverse())
                {
-                  await gameState.Draw();
+                  gameState.Draw();
                }
                
                msg.DrawFinished.SetResult(unit);
@@ -59,7 +61,7 @@ namespace DraconicEngine
             }
             else if (msg.Message == "Push")
             {
-               gameStates.Push(msg.View);
+               gameStates.Push(msg.DrawInfo);
             }
             else if (msg.Message == "Pop")
             {
@@ -83,11 +85,8 @@ namespace DraconicEngine
          protected set { rootTerminal = value; }
       }
 
-      Stack<IGameView> gameStates = new Stack<IGameView>();
-
-      Subject<IGameView> gameStateAdded = new Subject<IGameView>();
-      Subject<IGameView> gameStateRemoved = new Subject<IGameView>();
-
+      Stack<DrawInfo> gameStates = new Stack<DrawInfo>();
+      
       Subject<Unit> drawStarted = new Subject<Unit>();
       Subject<Unit> drawFinished = new Subject<Unit>();
 
@@ -96,35 +95,37 @@ namespace DraconicEngine
       public RogueGame()
       {
          var messageHandler = new DrawMessageHandler(drawStarted, drawFinished);
-         this.drawAgent = new ActionBlock<DrawMessage>(messageHandler.HandleMessage);
+         
+         this.drawAgent = new ActionBlock<DrawMessage>(new Action<DrawMessage>(messageHandler.HandleMessage));
 
 
       }
 
-      public async Task RunGameState(Some<IGameView> gameState)
+      public async Task<T> RunGameState<T>(IGameView<T> gameState)
       {
-         gameStates.Push(gameState.Value);
-         gameStateAdded.OnNext(gameState.Value);
+         var drawInfo = new DrawInfo(gameState.Draw, gameState.Type);
+         gameStates.Push(drawInfo);
 
-         await drawAgent.SendAsync(new DrawMessage() { Message = "Push", View = gameState.Value });
+         await drawAgent.SendAsync(new DrawMessage() { Message = "Push", DrawInfo = drawInfo });
 
          if (gameStates.Count == 1)
          {
             StartDrawLoop(cts.Token);
          }
 
-         await TurnLoop(gameState);
+         var result = await TurnLoop(gameState);
 
-         await drawAgent.SendAsync(new DrawMessage() { Message = "Pop", View = gameState.Value });
+         await drawAgent.SendAsync(new DrawMessage() { Message = "Pop", DrawInfo = drawInfo });
 
          gameStates.Pop();
-         gameStateRemoved.OnNext(gameState.Value);
 
          if (gameStates.Count == 0)
          {
             cts.Cancel();
             cts = new CancellationTokenSource();
          }
+
+         return result;
       }
 
       protected async void StartDrawLoop(CancellationToken ct)
@@ -139,7 +140,7 @@ namespace DraconicEngine
 
                var drawFinish = new TaskCompletionSource<Unit>();
 
-               await drawAgent.SendAsync(new DrawMessage() { Message = "Draw", DrawFinished = drawFinish }, ct);
+               await drawAgent.SendAsync(new DrawMessage() { Message = "Draw", DrawFinished = drawFinish });
                await drawFinish.Task;
 
                Present();
@@ -148,7 +149,7 @@ namespace DraconicEngine
 
                if (watch.Elapsed < frameTime)
                {
-                  await Task.Delay(frameTime - watch.Elapsed, ct);
+                  await Task.Delay(frameTime - watch.Elapsed);
                }
             }
          }
@@ -157,21 +158,11 @@ namespace DraconicEngine
          }
       }
 
-      async Task TurnLoop(Some<IGameView> gameState)
+      async Task<T> TurnLoop<T>(IGameView<T> gameState)
       {
-         while (true)
-         {
-            var result = await gameState.Value.DoLogic();
-
-            if (result == TickResult.Finished)
-            {
-               break;
-            }
-            else
-            {
-               await drawFinished.FirstAsync();
-            }
-         }
+         var result = await gameState.DoLogic();
+         await drawFinished.FirstAsync();
+         return result;
       }
 
       static RogueGame game;
@@ -182,9 +173,7 @@ namespace DraconicEngine
       }
 
       static readonly TimeSpan frameTime = TimeSpan.FromSeconds(1.0 / 15.0);
-
-      public IGameView CurrentGameState { get; set; }
-
+      
       Random randomer = new Random();
       public Random GameRandom { get { return randomer; } }
    }

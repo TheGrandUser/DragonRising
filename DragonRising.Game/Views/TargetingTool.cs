@@ -16,7 +16,7 @@ using DraconicEngine.RulesSystem;
 
 namespace DragonRising.Views
 {
-   class LocationTargetingTool : IGameView
+   class LocationTargetingTool : IGameView<Loc?>
    {
       enum TargetAction
       {
@@ -28,10 +28,7 @@ namespace DragonRising.Views
       }
 
       SceneView sceneView;
-
-      Loc? result;
-      public Loc? Result { get { return result; } }
-
+      
       Loc startLocation;
       Loc location;
 
@@ -49,7 +46,7 @@ namespace DragonRising.Views
          this.sceneTerminal = sceneView.Panel;
       }
 
-      public async Task<TickResult> DoLogic()
+      public async Task<Loc?> DoLogic()
       {
          while (true)
          {
@@ -62,15 +59,13 @@ namespace DragonRising.Views
                      (!selectionRange.Limits.HasFlag(RangeLimits.LineOfEffect) || World.Current.Scene.IsUnblockedBetween(startLocation, location)) &&
                      (!selectionRange.Limits.HasFlag(RangeLimits.LineOfSight) || World.Current.Scene.IsVisible(location)))
                   {
-                     result = location;
-                     return TickResult.Finished;
+                     return location;
                   }
                }
             }
             else if (keyEvent.Key == RogueKey.Escape)
             {
-               result = null;
-               return TickResult.Finished;
+               return null;
             }
             else if (keyEvent.Key.IsEightWayMovementKey())
             {
@@ -81,7 +76,7 @@ namespace DragonRising.Views
          }
       }
 
-      public Task Draw()
+      public void Draw()
       {
          var path = this.startLocation.GetLineTo(this.location);
          foreach (var scenePoint in path.TakeWhile(p => p != this.location))
@@ -98,8 +93,6 @@ namespace DragonRising.Views
          {
             this.sceneTerminal[finalPoint][RogueColors.White, RogueColors.DarkCyan].Write(Glyph.Plus);
          }
-
-         return Task.FromResult(0);
       }
    }
 }

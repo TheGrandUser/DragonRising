@@ -11,7 +11,6 @@ namespace DraconicEngine.Input
    public enum PlayerTurnResult
    {
       None,
-      Idle,
       TurnAdvancing,
       Quit,
    }

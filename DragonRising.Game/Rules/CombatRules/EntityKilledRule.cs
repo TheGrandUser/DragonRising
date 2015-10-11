@@ -88,11 +88,11 @@ namespace DragonRising.Rules.CombatRules
       {
          var selectBenefitScreen = new LevelUpScreen();
 
-         await RogueGame.Current.RunGameState(selectBenefitScreen);
+         var benefit = await RogueGame.Current.RunGameState(selectBenefitScreen);
 
          var combatantComponent = World.Current.Player.GetComponent<CombatantComponent>();
 
-         switch (selectBenefitScreen.Benefit)
+         switch (benefit)
          {
             case Benefit.Constitution:
                combatantComponent.MaxHP += 20;

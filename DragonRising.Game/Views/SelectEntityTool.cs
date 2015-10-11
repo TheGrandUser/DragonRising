@@ -20,15 +20,12 @@ using DragonRising.Widgets;
 
 namespace DragonRising.Views
 {
-   class SelectEntityTool : IGameView
+   class SelectEntityTool : IGameView<Option<Entity>>
    {
       IImmutableList<SeeableNode> availableEntities;
       Vector viewOffset;
       ITerminal sceneTerminal;
-
-      Option<Entity> result = None;
-      public Option<Entity> Result { get { return result; } }
-
+      
       public GameViewType Type { get { return GameViewType.PartialScreen; } }
 
       public SelectEntityTool(IImmutableList<SeeableNode> availableEntities, SceneView sceneView)
@@ -53,7 +50,7 @@ namespace DragonRising.Views
 
       CommandGesture1D cylce = Create1D(TargetAction.Cylce, g => g.Key.ToCycle(), GestureSet.Create4WayMove());
       CommandGesture cancel = CreateGesture(TargetAction.Cancel, GestureSet.Create(RogueKey.Escape));
-      CommandGesture2D point = CreateMousePointer(TargetAction.Point);
+      //CommandGesture2D point = CreateMousePointer(TargetAction.Point);
       CommandGesture accept = CreateGesture(TargetAction.Accept, GestureSet.Create(RogueMouseAction.LeftClick, RogueKey.Enter, RogueKey.Space));
 
 
@@ -63,7 +60,7 @@ namespace DragonRising.Views
          {
             yield return cylce;
             yield return cancel;
-            yield return point;
+            //yield return point;
             yield return accept;
          }
       }
@@ -71,7 +68,7 @@ namespace DragonRising.Views
       int lastSelectedIndex = 0;
       int? currentSelectedIndex = 0;
 
-      public async Task<TickResult> DoLogic()
+      public async Task<Option<Entity>> DoLogic()
       {
          while (true)
          {
@@ -104,13 +101,11 @@ namespace DragonRising.Views
                case TargetAction.Accept:
                   if (this.currentSelectedIndex.HasValue && this.currentSelectedIndex.Value < this.availableEntities.Count)
                   {
-                     this.result = this.availableEntities[this.currentSelectedIndex.Value].Entity;
-                     return TickResult.Finished;
+                     return this.availableEntities[this.currentSelectedIndex.Value].Entity;
                   }
                   break;
                case TargetAction.Cancel:
-                  this.result = null;
-                  return TickResult.Finished;
+                  return None;
                case TargetAction.Point:
                   var inputResult2D = inputResult.As2D();
                   var rootPoint = inputResult2D.Point.Value;
@@ -137,7 +132,7 @@ namespace DragonRising.Views
          }
       }
 
-      public Task Draw()
+      public void Draw()
       {
          int index = 0;
          foreach(var node in this.availableEntities)
@@ -154,8 +149,6 @@ namespace DragonRising.Views
             }
             index++;
          }
-         
-         return Task.FromResult(0);
       }
    }
 }

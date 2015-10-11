@@ -95,46 +95,46 @@ namespace DraconicEngine.EntitySystem
       protected virtual void NodeRemovedFunction(TNode node) { }
    }
 
-   public abstract class ListIteratingSystemAsync<TNode> : GameSystemAsync
-      where TNode : Node, new()
-   {
-      protected IReadOnlyReactiveList<TNode> nodeList;
-      private CompositeDisposable subscriptions;
+   //public abstract class ListIteratingSystemAsync<TNode> : GameSystemAsync
+   //   where TNode : Node, new()
+   //{
+   //   protected IReadOnlyReactiveList<TNode> nodeList;
+   //   private CompositeDisposable subscriptions;
 
-      public ListIteratingSystemAsync()
-      {
-      }
+   //   public ListIteratingSystemAsync()
+   //   {
+   //   }
 
-      public override void AddToEngine(EntityEngine engine)
-      {
-         this.subscriptions = new CompositeDisposable();
+   //   public override void AddToEngine(EntityEngine engine)
+   //   {
+   //      this.subscriptions = new CompositeDisposable();
 
-         nodeList = engine.GetNodes<TNode>();
-         foreach (var node in nodeList)
-         {
-            NodeAddedFunction(node);
-         }
-         this.subscriptions.Add(nodeList.ItemsAdded.Subscribe(NodeAddedFunction));
-         this.subscriptions.Add(nodeList.ItemsRemoved.Subscribe(NodeRemovedFunction));
-      }
+   //      nodeList = engine.GetNodes<TNode>();
+   //      foreach (var node in nodeList)
+   //      {
+   //         NodeAddedFunction(node);
+   //      }
+   //      this.subscriptions.Add(nodeList.ItemsAdded.Subscribe(NodeAddedFunction));
+   //      this.subscriptions.Add(nodeList.ItemsRemoved.Subscribe(NodeRemovedFunction));
+   //   }
 
-      public override void RemoveFromEngine(EntityEngine engine)
-      {
-         this.subscriptions.Dispose();
-         nodeList = null;
-      }
+   //   public override void RemoveFromEngine(EntityEngine engine)
+   //   {
+   //      this.subscriptions.Dispose();
+   //      nodeList = null;
+   //   }
 
-      public override async Task Update(double time)
-      {
-         foreach (var node in this.nodeList)
-         {
-            await NodeUpdateFunction(node, time);
-         }
-      }
+   //   public override async Task Update(double time)
+   //   {
+   //      foreach (var node in this.nodeList)
+   //      {
+   //         await NodeUpdateFunction(node, time);
+   //      }
+   //   }
 
 
-      protected abstract Task NodeUpdateFunction(TNode node, double time);
-      protected virtual void NodeAddedFunction(TNode node) { }
-      protected virtual void NodeRemovedFunction(TNode node) { }
-   }
+   //   protected abstract Task NodeUpdateFunction(TNode node, double time);
+   //   protected virtual void NodeAddedFunction(TNode node) { }
+   //   protected virtual void NodeRemovedFunction(TNode node) { }
+   //}
 }

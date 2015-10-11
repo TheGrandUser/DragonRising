@@ -3,6 +3,7 @@ using DraconicEngine.EntitySystem;
 using DraconicEngine.GameViews;
 using DraconicEngine.Input;
 using DraconicEngine.RulesSystem;
+using DraconicEngine.Terminals;
 using DraconicEngine.Terminals.Input;
 using DraconicEngine.Widgets;
 using DragonRising.Commands;
@@ -199,13 +200,13 @@ namespace DragonRising
             else
             {
                this.playerControlledBehavior.SetNextAction(ActionTaken.Idle);
-               return PlayerTurnResult.Idle;
+               return PlayerTurnResult.TurnAdvancing;
             }
          }
          catch (OperationCanceledException)
          {
             this.playerControlledBehavior.SetNextAction(ActionTaken.Idle);
-            return PlayerTurnResult.Idle;
+            return PlayerTurnResult.TurnAdvancing;
          }
       }
 
@@ -220,7 +221,7 @@ namespace DragonRising
          {
             var itemRequirement = (ItemRequirement)requirements;
 
-            var item = await SelectInventoryItem(PlayerCreature, itemRequirement.Message);
+            var item = await SelectInventoryItem(PlayerCreature, itemRequirement.Message, RogueGame.Current.RootTerminal);
 
             if (item == null)
             {
@@ -392,9 +393,9 @@ namespace DragonRising
       {
          var confirmDialog = new ConfirmDialog(message, RogueGame.Current.RootTerminal);
 
-         await RogueGame.Current.RunGameState(confirmDialog);
+         var result = await RogueGame.Current.RunGameState(confirmDialog);
 
-         return confirmDialog.Result;
+         return result;
       }
 
       public void SetLookAt(Loc? lookCursor)
@@ -422,13 +423,12 @@ namespace DragonRising
       }
 
 
-      public static async Task<Entity> SelectInventoryItem(Entity player, string message)
+      public static async Task<Entity> SelectInventoryItem(Entity player, string message, ITerminal terminal)
       {
          var inventory = player.GetComponent<InventoryComponent>();
-         var inventoryScreen = new InventoryScreen(inventory, message);
-         await RogueGame.Current.RunGameState(inventoryScreen);
-
-         var index = inventoryScreen.Result;
+         var inventoryScreen = new InventoryScreen(inventory, message, terminal);
+         var index = await RogueGame.Current.RunGameState(inventoryScreen);
+         
          if (index != null)
          {
             return inventory.Items[index.Value];
@@ -436,7 +436,7 @@ namespace DragonRising
          return null;
       }
 
-      public static async Task<Loc?> SelectTargetLocation(
+      public static Task<Loc?> SelectTargetLocation(
          Loc startLocation,
          string message,
          SelectionRange range,
@@ -445,12 +445,10 @@ namespace DragonRising
       {
          var targetTool = new LocationTargetingTool(startLocation, sceneView, message, range);
 
-         await RogueGame.Current.RunGameState(targetTool);
-
-         return targetTool.Result;
+         return RogueGame.Current.RunGameState(targetTool);
       }
 
-      public static async Task<Option<Entity>> SelectTargetEntity(Loc origin, SelectionRange range,
+      public async static Task<Option<Entity>> SelectTargetEntity(Loc origin, SelectionRange range,
          Predicate<Entity> filter, SceneView sceneView, Option<Area> areaOfEffect)
       {
          var rangeSquared = range.Range * range.Range;
@@ -461,18 +459,18 @@ namespace DragonRising
                World.Current.Scene.IsVisible(c.Location) &&
                (range.Range == null || Loc.IsDistanceWithin(c.Location, origin, range.Range.Value)))
             .Select(e => new SeeableNode() { Entity = e, Drawn = e.GetComponent<DrawnComponent>() })
-            .ToArray();
+            .ToImmutableList();
 
          if (!entitiesInRange.Any())
          {
             return None;
          }
 
-         var selectEntityTool = new SelectEntityTool(ImmutableList.CreateRange(entitiesInRange), sceneView);
+         var selectEntityTool = new SelectEntityTool(entitiesInRange, sceneView);
 
-         await RogueGame.Current.RunGameState(selectEntityTool);
+         var result =  await RogueGame.Current.RunGameState(selectEntityTool);
 
-         return selectEntityTool.Result;
+         return result;
       }
 
       public static async Task<Vector?> SelectDirection(Loc origin, string message, DirectionLimit limit)

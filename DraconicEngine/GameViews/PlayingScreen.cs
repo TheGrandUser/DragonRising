@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameViews
 {
-   public abstract class PlayingScreen : IGameView
+   public abstract class PlayingScreen : IGameView<Unit>
    {
       protected abstract EntityEngine Engine { get; }
 
@@ -30,46 +30,44 @@ namespace DraconicEngine.GameViews
 
       public abstract void AddAsyncInterruption(IAsyncInterruption interruption);
 
-      public async Task<TickResult> DoLogic()
+      public async Task<Unit> DoLogic()
       {
-         if (this.IsUnderPlayerControl())
+         while (true)
          {
-            var playerTurn = await this.GetPlayerTurn(IdleUpdate);
+            if (this.IsUnderPlayerControl())
+            {
+               while (true)
+               {
+                  var playerTurn = await this.GetPlayerTurn(IdleUpdate);
 
-            if (playerTurn == PlayerTurnResult.None)
-            {
-               return TickResult.Continue;
+                  if (playerTurn == PlayerTurnResult.TurnAdvancing)
+                  {
+                     await Task.Delay(ActionUpdate);
+                     break;
+                  }
+                  else if (playerTurn == PlayerTurnResult.Quit)
+                  {
+                     this.Save();
+                     OnFinished();
+                     return unit;
+                  }
+               }
             }
-            else if (playerTurn == PlayerTurnResult.TurnAdvancing)
+            else
             {
-               await Task.Delay(ActionUpdate);
+               await Task.Delay(IdleUpdate);
             }
-            else if (playerTurn == PlayerTurnResult.Quit)
+
+            Engine.Update(1.0, UpdateTrack.Game);
+
+            if (IsGameEndState())
             {
-               this.Save();
-               OnFinished();
-               return TickResult.Finished;
-            }
-            else // Idle, already timed out
-            {
+
+               await RogueGame.Current.RunGameState(CreateEndScreen());
+
+               return unit;
             }
          }
-         else
-         {
-            await Task.Delay(IdleUpdate);
-         }
-
-         await Engine.Update(1.0, UpdateTrack.Game);
-
-         if (IsGameEndState())
-         {
-
-            await RogueGame.Current.RunGameState(CreateEndScreen());
-
-            return TickResult.Finished;
-         }
-
-         return TickResult.Continue;
       }
 
       protected virtual void Save()
@@ -82,10 +80,8 @@ namespace DraconicEngine.GameViews
       {
       }
 
-      public async Task Draw()
+      public void Draw()
       {
-         RogueGame.Current.RootTerminal.Clear();
-
          PreSceneDraw();
 
          foreach (var widget in this.Widgets)
@@ -93,7 +89,7 @@ namespace DraconicEngine.GameViews
             widget.Draw();
          }
 
-         await this.Engine.Update(1.0, UpdateTrack.Render);
+         this.Engine.Update(1.0, UpdateTrack.Render);
 
          PostSceneDraw();
       }
@@ -102,7 +98,7 @@ namespace DraconicEngine.GameViews
       {
       }
 
-      protected abstract Some<IGameView> CreateEndScreen();
+      protected abstract IGameView<Unit> CreateEndScreen();
 
       public GameViewType Type { get { return GameViewType.WholeScreen; } }
 

@@ -22,7 +22,7 @@ using DragonRising.GameWorld.Powers.Spells;
 
 namespace DragonRising.Views
 {
-   class LoadGeneralDataScreen : IGameView
+   class LoadGeneralDataScreen : IGameView<Unit>
    {
       private readonly ITerminal messageTerminal;
 
@@ -49,16 +49,12 @@ namespace DragonRising.Views
 
       public GameViewType Type { get { return GameViewType.WholeScreen; } }
 
-      public Task Draw()
+      public void Draw()
       {
-         RogueGame.Current.RootTerminal.Clear();
-
          this.messageTerminal.Write(message);
-
-         return Task.FromResult(0);
       }
       
-      public async Task<TickResult> DoLogic()
+      public async Task<Unit> DoLogic()
       {
          while (loaders.Count > 0)
          {
@@ -69,7 +65,7 @@ namespace DragonRising.Views
             await loader.Load();
          }
 
-         return TickResult.Finished;
+         return unit;
       }
    }
 
