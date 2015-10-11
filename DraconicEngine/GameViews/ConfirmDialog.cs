@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.GameViews
 {
-   public class ConfirmDialog : IGameView
+   public class ConfirmDialog : IGameView<bool>
    {
       string message;
       List<CharacterString> lines = new List<CharacterString>();
@@ -44,10 +44,8 @@ namespace DraconicEngine.GameViews
 
          this.dialogPanel = hostPanel[position, size][RogueColors.White, RogueColors.Black];
       }
-
-      public bool Result { get; private set; }
-
-      public async Task<TickResult> DoLogic()
+      
+      public async Task<bool> DoLogic()
       {
          while (true)
          {
@@ -55,18 +53,16 @@ namespace DraconicEngine.GameViews
 
             if (key.Key == RogueKey.Y)
             {
-               this.Result = true;
-               return TickResult.Finished;
+               return true;
             }
             else if (key.Key == RogueKey.N)
             {
-               this.Result = false;
-               return TickResult.Finished;
+               return false;
             }
          }
       }
-
-      public Task Draw()
+      
+      public void Draw()
       {
          this.dialogPanel.Clear();
          this.dialogPanel.DrawBox(DrawBoxOptions.DoubleLines);
@@ -77,8 +73,6 @@ namespace DraconicEngine.GameViews
          {
             this.dialogPanel[margine, margine + i].Write(this.lines[i]);
          }
-
-         return Task.FromResult(0);
       }
    }
 }

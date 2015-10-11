@@ -90,6 +90,6 @@ namespace DraconicEngine.Input
       {
          return new CommandGesture2D(mouseMoveFunc, key => Vector.Zero, GestureSet.Create(RogueMouseAction.Movement));
       }
-      public static CommandGesture2D CreateMousePointer<TValue>(TValue value) => CreateMousePointer(new ValueCommand<TValue>(value));
+      //public static CommandGesture2D CreateMousePointer<TValue>(TValue value) => CreateMousePointerCommand(new ValueCommand<TValue>(value));
    }
 }

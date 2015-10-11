@@ -52,7 +52,7 @@ namespace DraconicEngine.EntitySystem
       IEnumerable<GameSystem> RenderSystems { get; }
       void RemoveSystem(GameSystem system);
       void RemoveAllSystems();
-      Task Update(double time, UpdateTrack track);
+      void Update(double time, UpdateTrack track);
 
       IEntityStore CreateChildStore();
    }
@@ -275,9 +275,8 @@ namespace DraconicEngine.EntitySystem
             }
          }
       }
-
-
-      public async Task Update(double time, UpdateTrack track)
+      
+      public void Update(double time, UpdateTrack track)
       {
          IEnumerable<GameSystem> systems;
          switch (track)
@@ -304,11 +303,11 @@ namespace DraconicEngine.EntitySystem
                var syncSystem = (GameSystemSync)system;
                syncSystem.Update(time);
             }
-            else if (system is GameSystemAsync)
-            {
-               var asyncSystem = (GameSystemAsync)system;
-               await asyncSystem.Update(time);
-            }
+            //else if (system is GameSystemAsync)
+            //{
+            //   var asyncSystem = (GameSystemAsync)system;
+            //   await asyncSystem.Update(time);
+            //}
          }
          this.IsUpdating = false;
          updateComplete.OnNext(Unit.Default);

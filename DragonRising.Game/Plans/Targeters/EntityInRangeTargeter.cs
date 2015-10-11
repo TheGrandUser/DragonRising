@@ -39,14 +39,10 @@ namespace DragonRising.Plans.Targeters
 
       public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
-         var range = new SelectionRange(1, RangeLimits.None);
-
          var area = Area.Combine(this.queries.SelectMany(q => q.GetArea().AsEnumerable()));
 
-         var location = await PlayerController.SelectTargetEntity(
-            origin,range,
-            c=> c != World.Current.Player, sceneView, area);
-         
+         var location = await PlayerController.SelectTargetEntity(origin, Range, c => c != World.Current.Player, sceneView, area);
+
          return await location.Match(Some: async creature =>
          {
             var newPath = path.Push(origin);

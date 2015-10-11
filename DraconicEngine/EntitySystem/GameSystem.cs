@@ -30,11 +30,11 @@ namespace DraconicEngine.EntitySystem
       }
    }
 
-   public abstract class GameSystemAsync : GameSystem
-   {
-      public virtual Task Update(double time)
-      {
-         return Task.FromResult(0);
-      }
-   }
+   //public abstract class GameSystemAsync : GameSystem
+   //{
+   //   public virtual Task Update(double time)
+   //   {
+   //      return Task.FromResult(0);
+   //   }
+   //}
 }

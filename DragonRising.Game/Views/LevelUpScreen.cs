@@ -14,7 +14,7 @@ using DraconicEngine;
 
 namespace DragonRising.Views
 {
-   public class LevelUpScreen : IGameView
+   public class LevelUpScreen : IGameView<Benefit>
    {
       MenuWidget<Benefit> menu;
 
@@ -29,22 +29,15 @@ namespace DragonRising.Views
       }
       
       public GameViewType Type => GameViewType.WholeScreen;
-
-      public Benefit Benefit { get; private set; }
-
-      public Task Draw()
+      
+      public void Draw()
       {
-         RogueGame.Current.RootTerminal.Clear();
-
          this.menu.Draw();
-
-         return Task.FromResult(0);
       }
       
-      public async Task<TickResult> DoLogic()
+      public Task<Benefit> DoLogic()
       {
-         this.Benefit = await this.menu.Tick();
-         return TickResult.Finished;
+         return this.menu.Tick();
       }
    }
 

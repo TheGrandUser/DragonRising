@@ -19,7 +19,7 @@ using DragonRising.GameWorld;
 
 namespace DragonRising.Views
 {
-   class NewGameScreen : IGameView
+   class NewGameScreen : IGameView<Option<World>>
    {
       public GameViewType Type => GameViewType.WholeScreen;
 
@@ -35,10 +35,8 @@ namespace DragonRising.Views
       int tick = 0;
       bool showCursor = false;
 
-      public Task Draw()
+      public void Draw()
       {
-         RogueGame.Current.RootTerminal.Clear();
-
          if (tick % 15 == 0)
          {
             showCursor = !showCursor;
@@ -52,11 +50,9 @@ namespace DragonRising.Views
          {
             this.namePromptTerminal.Write("Enter your name: " + nameInProgress);
          }
-
-         return Task.FromResult(0);
       }
       
-      public async Task<TickResult> DoLogic()
+      public async Task<Option<World>> DoLogic()
       {
          while (true)
          {
@@ -66,15 +62,14 @@ namespace DragonRising.Views
             {
                if (nameInProgress != string.Empty)
                {
-                  CreateNew(nameInProgress);
+                  var world = CreateNew(nameInProgress);
 
-                  return TickResult.Finished;
+                  return world;
                }
-               return TickResult.Continue;
             }
             else if (keyPress.Key == RogueKey.Escape)
             {
-               return TickResult.Finished;
+               return None;
             }
             else if (keyPress.Key == RogueKey.Backspace || keyPress.Key == RogueKey.Delete)
             {
@@ -89,16 +84,12 @@ namespace DragonRising.Views
             }
          }
       }
-
-      public World World { get; set; }
-      public string GameName { get; set; }
-
-
-      void CreateNew(string name)
+      
+      World CreateNew(string name)
       {
          var player = new Entity(name,
             new ComponentSet(
-               new DrawnComponent() { SeenCharacter = new Character(Glyph.At, RogueColors.White) },
+               new DrawnComponent() { SeenCharacter = new Character(Glyph.DUpper, RogueColors.White) },
                new CombatantComponent(hp: 30, defense: 2, power: 5),
                new CreatureComponent(6),
                new InventoryComponent() { Capacity = 26 },
@@ -114,8 +105,7 @@ namespace DragonRising.Views
 
          var world = new World(player);
 
-         this.World = world;
-         this.GameName = name;
+         return world;
       }
    }
 }

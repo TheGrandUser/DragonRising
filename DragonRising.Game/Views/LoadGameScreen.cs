@@ -16,7 +16,7 @@ using static DraconicEngine.Input.CommandGestureFactory;
 
 namespace DragonRising.Views
 {
-   class LoadGameScreen : IGameView
+   class LoadGameScreen : IGameView<string>
    {
       List<string> saveNames = new List<string>();
       int currentMenuItem = 0;
@@ -49,18 +49,13 @@ namespace DragonRising.Views
          Down,
          Select,
          Cancel,
-         MouseSelect,
-         MousePoint,
       }
 
       CommandGesture upGesture = CreateGesture(MenuCommands.Up, GestureSet.Create(RogueKey.Up, RogueKey.NumPad8));
       CommandGesture downGesture = CreateGesture(MenuCommands.Down, GestureSet.Create(RogueKey.Down, RogueKey.NumPad2));
       CommandGesture selectGesture = CreateGesture(MenuCommands.Select, GestureSet.Create(RogueKey.Enter, RogueKey.Space));
-      CommandGesture cancelGesture = CreateGesture(MenuCommands.Select, GestureSet.Create(RogueKey.Escape));
-
-      CommandGesture mouseSelectGesture = CreateGesture(MenuCommands.MouseSelect, GestureSet.Create(RogueMouseAction.LeftClick));
-      CommandGesture mousePointGesture = CreateGesture(MenuCommands.MousePoint, GestureSet.Create(RogueMouseAction.Movement));
-
+      CommandGesture cancelGesture = CreateGesture(MenuCommands.Cancel, GestureSet.Create(RogueKey.Escape));
+      
       IEnumerable<CommandGesture> Gestures
       {
          get
@@ -68,14 +63,11 @@ namespace DragonRising.Views
             yield return upGesture;
             yield return downGesture;
             yield return selectGesture;
-            //yield return mouseSelectGesture;
-            //yield return mousePointGesture;
+            yield return cancelGesture;
          }
       }
-
-      public string SelectedGame { get; set; }
-
-      public async Task<TickResult> DoLogic()
+      
+      public async Task<string> DoLogic()
       {
          while (true)
          {
@@ -86,9 +78,7 @@ namespace DragonRising.Views
             {
                if (currentMenuItem >= 0 && currentMenuItem < saveNames.Count)
                {
-                  this.SelectedGame = saveNames[currentMenuItem];
-
-                  return TickResult.Finished;
+                  return saveNames[currentMenuItem];
                }
             }
             else if (command.Value == MenuCommands.Up)
@@ -102,7 +92,6 @@ namespace DragonRising.Views
                }
 
                currentMenuItem = currentValidIndex;
-               return TickResult.Continue;
             }
             else if (command.Value == MenuCommands.Down)
             {
@@ -115,23 +104,16 @@ namespace DragonRising.Views
                }
 
                currentMenuItem = currentValidIndex;
-               return TickResult.Continue;
             }
-            else if (command.Value == MenuCommands.MouseSelect)
+            else if (command.Value == MenuCommands.Cancel)
             {
-               return TickResult.Continue;
-            }
-            else if (command.Value == MenuCommands.MousePoint)
-            {
-               return TickResult.Continue;
+               return null;
             }
          }
       }
 
-      public Task Draw()
+      public void Draw()
       {
-         RogueGame.Current.RootTerminal.Clear();
-
          this.optionsTerminal[RogueColors.LightGray].DrawBox(DrawBoxOptions.DoubleLines);
 
          this.optionsTerminal[3, 2][RogueColors.LightGray].Write("Please select a save game");
@@ -142,8 +124,6 @@ namespace DragonRising.Views
             var color = (currentMenuItem == i ? RogueColors.White : RogueColors.LightGray);
             this.optionsTerminal[3, 6 + i][color].Write(name);
          }
-
-         return Task.FromResult(0);
       }
    }
 }

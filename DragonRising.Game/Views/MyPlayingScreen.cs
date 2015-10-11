@@ -65,13 +65,13 @@ namespace DragonRising.Views
 
       public PlayerController PlayerController { get; set; }
 
-      public MyPlayingScreen(World world, string gameName, ISaveManager saveManager)
+      public MyPlayingScreen(World world, ISaveManager saveManager)
       {
          this.World = world;
          this.saveManager = saveManager;
 
          var player = world.Player;
-         this.gameName = gameName;
+         this.gameName = player.Name;
 
          var rulesManager = ServiceLocator.Current.GetInstance<IRulesManager>();
 
@@ -148,7 +148,7 @@ namespace DragonRising.Views
          this.statsPanel.DrawBox(DrawBoxOptions.DoubleLines);
       }
 
-      protected override Some<IGameView> CreateEndScreen()
+      protected override IGameView<Unit> CreateEndScreen()
       {
          return new GameEndScreen();
       }
