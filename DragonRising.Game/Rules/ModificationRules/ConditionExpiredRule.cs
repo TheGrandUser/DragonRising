@@ -12,7 +12,7 @@ namespace DragonRising.Rules.ModificationRules
 {
    class ConditionExpiredRule : Rule<ConditionExpiredEvent>
    {
-      public override RuleResult Do(ConditionExpiredEvent gameEvent)
+      public override RuleResult Do(ConditionExpiredEvent gameEvent, Scene scene)
       {
          var conditionComponent = gameEvent.Entity.GetComponent<ConditionComponent>();
 

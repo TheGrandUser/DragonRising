@@ -13,7 +13,7 @@ namespace DragonRising.Rules.ModificationRules
 {
    class AddConditionRule : Rule<AddConditionEvent>
    {
-      public override RuleResult Do(AddConditionEvent gameEvent)
+      public override RuleResult Do(AddConditionEvent gameEvent, Scene scene)
       {
          // Check if status is applicable to entity, if not, interupt further rules
 

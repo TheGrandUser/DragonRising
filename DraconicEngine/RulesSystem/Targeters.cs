@@ -14,24 +14,15 @@ namespace DraconicEngine.RulesSystem
    // ITargeter
    // ITargetingRegion & TargetPreview
    // TargetResult
-
-   public interface ITargeter
-   {
-      IEnumerable<ITargeter> Targeters { get; }
-      IEnumerable<IQuery> Queries { get; }
-      IEnumerable<IEffect> Effects { get; }
-
-   }
-
+   
    public static class Targeter
    {
-      public static async Task<Option<ImmutableList<TargetResult>>> HandleChildTargetersAsync<T>(
+      public static async Task<Option<ImmutableList<TargetResult<TContext>>>> HandleChildTargetersAsync<T, TContext>(
          IEnumerable<T> targeters,
-         Func<T, Task<Option<TargetResult>>> getResult)
-         where T : ITargeter
+         Func<T, Task<Option<TargetResult<TContext>>>> getResult)
       {
          Stack<T> targetStack = new Stack<T>(targeters.Reverse());
-         Stack<Tuple<T, TargetResult>> results = new Stack<Tuple<T, TargetResult>>(targetStack.Count);
+         Stack<Tuple<T, TargetResult<TContext>>> results = new Stack<Tuple<T, TargetResult<TContext>>>(targetStack.Count);
 
          while (targetStack.Count > 0)
          {
@@ -67,15 +58,34 @@ namespace DraconicEngine.RulesSystem
          return results.Select(r => r.Item2).ToImmutableList();
       }
    }
-   
-   public interface ILocationBasedTargeter : ITargeter
+
+   public interface IFromLocationTargeter<TContext>
    {
-      Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path);
+      Task<Option<TargetResult<TContext>>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path);
    }
 
-   public interface IDirectionBasedTargetter : ITargeter
+   public interface IToLocationTargeter<TContext>
    {
-      Task<Option<TargetResult>> GetPlayerTargetingAsync(Vector direciton, Loc origin, ImmutableStack<Either<Loc, Vector>> path);
+      ImmutableList<IFromLocationTargeter<TContext>> Targeters { get; }
+      ImmutableList<IFromLocationQuery<TContext>> Queries { get; }
+      ImmutableList<ILocationEffect<TContext>> Effects { get; }
+   }
+
+   public interface IFromDirectionTargetter<TContext>
+   {
+      Task<Option<TargetResult<TContext>>> GetPlayerTargetingAsync(Vector direciton, Loc origin, ImmutableStack<Either<Loc, Vector>> path);
+   }
+
+   public interface IToDirectionTargeter<TContext>
+   {
+      ImmutableList<IFromDirectionTargetter<TContext>> Targeters { get; }
+      ImmutableList<IAreaFromDirectionQuery<TContext>> Queries { get; }
+   }
+   public interface IToEntityTargeter<TContext>
+   {
+      ImmutableList<IFromLocationTargeter<TContext>> Targeters { get; }
+      ImmutableList<IFromLocationQuery<TContext>> Queries { get; }
+      ImmutableList<IEntityEffect<TContext>> Effects { get; }
    }
 
    /// <summary>
@@ -128,64 +138,90 @@ namespace DraconicEngine.RulesSystem
       LineOfSight
    }
 
-   public abstract class TargetResult
+   public abstract class TargetResult<TContext>
    {
-      public ITargeter Targeter { get; }
-      public ImmutableList<TargetResult> ChildResults { get; }
+      public ImmutableList<TargetResult<TContext>> ChildResults { get; }
 
-      protected TargetResult(ITargeter targeter, IEnumerable<TargetResult> childResults)
+      protected TargetResult(IEnumerable<TargetResult<TContext>> childResults)
       {
-         Targeter = targeter;
          ChildResults = childResults.ToImmutableList();
       }
-   }
 
-   public abstract class LocatableTargetResult : TargetResult
+      public abstract IEnumerable<Fact> GetFacts(Entity initiatior, TContext context);
+   }
+   
+   public class LocationTargetResult<TContext> : TargetResult<TContext>
    {
-      public LocatableTargetResult(ITargeter targeter, IEnumerable<TargetResult> childResults)
-         : base(targeter, childResults)
-      {
+      private Loc location;
+      IToLocationTargeter<TContext> targeter;
 
+      public LocationTargetResult(
+         Loc location,
+         IToLocationTargeter<TContext> targeter,
+         IEnumerable<TargetResult<TContext>> childResults)
+         : base(childResults)
+      {
+         this.targeter = targeter;
+         this.location = location;
       }
-      public abstract Loc Location { get; }
+      
+      public override IEnumerable<Fact> GetFacts(Entity initiatior, TContext context)
+      {
+         var targeterFacts = ChildResults.SelectMany(r => r.GetFacts(initiatior, context));
+         var queryFacts = targeter.Queries.SelectMany(q => q.GetFacts(initiatior, location, context));
+         var effectFacts = targeter.Effects.SelectMany(e => e.GetFacts(initiatior, location, context));
+
+         return targeterFacts.Concat(queryFacts).Concat(effectFacts);
+      }
    }
 
-   public class LocationTargetResult : LocatableTargetResult
+   public class EntityTargetResult<TContext> : TargetResult<TContext>
    {
-      public LocationTargetResult(Loc location, ITargeter targeter, IEnumerable<TargetResult> childResults)
-         : base(targeter, childResults)
-      {
-         Location = location;
-      }
+      private Entity entity;
+      private IToEntityTargeter<TContext> targeter;
 
-      public override Loc Location { get; }
+      public EntityTargetResult(
+         Entity entity,
+         IToEntityTargeter<TContext> targeter,
+         IEnumerable<TargetResult<TContext>> childResults)
+         : base(childResults)
+      {
+         this.targeter = targeter;
+         this.entity = entity;
+      }
+      
+      public override IEnumerable<Fact> GetFacts(Entity initiatior, TContext context)
+      {
+         var targeterFacts = ChildResults.SelectMany(r => r.GetFacts(initiatior, context));
+         var queryFacts = targeter.Queries.SelectMany(q => q.GetFacts(initiatior, entity.Location, context));
+         var effectFacts = targeter.Effects.SelectMany(e => e.GetFacts(initiatior, entity, context));
+
+         return targeterFacts.Concat(queryFacts).Concat(effectFacts);
+      }
    }
 
-   public class EntityTargetResult : LocatableTargetResult
+   public class DirectionTargetResult<TContext> : TargetResult<TContext>
    {
-      public EntityTargetResult(Entity entity, ITargeter targeter, IEnumerable<TargetResult> childResults)
-         : base(targeter, childResults)
+      private Vector direction;
+      private Loc location;
+      private IToDirectionTargeter<TContext> targeter;
+
+      public DirectionTargetResult(Vector direction, Loc location, 
+         IToDirectionTargeter<TContext> targeter,
+         IEnumerable<TargetResult<TContext>> childResults)
+         : base(childResults)
       {
-         Entity = entity;
+         this.targeter = targeter;
+         this.direction = direction;
+         this.location = location;
       }
-
-      public Entity Entity { get; }
-
-      public override Loc Location => Entity.Location;
-   }
-
-   public class DirectionTargetResult : TargetResult
-   {
-      public DirectionTargetResult(Vector direction, Loc location, ITargeter targeter, IEnumerable<TargetResult> childResults)
-         : base(targeter, childResults)
+      
+      public override IEnumerable<Fact> GetFacts(Entity initiatior, TContext context)
       {
-         Direction = direction;
-         Location = location;
+         var targeterFacts = ChildResults.SelectMany(r => r.GetFacts(initiatior, context));
+         var queryFacts = targeter.Queries.SelectMany(q => q.GetFacts(initiatior, direction, location, context));
+
+         return targeterFacts.Concat(queryFacts);
       }
-
-      public Loc Location { get; }
-      public Vector Direction { get; }
    }
-
-
 }

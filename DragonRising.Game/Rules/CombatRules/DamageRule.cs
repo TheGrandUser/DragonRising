@@ -19,7 +19,7 @@ namespace DragonRising.Rules.CombatRules
 {
    class DamageRule : Rule<InflictDamageEvent>
    {
-      public override RuleResult Do(InflictDamageEvent damageParameters)
+      public override RuleResult Do(InflictDamageEvent damageParameters, Scene scene)
       {
          var targetCombatant = damageParameters.Target.GetComponent<CombatantComponent>();
 
@@ -48,7 +48,7 @@ namespace DragonRising.Rules.CombatRules
 
    class ReportDamageRule : Rule<InflictDamageEvent>
    {
-      public override RuleResult Do(InflictDamageEvent gameEvent)
+      public override RuleResult Do(InflictDamageEvent gameEvent, Scene scene)
       {
          if (World.Current.Scene.IsVisible(gameEvent.Target.Location))
          {
@@ -72,7 +72,7 @@ namespace DragonRising.Rules.CombatRules
    {
       public override int Priority => 1;
 
-      public override RuleResult Do(FactInterupted<InflictDamageEvent> gameEvent)
+      public override RuleResult Do(FactInterupted<InflictDamageEvent> gameEvent, Scene scene)
       {
          if (World.Current.Scene.IsVisible(gameEvent.Fact.Target.Location))
          {

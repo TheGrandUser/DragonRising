@@ -16,7 +16,7 @@ namespace DragonRising.Rules.InventoryRules
 {
    public class UseItemRule : Rule<UseItemAction>
    {
-      public override RuleResult Do(UseItemAction action)
+      public override RuleResult Do(UseItemAction action, Scene scene)
       {
          var itemComponent = action.Item.GetComponent<ItemComponent>();
          var usable = itemComponent.Usable;

@@ -13,7 +13,7 @@ namespace DragonRising.Rules.ExplorationRules
 {
    public class UsePortalRule : Rule<UsePortalAction>
    {
-      public override RuleResult Do(UsePortalAction action)
+      public override RuleResult Do(UsePortalAction action, Scene scene)
       {
          return RuleResult.Empty;
       }

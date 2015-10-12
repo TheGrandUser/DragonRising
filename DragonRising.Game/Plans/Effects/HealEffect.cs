@@ -12,7 +12,7 @@ using DragonRising.Facts.Events;
 
 namespace DragonRising.Plans.Effects
 {
-   class HealEffect : IEntityEffect
+   class HealEffect : IEntityEffect<Scene>
    {
       int amount;
 
@@ -21,7 +21,7 @@ namespace DragonRising.Plans.Effects
          this.amount = amount;
       }
       
-      public IEnumerable<Fact> GetFacts(Entity initiator, Entity target)
+      public IEnumerable<Fact> GetFacts(Entity initiator, Entity target, Scene scene)
       {
          yield return new CreatureHealedEvent(initiator, target, amount);
       }

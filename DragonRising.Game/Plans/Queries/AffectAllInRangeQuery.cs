@@ -12,16 +12,21 @@ using System.Diagnostics;
 using DragonRising.GameWorld.Components;
 using DraconicEngine;
 using DragonRising.GameWorld;
+using ILocationBasedTargeter = DraconicEngine.RulesSystem.IFromLocationTargeter<DragonRising.Scene>;
+using IFromLocationQuery = DraconicEngine.RulesSystem.IFromLocationQuery<DragonRising.Scene>;
+using TargetResult = DraconicEngine.RulesSystem.TargetResult<DragonRising.Scene>;
+using LocationTargetResult = DraconicEngine.RulesSystem.LocationTargetResult<DragonRising.Scene>;
+using IEntityEffect = DraconicEngine.RulesSystem.IEntityEffect<DragonRising.Scene>;
 
 namespace DragonRising.Plans.Queries
 {
-   class AffectAllInRangeQuery : ILocationBasedQuery
+   class AffectAllInRangeQuery : IFromLocationQuery
    {
       int range;
-      ImmutableList<IEffect> effects;
+      ImmutableList<IEntityEffect> effects;
       IEntityFilter entityFilter;
 
-      public AffectAllInRangeQuery(int range, IEntityFilter entityFilter, params IEffect[] effects)
+      public AffectAllInRangeQuery(int range, IEntityFilter entityFilter, params IEntityEffect[] effects)
       {
          if (effects.Length == 0)
          {
@@ -31,15 +36,11 @@ namespace DragonRising.Plans.Queries
          this.entityFilter = entityFilter;
          this.effects = effects.ToImmutableList();
       }
-
-      public IEnumerable<IQuery> Queries => Enumerable.Empty<IQuery>();
-
-      public IEnumerable<IEffect> Effects => effects;
       
       public Option<Area> GetArea() => new CirlceArea(range, Loc.Zero);
       public Option<Area> GetArea(Loc origin) => new CirlceArea(range, origin);
 
-      public IEnumerable<Fact> GetFacts(Entity user, Loc loc)
+      public IEnumerable<Fact> GetFacts(Entity user, Loc loc, Scene scene)
       {
          var entities = World.Current.Scene.EntityStore.Entities.Where(e => Loc.IsDistanceWithin(e.GetLocation(), e.Location, range));
 
@@ -49,16 +50,10 @@ namespace DragonRising.Plans.Queries
          }
          entities = entities.ToList();
 
-         var effectFacts = effects.SelectMany(effect =>
-            effect.Match(
-               entity: ee => entities.SelectMany(e => ee.GetFacts(user, e)),
-               loc: le => entities.SelectMany(e => le.GetFacts(user, e.Location)),
-               area: ae => ae.GetFacts(user, new CirlceArea(range, loc))));
+         var effectFacts = effects.SelectMany(effect => entities.SelectMany(e => effect.GetFacts(user, e, scene)));
 
          //var queryFacts = queries.SelectMany(query => query.GetFacts(user, user.Location));
-
-         //return this.nextPlans.SelectMany(p => entities.Select(e => new EntityFulfillment(e)).SelectMany(e => p.GetFacts(initiator, e)));
-
+         
          return effectFacts;
       }
    }

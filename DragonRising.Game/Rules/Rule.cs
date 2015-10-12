@@ -14,8 +14,8 @@ namespace DragonRising.Rules
    public static class Rule
    {
    }
-   
-   public abstract class Rule<TFact> : IRule<TFact>
+
+   public abstract class Rule<TFact> : IRule<TFact, Scene>
       where TFact : Fact
    {
       protected virtual bool Filter(TFact fact) => true;
@@ -23,9 +23,9 @@ namespace DragonRising.Rules
       public bool Filter(Fact fact) => Filter((TFact)fact);
       public virtual bool UseFilter => false;
 
-      public RuleResult Do(Fact fact) => Do((TFact)fact);
+      public RuleResult Do(Fact fact, Scene scene) => Do((TFact)fact, scene);
 
-      public abstract RuleResult Do(TFact gameEvent);
+      public abstract RuleResult Do(TFact gameEvent, Scene scene);
 
       public virtual int Priority => 100;
 

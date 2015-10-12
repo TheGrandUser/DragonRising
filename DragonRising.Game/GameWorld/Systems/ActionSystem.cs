@@ -29,7 +29,7 @@ namespace DragonRising.GameWorld.Systems
          var actionsToDo = actionsStore.Select(kvp => kvp.Value).ToList();
          actionsStore.Clear();
 
-         rulesManager.ProcessFacts(actionsToDo);
+         rulesManager.ProcessFacts(actionsToDo, World.Current.Scene);
       }
 
       protected override void NodeUpdateFunction(BehaviorNode node, double time)

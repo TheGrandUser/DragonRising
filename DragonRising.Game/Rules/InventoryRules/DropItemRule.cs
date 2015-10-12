@@ -13,10 +13,8 @@ namespace DragonRising.Rules.InventoryRules
 {
    class DropItemRule : Rule<DropItemAction>
    {
-      public override RuleResult Do(DropItemAction action)
+      public override RuleResult Do(DropItemAction action, Scene scene)
       {
-         var scene = World.Current.Scene;
-
          action.Dropper.GetComponent<InventoryComponent>().Items.Remove(action.Item);
          action.Item.Location = action.Dropper.Location;
          scene.EntityStore.AddEntity(action.Item);

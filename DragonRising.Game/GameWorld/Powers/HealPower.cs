@@ -19,7 +19,7 @@ namespace DragonRising.GameWorld.Powers
 {
    public class CureMinorWoundsPower : EffectPlan
    {
-      IEffect effect;
+      IEntityEffect<Scene> effect;
 
       public CureMinorWoundsPower(int amount = 4)
          : base("Cure Minor Wounds")
@@ -27,6 +27,6 @@ namespace DragonRising.GameWorld.Powers
          effect = new HealEffect(amount);
       }
 
-      public override IEnumerable<IEffect> Effects => EnumerableEx.Return(effect);
+      public override IEnumerable<IEntityEffect<Scene>> Effects => EnumerableEx.Return(effect);
    }
 }

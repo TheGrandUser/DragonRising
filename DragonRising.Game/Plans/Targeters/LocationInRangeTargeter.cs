@@ -9,30 +9,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static LanguageExt.Prelude;
+using IFromLocationTargeter = DraconicEngine.RulesSystem.IFromLocationTargeter<DragonRising.Scene>;
+using IFromLocationQuery = DraconicEngine.RulesSystem.IFromLocationQuery<DragonRising.Scene>;
+using TargetResult = DraconicEngine.RulesSystem.TargetResult<DragonRising.Scene>;
+using LocationTargetResult = DraconicEngine.RulesSystem.LocationTargetResult<DragonRising.Scene>;
+using ILocationEffect = DraconicEngine.RulesSystem.ILocationEffect<DragonRising.Scene>;
+using IToLocationTargeter = DraconicEngine.RulesSystem.IToLocationTargeter<DragonRising.Scene>;
 
 namespace DragonRising.Plans.Targeters
 {
-   public class LocationInRangeTargeter : ILocationBasedTargeter
+   public class LocationInRangeTargeter : IFromLocationTargeter, IToLocationTargeter
    {
-      private readonly ImmutableArray<ILocationBasedTargeter> targeters;
-      private readonly ImmutableArray<ILocationBasedQuery> queries;
-      private readonly ImmutableArray<IEffect> effects;
+      public ImmutableList<IFromLocationTargeter> Targeters { get; }
+      public ImmutableList<IFromLocationQuery> Queries { get; }
+      public ImmutableList<ILocationEffect> Effects { get; }
 
       public LocationInRangeTargeter(
          SelectionRange range,
-         IEnumerable<ILocationBasedTargeter> targeters,
-         IEnumerable<ILocationBasedQuery> queries,
-         IEnumerable<IEffect> effects)
+         IEnumerable<IFromLocationTargeter> targeters,
+         IEnumerable<IFromLocationQuery> queries,
+         IEnumerable<ILocationEffect> effects)
       {
          Range = range;
-         this.targeters = targeters.ToImmutableArray();
-         this.queries = queries.ToImmutableArray();
-         this.effects = effects.ToImmutableArray();
+         this.Targeters = targeters.ToImmutableList();
+         this.Queries = queries.ToImmutableList();
+         this.Effects = effects.ToImmutableList();
       }
-
-      public IEnumerable<ITargeter> Targeters => targeters;
-      public IEnumerable<IQuery> Queries => queries;
-      public IEnumerable<IEffect> Effects => effects;
 
       public SelectionRange Range { get; }
 
@@ -43,7 +45,7 @@ namespace DragonRising.Plans.Targeters
 
       public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
-         var area = Area.Combine(this.queries.SelectMany(q => q.GetArea().AsEnumerable()));
+         var area = Area.Combine(this.Queries.SelectMany(q => q.GetArea().AsEnumerable()));
 
          var location = await PlayerController.SelectTargetLocation(origin, "Select an adjacent creature", Range, sceneView, area);
 
@@ -51,12 +53,10 @@ namespace DragonRising.Plans.Targeters
          {
             var newPath = path.Push(origin);
             var childResults = await Targeter.HandleChildTargetersAsync(
-               this.targeters,
+               this.Targeters,
                t => t.GetPlayerTargetingAsync(sceneView, location.Value, newPath));
 
-            var result = childResults.Match(
-               Some: rs => Some<TargetResult>(new LocationTargetResult(location.Value, this, rs)),
-               None: () => None);
+            var result = childResults.Map(rs => (TargetResult)new LocationTargetResult(location.Value, this, rs));
 
             return result;
          }
@@ -69,30 +69,30 @@ namespace DragonRising.Plans.Targeters
       class LocationInRangeTargeterBuilder : ILocationInRangeTargeterBuilder
       {
          SelectionRange range;
-         List<ILocationBasedTargeter> targeters = new List<ILocationBasedTargeter>();
-         List<ILocationBasedQuery> queries = new List<ILocationBasedQuery>();
-         List<IEffect> effects = new List<IEffect>();
+         List<IFromLocationTargeter> targeters = new List<IFromLocationTargeter>();
+         List<IFromLocationQuery> queries = new List<IFromLocationQuery>();
+         List<ILocationEffect> effects = new List<ILocationEffect>();
 
          public LocationInRangeTargeterBuilder(SelectionRange range)
          {
             this.range = range;
          }
 
-         public ILocationInRangeTargeterBuilder Add(params ILocationBasedTargeter[] targeters)
+         public ILocationInRangeTargeterBuilder Add(params IFromLocationTargeter[] targeters)
          {
             this.targeters.AddRange(targeters);
 
             return this;
          }
 
-         public ILocationInRangeTargeterBuilder Add(params ILocationBasedQuery[] queries)
+         public ILocationInRangeTargeterBuilder Add(params IFromLocationQuery[] queries)
          {
             this.queries.AddRange(queries);
 
             return this;
          }
 
-         public ILocationInRangeTargeterBuilder Add(params IEffect[] effects)
+         public ILocationInRangeTargeterBuilder Add(params ILocationEffect[] effects)
          {
             this.effects.AddRange(effects);
 
@@ -112,9 +112,9 @@ namespace DragonRising.Plans.Targeters
 
    public interface ILocationInRangeTargeterBuilder
    {
-      ILocationInRangeTargeterBuilder Add(params ILocationBasedTargeter[] targeters);
-      ILocationInRangeTargeterBuilder Add(params ILocationBasedQuery[] queries);
-      ILocationInRangeTargeterBuilder Add(params IEffect[] effects);
+      ILocationInRangeTargeterBuilder Add(params IFromLocationTargeter[] targeters);
+      ILocationInRangeTargeterBuilder Add(params IFromLocationQuery[] queries);
+      ILocationInRangeTargeterBuilder Add(params ILocationEffect[] effects);
 
       LocationInRangeTargeter Finish();
    }

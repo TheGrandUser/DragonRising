@@ -16,11 +16,10 @@ namespace DragonRising.Rules.InventoryRules
 {
    public class PickupItemRule : Rule<PickUpItemAction>
    {
-      public override RuleResult Do(PickUpItemAction action)
+      public override RuleResult Do(PickUpItemAction action, Scene scene)
       {
          var inventory = action.Picker.GetComponent<InventoryComponent>();
-         var scene = World.Current.Scene;
-
+         
          var itemComponent = action.ItemToPick.GetComponent<ItemComponent>();
 
          if (inventory.TryPickUp(action.ItemToPick))

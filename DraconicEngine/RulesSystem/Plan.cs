@@ -9,41 +9,29 @@ using DraconicEngine.EntitySystem;
 
 namespace DraconicEngine.RulesSystem
 {
-   public interface IPlan
+   public class FinalizedPlan<TContext>
    {
-      IEnumerable<ITargeter> Targeters { get; }
-      IEnumerable<IQuery> Queries { get; }
-      IEnumerable<IEffect> Effects { get; }
-   }
+      private ImmutableList<TargetResult<TContext>> targetResults;
+      private ImmutableList<IEntityEffect<TContext>> effects;
+      private ImmutableList<IFromLocationQuery<TContext>> queries;
 
-   public class FinalizedPlan
-   {
-      private ImmutableDictionary<ITargeter, TargetResult> targetResults;
-
-      private ImmutableList<IEffect> effects;
-      private ImmutableList<ILocationBasedQuery> queries;
-      
-      public FinalizedPlan(IEnumerable<TargetResult> targetResults, IEnumerable<ILocationBasedQuery> queries, IEnumerable<IEffect> effects)
+      public FinalizedPlan(
+         IEnumerable<TargetResult<TContext>> targetResults,
+         IEnumerable<IFromLocationQuery<TContext>> queries,
+         IEnumerable<IEntityEffect<TContext>> effects)
       {
          this.queries = queries.ToImmutableList();
          this.effects = effects.ToImmutableList();
-         this.targetResults = targetResults.ToImmutableDictionary(tr => tr.Targeter);
+         this.targetResults = targetResults.ToImmutableList();
       }
 
-      public ImmutableDictionary<ITargeter, TargetResult> TargetResults => targetResults;
-
-      public ImmutableList<Fact> GetFacts(Entity user)
+      public ImmutableList<Fact> GetFacts(Entity user, TContext context)
       {
-         var effectFacts = this.effects.SelectMany(effect =>
-            effect.Match(
-               entity: e => e.GetFacts(user, user),
-               loc: e => e.GetFacts(user, user.Location),
-               area: e => e.GetFacts(user, new RectArea(user.Location, user.Location))));
+         var targetFacts = targetResults.SelectMany(tr => tr.GetFacts(user, context));
+         var queryFacts = queries.SelectMany(query => query.GetFacts(user, user.Location, context));
+         var effectFacts = effects.SelectMany(effect => effect.GetFacts(user, user, context));
 
-         var queryFacts = queries.SelectMany(query => query.GetFacts(user, user.Location));
-
-
-         return effectFacts.Concat(queryFacts).ToImmutableList();
+         return targetFacts.Concat(effectFacts).Concat(queryFacts).ToImmutableList();
       }
    }
 }

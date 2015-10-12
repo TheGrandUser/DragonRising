@@ -28,7 +28,7 @@ namespace DragonRising.Views
       }
 
       SceneView sceneView;
-      
+
       Loc startLocation;
       Loc location;
 
@@ -36,14 +36,16 @@ namespace DragonRising.Views
 
       ITerminal sceneTerminal;
       SelectionRange selectionRange;
+      private Area area;
 
-      public LocationTargetingTool(Loc startLocation, SceneView sceneView, string message, SelectionRange selectionRange)
+      public LocationTargetingTool(Loc startLocation, SceneView sceneView, string message, SelectionRange selectionRange, Option<Area> area)
       {
          this.startLocation = this.location = startLocation;
          this.sceneView = sceneView;
          this.selectionRange = selectionRange;
 
          this.sceneTerminal = sceneView.Panel;
+         this.area = area.Match(s => s, () => null);
       }
 
       public async Task<Loc?> DoLogic()
@@ -55,9 +57,7 @@ namespace DragonRising.Views
             {
                if (!selectionRange.Range.HasValue || Loc.IsDistanceWithin(startLocation, location, selectionRange.Range.Value))
                {
-                  if (
-                     (!selectionRange.Limits.HasFlag(RangeLimits.LineOfEffect) || World.Current.Scene.IsUnblockedBetween(startLocation, location)) &&
-                     (!selectionRange.Limits.HasFlag(RangeLimits.LineOfSight) || World.Current.Scene.IsVisible(location)))
+                  if (IsWithinRange(location))
                   {
                      return location;
                   }
@@ -71,22 +71,47 @@ namespace DragonRising.Views
             {
                Vector offset = keyEvent.Key.ToMovementVec();
 
-               location += offset;
+               var newLoc = location + offset;
+               if (IsWithinRange(newLoc))
+               {
+                  location = newLoc;
+               }
             }
          }
       }
 
+      bool IsWithinRange(Loc loc)
+      {
+         return
+            (!selectionRange.Limits.HasFlag(RangeLimits.LineOfEffect) || World.Current.Scene.IsUnblockedBetween(startLocation, location)) &&
+            (!selectionRange.Limits.HasFlag(RangeLimits.LineOfSight) || World.Current.Scene.IsVisible(location));
+      }
+
       public void Draw()
       {
+         if (area != null)
+         {
+            foreach(var scenePoint in area.GetPerimeter())
+            {
+               Loc displayPoint = scenePoint - this.sceneView.ViewOffset + this.location;
+               if (sceneTerminal.Size.Contains(displayPoint))
+               {
+                  this.sceneTerminal.SetHighlight(displayPoint, RogueColors.DarkGray, RogueColors.LightCyan);
+               }
+            }
+         }
+
          var path = this.startLocation.GetLineTo(this.location);
          foreach (var scenePoint in path.TakeWhile(p => p != this.location))
          {
             Loc displayPoint = scenePoint - this.sceneView.ViewOffset;
             if (sceneTerminal.Size.Contains(displayPoint))
             {
-               this.sceneTerminal.SetHighlight(displayPoint, RogueColors.Gray, RogueColors.DarkCyan);
+               this.sceneTerminal.SetHighlight(displayPoint, RogueColors.LightGray, RogueColors.DarkCyan);
             }
          }
+
+
 
          Loc finalPoint = this.location - this.sceneView.ViewOffset;
          if (sceneTerminal.Size.Contains(finalPoint))

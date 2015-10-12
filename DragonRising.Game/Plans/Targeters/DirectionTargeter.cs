@@ -11,41 +11,35 @@ using static LanguageExt.Prelude;
 
 namespace DragonRising.Plans.Targeters
 {
-   public class DirectionTargeter : ILocationBasedTargeter
+   public class DirectionTargeter : IFromLocationTargeter<Scene>, IToDirectionTargeter<Scene>
    {
       DirectionLimit limits;
-      private readonly ImmutableArray<IDirectionBasedAreaSelector> queries;
-      private readonly ImmutableArray<IDirectionBasedTargetter> targeters;
+      public ImmutableList<IAreaFromDirectionQuery<Scene>> Queries { get; }
+      public ImmutableList<IFromDirectionTargetter<Scene>> Targeters { get; }
 
       public DirectionTargeter(
          DirectionLimit limits,
-         IEnumerable<IDirectionBasedAreaSelector> areaSelectors,
-         IEnumerable<IDirectionBasedTargetter> targeters)
+         IEnumerable<IAreaFromDirectionQuery<Scene>> areaSelectors,
+         IEnumerable<IFromDirectionTargetter<Scene>> targeters)
       {
          this.limits = limits;
-         this.queries = areaSelectors.ToImmutableArray();
-         this.targeters = targeters.ToImmutableArray();
+         this.Queries = areaSelectors.ToImmutableList();
+         this.Targeters = targeters.ToImmutableList();
       }
-
-      public IEnumerable<IQuery> Queries => queries;
-      public IEnumerable<ITargeter> Targeters => targeters;
-      public IEnumerable<IEffect> Effects => Enumerable.Empty<IEffect>();
-
-      public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
+      
+      public async Task<Option<TargetResult<Scene>>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
-         var area = Area.Combine(this.queries.SelectMany(q => q.GetArea().AsEnumerable()).ToImmutableList());
+         var area = Area.Combine(this.Queries.SelectMany(q => q.GetArea().AsEnumerable()).ToImmutableList());
 
          var direction = await PlayerController.SelectDirection(origin, "Select a direction", limits);
 
          if (direction.HasValue)
          {
             var childResults = await Targeter.HandleChildTargetersAsync(
-               this.targeters,
+               this.Targeters,
                t => t.GetPlayerTargetingAsync(direction.Value, origin, path));
 
-            var result = childResults.Match(
-               Some: rs => Some<TargetResult>(new DirectionTargetResult(direction.Value, origin, this, rs)),
-               None: () => None);
+            var result = childResults.Map(rs => (TargetResult<Scene>)new DirectionTargetResult<Scene>(direction.Value, origin, this, rs));
 
             return result;
          }
