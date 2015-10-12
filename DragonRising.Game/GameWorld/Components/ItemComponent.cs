@@ -1,15 +1,19 @@
-﻿using DragonRising.GameWorld.Items;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageExt;
 using static LanguageExt.Prelude;
-using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld;
+using DragonRising.Commands.Requirements;
+using DraconicEngine.EntitySystem;
 using DraconicEngine;
+using DraconicEngine.RulesSystem;
+using DragonRising.GameWorld.Powers;
+using System.Collections.Immutable;
+using DragonRising.Plans;
+using DragonRising.GameWorld.Powers.Spells;
+using DragonRising.Facts.Actions;
 
 namespace DragonRising.GameWorld.Components
 {
@@ -33,12 +37,28 @@ namespace DragonRising.GameWorld.Components
       {
          return new ItemComponent(this, fresh);
       }
+
+      protected override void OnOwnerChanged(Entity oldOwner, Entity newOwner)
+      {
+      }
    }
 
-   public class Usable
+   public abstract class Usable
    {
+      public Usable(EffectPlan plan)
+      {
+         this.Plan = plan;
+      }
 
-      public IItemUsage Usage { get; set; }
+      protected Usable(Usable original, bool fresh)
+      {
+         this.Plan = original.Plan;
+         this.MaxCharges = original.MaxCharges;
+         this.IsCharged = original.IsCharged;
+         this.Charges = fresh ? MaxCharges : original.Charges;
+      }
+
+      public EffectPlan Plan { get; }
       public int MaxCharges { get; set; }
 
       public int Charges { get; set; }
@@ -46,37 +66,38 @@ namespace DragonRising.GameWorld.Components
 
       public Usable Clone(bool fresh)
       {
-         return new Usable()
-         {
-            Usage = Usage,
-            MaxCharges = MaxCharges,
-            IsCharged = IsCharged,
-            Charges = fresh ? MaxCharges : Charges
-         };
+         return CloneCore(fresh);
       }
 
-      public ItemUseResult Use(Entity user, Some<RequirementFulfillment> itemsRequirements)
+      protected abstract Usable CloneCore(bool fresh);
+
+      public abstract Fact GetFact(Entity user, FinalizedPlan<Scene> plan);
+   }
+
+   public class SpellUsable : Usable
+   {
+      Spell spell;
+
+      public SpellUsable(Spell spell)
+         : base(spell.Plan)
       {
-         var usage = this.Usage;
-         if (usage != null)
-         {
-            if (usage.Use(user, itemsRequirements))
-            {
-               if (this.IsCharged)
-               {
-                  this.Charges--;
+         this.spell = spell;
+      }
 
-                  if (this.Charges <= 0)
-                  {
-                     return ItemUseResult.Destroyed;
-                  }
-               }
+      protected SpellUsable(SpellUsable original, bool fresh)
+         : base(original, fresh)
+      {
+         this.spell = original.spell;
+      }
 
-               return ItemUseResult.Used;
-            }
-         }
+      public override Fact GetFact(Entity user, FinalizedPlan<Scene> plan)
+      {
+         return new CastSpellFact(user, spell, plan);
+      }
 
-         return ItemUseResult.NotUsed;
+      protected override Usable CloneCore(bool fresh)
+      {
+         return new SpellUsable(this, fresh);
       }
    }
 
@@ -103,6 +124,8 @@ namespace DragonRising.GameWorld.Components
       public int Range { get; set; }
 
       // takes ammo?
+
+      public string DamageType { get; set; } = "Normal";
 
       public WeaponUse Clone(bool fresh)
       {

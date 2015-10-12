@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine.Terminals;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.EntitySystem.Components;
+using DraconicEngine.EntitySystem;
 using DragonRising;
 using DraconicEngine;
 using DraconicEngine.Widgets;
@@ -30,11 +29,18 @@ namespace DragonRising.Widgets
          this.sceneView = sceneView;
       }
 
+      private Loc lastLocation;
       public override void Draw()
       {
-         this.sceneView.Update();
+         sceneView.SetFocus(world.Player.Location, new Vector(world.MapWidth, world.MapHeight));
+
          var scene = world.Scene;
-         scene.UpdateFoV();
+         if (this.lastLocation != world.Player.Location)
+         {
+            scene.ClearFoV();
+            scene.UpdateFoV();
+            this.lastLocation = world.Player.Location;
+         }
 
          var rowStart = Math.Max(this.sceneView.ViewOffset.Y, 0);
          var rowCount = Math.Min(this.Panel.Size.Y, scene.MapHeight - this.sceneView.ViewOffset.Y);

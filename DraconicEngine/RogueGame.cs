@@ -1,4 +1,4 @@
-﻿using DraconicEngine.GameStates;
+﻿using DraconicEngine.GameViews;
 using DraconicEngine.Terminals;
 using System;
 using System.Collections.Generic;
@@ -11,11 +11,65 @@ using System.Reactive.Subjects;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Diagnostics;
+using System.Threading.Tasks.Dataflow;
+using System.Threading;
 
 namespace DraconicEngine
 {
    public abstract class RogueGame
    {
+      class DrawMessage
+      {
+         public string Message { get; set; }
+         public DrawInfo DrawInfo { get; set; }
+         public TaskCompletionSource<Unit> DrawFinished { get; set; }
+      }
+
+      ActionBlock<DrawMessage> drawAgent;
+      class DrawMessageHandler
+      {
+         Stack<DrawInfo> gameStates = new Stack<DrawInfo>();
+         IObserver<Unit> drawStarted;
+         IObserver<Unit> drawFinished;
+
+         public DrawMessageHandler(IObserver<Unit> drawStarted, IObserver<Unit> drawFinished)
+         {
+            this.drawStarted = drawStarted;
+            this.drawFinished = drawFinished;
+         }
+
+         public void HandleMessage(DrawMessage msg)
+         {
+            if (msg.Message == "Draw")
+            {
+               drawStarted.OnNext(unit);
+
+               RogueGame.Current.RootTerminal.Clear();
+               
+               var screen = gameStates.FirstOrDefault(state => state.Type == GameViewType.WholeScreen);
+               if (screen != null)
+               {
+                  screen.Draw();
+               }
+               foreach (var gameState in gameStates.TakeWhile(gs => gs.Type == GameViewType.PartialScreen).Reverse())
+               {
+                  gameState.Draw();
+               }
+               
+               msg.DrawFinished.SetResult(unit);
+               drawFinished.OnNext(unit);
+            }
+            else if (msg.Message == "Push")
+            {
+               gameStates.Push(msg.DrawInfo);
+            }
+            else if (msg.Message == "Pop")
+            {
+               gameStates.Pop();
+            }
+         }
+      }
+
       public static readonly int ScreenWidth = 80;
       public static readonly int ScreenHeight = 36;
 
@@ -30,90 +84,87 @@ namespace DraconicEngine
          get { return rootTerminal; }
          protected set { rootTerminal = value; }
       }
+
+      Stack<DrawInfo> gameStates = new Stack<DrawInfo>();
       
-      Stack<IGameState> gameStates = new Stack<IGameState>();
-
-      public async Task RunGameState(Some<IGameState> gameState)
-      {
-         gameStates.Push(gameState.Value);
-         gameStateAdded.OnNext(gameState.Value);
-
-         Task drawTask = gameStates.Count == 1 ? StartDrawLoop() : Task.FromResult(0);
-
-         gameState.Value.Start();
-
-         await TurnLoop(gameState);
-
-         var nextState = gameState.Value.Finish();
-         gameStates.Pop();
-         gameStateRemoved.OnNext(gameState.Value);
-
-
-         await drawTask;
-      }
-
-      private bool ShowsPrior(GameStateType type)
-      {
-         return type == GameStateType.Dialog || type == GameStateType.Effect || type == GameStateType.Tool;
-      }
-
-      Subject<IGameState> gameStateAdded = new Subject<IGameState>();
-      Subject<IGameState> gameStateRemoved = new Subject<IGameState>();
-
       Subject<Unit> drawStarted = new Subject<Unit>();
       Subject<Unit> drawFinished = new Subject<Unit>();
 
+      CancellationTokenSource cts = new CancellationTokenSource();
 
-
-      protected async Task StartDrawLoop()
+      public RogueGame()
       {
-         var watch = new Stopwatch();
+         var messageHandler = new DrawMessageHandler(drawStarted, drawFinished);
+         
+         this.drawAgent = new ActionBlock<DrawMessage>(new Action<DrawMessage>(messageHandler.HandleMessage));
 
-         while (gameStates.Count > 0)
+
+      }
+
+      public async Task<T> RunGameState<T>(IGameView<T> gameState)
+      {
+         var drawInfo = new DrawInfo(gameState.Draw, gameState.Type);
+         gameStates.Push(drawInfo);
+
+         await drawAgent.SendAsync(new DrawMessage() { Message = "Push", DrawInfo = drawInfo });
+
+         if (gameStates.Count == 1)
          {
-            drawStarted.OnNext(unit);
+            StartDrawLoop(cts.Token);
+         }
 
-            watch.Restart();
+         var result = await TurnLoop(gameState);
 
-            var screen = gameStates.FirstOrDefault(state => state.Type == GameStateType.Screen);
-            if (screen != null)
+         await drawAgent.SendAsync(new DrawMessage() { Message = "Pop", DrawInfo = drawInfo });
+
+         gameStates.Pop();
+
+         if (gameStates.Count == 0)
+         {
+            cts.Cancel();
+            cts = new CancellationTokenSource();
+         }
+
+         return result;
+      }
+
+      protected async void StartDrawLoop(CancellationToken ct)
+      {
+         try
+         {
+            var watch = new Stopwatch();
+
+            while (!ct.IsCancellationRequested)
             {
-               await screen.Draw();
-            }
-            foreach (var gameState in gameStates.TakeWhile(gs => ShowsPrior(gs.Type)).Reverse())
-            {
-               await gameState.Draw();
-            }
+               watch.Restart();
 
-            Present();
-            drawFinished.OnNext(unit);
+               var drawFinish = new TaskCompletionSource<Unit>();
 
-            watch.Stop();
+               await drawAgent.SendAsync(new DrawMessage() { Message = "Draw", DrawFinished = drawFinish });
+               await drawFinish.Task;
 
-            if (watch.Elapsed < frameTime)
-            {
-               await Task.Delay(frameTime - watch.Elapsed);
+               Present();
+
+               watch.Stop();
+
+               if (watch.Elapsed < frameTime)
+               {
+                  await Task.Delay(frameTime - watch.Elapsed);
+               }
             }
+         }
+         catch (TaskCanceledException)
+         {
          }
       }
 
-      async Task TurnLoop(Some<IGameState> gameState)
+      async Task<T> TurnLoop<T>(IGameView<T> gameState)
       {
-         while (true)
-         {
-            var result = await gameState.Value.Tick();
-            
-            if(result == TickResult.Finished)
-            {
-               break;
-            }
-            else
-            {
-               await drawFinished.FirstAsync();
-            }
-         }
+         var result = await gameState.DoLogic();
+         await drawFinished.FirstAsync();
+         return result;
       }
-      
+
       static RogueGame game;
       public static RogueGame Current { get { return game; } }
       public static void SetCurrentGame(RogueGame game)
@@ -122,9 +173,7 @@ namespace DraconicEngine
       }
 
       static readonly TimeSpan frameTime = TimeSpan.FromSeconds(1.0 / 15.0);
-
-      public IGameState CurrentGameState { get; set; }
-
+      
       Random randomer = new Random();
       public Random GameRandom { get { return randomer; } }
    }

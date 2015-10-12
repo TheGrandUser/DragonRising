@@ -9,25 +9,37 @@ namespace DragonRising
 {
    public class SimpleMessageService : IMessageService
    {
-      Queue<RogueMessage> messages = new Queue<RogueMessage>();
-      public Queue<RogueMessage> Messages { get { return messages; } }
+      List<RogueMessage> infoMessages = new List<RogueMessage>();
+      Queue<RogueMessage> eventMessages = new Queue<RogueMessage>();
 
-      int maxMessages;
+      int maxEventMessages;
 
-      public SimpleMessageService(int maxMessages)
+      public SimpleMessageService(int maxEventMessages)
       {
-         this.maxMessages = maxMessages;
+         this.maxEventMessages = maxEventMessages;
       }
 
       public void PostMessage(string message, RogueColor color)
       {
-         this.messages.Enqueue(new RogueMessage(message, color));
-         if (this.messages.Count > maxMessages)
+         eventMessages.Enqueue(new RogueMessage(message, color));
+         if (eventMessages.Count > maxEventMessages)
          {
-            this.messages.Dequeue();
+            eventMessages.Dequeue();
          }
       }
 
-      IEnumerable<RogueMessage> IMessageService.Messages { get { return messages.AsEnumerable(); } }
+      public void ClearInfoMessages()
+      {
+         infoMessages.Clear();
+      }
+
+      public void AddInfoMessage(RogueMessage message)
+      {
+         infoMessages.Add(message);
+      }
+      
+      public IEnumerable<RogueMessage> EventMessages => eventMessages.AsEnumerable();
+
+      public IEnumerable<RogueMessage> InfoMessages => infoMessages.AsEnumerable();
    }
 }

@@ -23,8 +23,8 @@ namespace DraconicEngine.Utilities
 
          var choice = RogueGame.Current.GameRandom.NextDouble() * total;
 
-         return items.Scan(tuple(0.0, default(T)),
-            (current, last) => tuple(current.Value + last.Item1, current.Key))
+         return items.Scan(Tuple(0.0, default(T)),
+            (last, current) => Tuple(current.Value + last.Item1, current.Key))
             .First(place => choice <= place.Item1)
             .Item2;
       }
@@ -36,8 +36,8 @@ namespace DraconicEngine.Utilities
             {
                Item = kvp.Key,
                Weight = kvp.Value.Match<double>(
-                  Right: weight => weight,
-                  Left: byLevel => FromDungeonLevel(level, byLevel)
+                  Left: weight => weight,
+                  Right: byLevel => FromDungeonLevel(level, byLevel)
                   .Match(
                      Some: val => val,
                      None: () => 0))
@@ -49,8 +49,8 @@ namespace DraconicEngine.Utilities
 
          var choice = RogueGame.Current.GameRandom.NextDouble() * total;
 
-         return finalizedWeights.Scan(tuple(0.0, default(T)),
-            (current, last) => tuple(current.Value + last.Item1, current.Key))
+         return finalizedWeights.Scan(Tuple(0.0, default(T)),
+            (last, current) => Tuple(current.Value + last.Item1, current.Key))
             .First(place => choice <= place.Item1)
             .Item2;
       }
@@ -73,8 +73,8 @@ namespace DraconicEngine.Utilities
 
          var choice = RogueGame.Current.GameRandom.NextDouble() * total;
 
-         return items.Scan(tuple(0.0, 0),
-            (current, last) => tuple(current + last.Item1, last.Item2 + 1))
+         return items.Scan(Tuple(0.0, 0),
+            (last, current) => Tuple(current + last.Item1, last.Item2 + 1))
             .First(place => choice <= place.Item1)
             .Item2;
       }

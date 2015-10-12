@@ -1,5 +1,5 @@
-﻿using DraconicEngine.GameWorld.EntitySystem;
-using DragonRising.GameWorld.Items;
+﻿using DraconicEngine.EntitySystem;
+using DraconicEngine.RulesSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +15,5 @@ namespace DragonRising.Storage
       void Add(Entity entity);
 
       Dictionary<string, Entity> Templates { get; }
-   }
-
-   public interface IItemUsageLibrary
-   {
-      IItemUsage Get(string name);
-      bool Contains(string name);
-      void Add(string name, IItemUsage usage);
-      string NameForUsage(IItemUsage usage);
    }
 }

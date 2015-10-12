@@ -79,7 +79,7 @@ namespace DragonRising.GameWorld.Alligences
 
       public void SetRelationship(Some<Alligence> alligence1, Some<Alligence> alligence2, Relationship relationship)
       {
-         this.relationships[tuple(alligence1.Value, alligence2.Value)] = relationship;
+         this.relationships[Tuple(alligence1.Value, alligence2.Value)] = relationship;
       }
 
       public Some<Alligence> GetOrAddByName(string name)
@@ -96,6 +96,6 @@ namespace DragonRising.GameWorld.Alligences
          return a;
       }
 
-      public IEnumerable<Tuple<Alligence, Alligence, Relationship>> Relationships => this.relationships.Select(kvp => tuple(kvp.Key.Item1, kvp.Key.Item2, kvp.Value));
+      public IEnumerable<Tuple<Alligence, Alligence, Relationship>> Relationships => this.relationships.Select(kvp => Tuple(kvp.Key.Item1, kvp.Key.Item2, kvp.Value));
    }
 }

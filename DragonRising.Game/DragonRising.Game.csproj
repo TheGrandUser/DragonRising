@@ -31,17 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConcurrentHashtable">
-      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\ConcurrentHashtable.dll</HintPath>
+    <Reference Include="LanguageExt.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LanguageExt.1.6.2\lib\LanguageExt.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="LanguageExt.Core">
-      <HintPath>..\packages\LanguageExt.0.0.8-beta\lib\LanguageExt.Core.dll</HintPath>
+    <Reference Include="Microsoft.Experimental.Collections, Version=1.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Experimental.Collections.1.0.3-alpha\lib\portable-net45+win8+wp8\Microsoft.Experimental.Collections.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism.PubSubEvents">
       <HintPath>..\packages\Prism.PubSubEvents.1.1.2\lib\portable-sl5+windowsphone8+windows8+net40+wpa81\Microsoft.Practices.Prism.PubSubEvents.dll</HintPath>
@@ -49,40 +45,51 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="ReactiveUI">
-      <HintPath>..\packages\reactiveui-core.6.2.1.1\lib\Net45\ReactiveUI.dll</HintPath>
+    <Reference Include="ReactiveUI, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\reactiveui-core.6.5.0\lib\Net45\ReactiveUI.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.5.1\lib\Net45\Splat.dll</HintPath>
+    <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.1.6.2\lib\Net45\Splat.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
-      <HintPath>..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Interactive">
-      <HintPath>..\packages\Ix-Main.1.2.2\lib\net45\System.Interactive.dll</HintPath>
+    <Reference Include="System.Interactive, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ix-Main.1.2.5\lib\net45\System.Interactive.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Reactive.Core">
-      <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+    <Reference Include="System.Reactive.Core, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Core.2.3.0-beta2\lib\net46\System.Reactive.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    <Reference Include="System.Reactive.Interfaces, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Interfaces.2.3.0-beta2\lib\net46\System.Reactive.Interfaces.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Reactive.Linq">
-      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+    <Reference Include="System.Reactive.Linq, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Linq.2.3.0-beta2\lib\net46\System.Reactive.Linq.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+    <Reference Include="System.Reactive.PlatformServices, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-PlatformServices.2.3.0-beta2\lib\net46\System.Reactive.PlatformServices.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Reactive.Windows.Threading">
       <HintPath>..\packages\Rx-XAML.2.2.5\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -100,24 +107,80 @@
     <Compile Include="Commands\ManipulateEntityCommand.cs" />
     <Compile Include="Commands\MovementCommand.cs" />
     <Compile Include="Commands\PickUpItemCommand.cs" />
-    <Compile Include="Commands\TeleportCommand.cs" />
+    <Compile Include="Commands\Requirements\AllRequirement.cs" />
+    <Compile Include="Commands\Requirements\AndMaybeRequirement.cs" />
+    <Compile Include="Commands\Requirements\ConfirmRequirement.cs" />
+    <Compile Include="Commands\Requirements\DirectionRequirement.cs" />
+    <Compile Include="Commands\Requirements\LocationRequirement.cs" />
+    <Compile Include="Commands\Requirements\OrRequirement.cs" />
+    <Compile Include="Commands\Requirements\PlanRequirement.cs" />
     <Compile Include="Commands\UseItemCommand.cs" />
     <Compile Include="DragonRisingGame.cs" />
     <Compile Include="Commands\LookCommand.cs" />
     <Compile Include="EntityExtensions.cs" />
     <Compile Include="EntityStoreExtensions.cs" />
-    <Compile Include="GameStates\LoadGeneralDataScreen.cs" />
-    <Compile Include="GameStates\NewGameScreen.cs" />
-    <Compile Include="GameStates\LevelUpScreen.cs" />
-    <Compile Include="GameWorld\Actions\AttackEntityAction.cs" />
-    <Compile Include="GameWorld\Actions\DropItemAction.cs" />
-    <Compile Include="GameWorld\Actions\ManipulateEntityAction.cs" />
-    <Compile Include="GameWorld\Actions\MovementAction.cs" />
-    <Compile Include="GameWorld\Actions\PickUpItemAction.cs" />
-    <Compile Include="GameWorld\Actions\Requirements\ItemRequirement.cs" />
-    <Compile Include="GameWorld\Actions\TeleportAction.cs" />
-    <Compile Include="GameWorld\Actions\UseItemAction.cs" />
-    <Compile Include="GameWorld\Actions\UsePortalAction.cs" />
+    <Compile Include="Commands\Requirements\EntityRequirement.cs" />
+    <Compile Include="Facts\Actions\CastSpellFact.cs" />
+    <Compile Include="Facts\Events\HealingEvents.cs" />
+    <Compile Include="GameWorld\Behaviors\Behavior.cs" />
+    <Compile Include="GameWorld\Behaviors\ExternallyControlledBehavior.cs" />
+    <Compile Include="GameWorld\Behaviors\JustPassBehavior.cs" />
+    <Compile Include="GameWorld\Components\ConditionComponent.cs" />
+    <Compile Include="GameWorld\CoreStats.cs" />
+    <Compile Include="GameWorld\Generators\TwoRoomsOneOrcGenerator.cs" />
+    <Compile Include="GameWorld\Powers\ConfuseNearestPower.cs" />
+    <Compile Include="GameWorld\Powers\HealPower.cs" />
+    <Compile Include="GameWorld\Powers\LightningPower.cs" />
+    <Compile Include="GameWorld\Powers\Spells\Spell.cs" />
+    <Compile Include="Plans\Effects\ApplyTemporaryCondition.cs" />
+    <Compile Include="Facts\Events\SensoryEvents\NoiseEvents.cs" />
+    <Compile Include="GameWorld\Conditions\ConfusedCondition.cs" />
+    <Compile Include="GameWorld\Conditions\ICondition.cs" />
+    <Compile Include="Plans\Effects\DamageEffect.cs" />
+    <Compile Include="Plans\Effects\SensoryEffect.cs" />
+    <Compile Include="Plans\Effects\HealEffect.cs" />
+    <Compile Include="Plans\EntityFilters\OnlyCreaturesFilter.cs" />
+    <Compile Include="Plans\EntityFilters\OnlyEnemiesFilter.cs" />
+    <Compile Include="Plans\Targeters\AdjacentCreatureOrSelfTargeter.cs" />
+    <Compile Include="Plans\Queries\AffectAllInRangeQuery.cs" />
+    <Compile Include="Plans\Queries\SelectClosestCreatureQuery.cs" />
+    <Compile Include="Facts\Events\AttackEvents.cs" />
+    <Compile Include="Facts\Events\ConditionEvents.cs" />
+    <Compile Include="Plans\Targeters\DirectionTargeter.cs" />
+    <Compile Include="Plans\Targeters\EntityInRangeTargeter.cs" />
+    <Compile Include="Plans\Targeters\LocationInRangeTargeter.cs" />
+    <Compile Include="Plans\Targeters\TargeterExtensions.cs" />
+    <Compile Include="Rules\ExplorationRules\ManipulateEntityRule.cs" />
+    <Compile Include="Rules\ExplorationRules\ReportSensoryEffectRule.cs" />
+    <Compile Include="Rules\ExplorationRules\UsePortalRule.cs" />
+    <Compile Include="Rules\GameFlowRules\GameEndsOnPlayerDeathRule.cs" />
+    <Compile Include="Rules\CombatRules\AttackRule.cs" />
+    <Compile Include="Rules\InventoryRules\DropItemRule.cs" />
+    <Compile Include="Rules\InventoryRules\PickupItemRule.cs" />
+    <Compile Include="Rules\InventoryRules\UseItemRule.cs" />
+    <Compile Include="Rules\ModificationRules\AddConditionRule.cs" />
+    <Compile Include="Rules\CombatRules\EntityKilledRule.cs" />
+    <Compile Include="Rules\CombatRules\DamageRule.cs" />
+    <Compile Include="Rules\ExplorationRules\MoveRule.cs" />
+    <Compile Include="Rules\ModificationRules\OnConfusedConditionRule.cs" />
+    <Compile Include="Rules\ModificationRules\ReportConditionRules.cs" />
+    <Compile Include="Rules\ModificationRules\ConditionExpiredRule.cs" />
+    <Compile Include="Rules\Rule.cs" />
+    <Compile Include="Rules\RuleManager.cs" />
+    <Compile Include="Rules\ExplorationRules\SearchProcessRule.cs" />
+    <Compile Include="Rules\MagicRules\UseASpellRule.cs" />
+    <Compile Include="Views\LoadGeneralDataScreen.cs" />
+    <Compile Include="Views\NewGameScreen.cs" />
+    <Compile Include="Views\LevelUpScreen.cs" />
+    <Compile Include="Facts\Actions\AttackEntityAction.cs" />
+    <Compile Include="Facts\Actions\DropItemAction.cs" />
+    <Compile Include="Facts\Actions\ManipulateEntityAction.cs" />
+    <Compile Include="Facts\Actions\MovementAction.cs" />
+    <Compile Include="Facts\Actions\PickUpItemAction.cs" />
+    <Compile Include="Commands\Requirements\ItemRequirement.cs" />
+    <Compile Include="Facts\Actions\TeleportAction.cs" />
+    <Compile Include="Facts\Actions\UseItemAction.cs" />
+    <Compile Include="Facts\Actions\UsePortalAction.cs" />
     <Compile Include="GameWorld\Alligences\Alligence.cs" />
     <Compile Include="GameWorld\Alligences\AlligenceManager.cs" />
     <Compile Include="GameWorld\Alligences\Relationship.cs" />
@@ -130,49 +193,27 @@
     <Compile Include="GameWorld\Components\EquipmentComponent.cs" />
     <Compile Include="GameWorld\Components\InventoryComponent.cs" />
     <Compile Include="GameWorld\Components\ItemComponent.cs" />
-    <Compile Include="GameWorld\Components\LevelComponent.cs" />
-    <Compile Include="GameWorld\Components\LocationComponent.cs" />
     <Compile Include="GameWorld\Components\ManipulatableComponent.cs" />
-    <Compile Include="GameWorld\Effects\BehaviorReplacementEffect.cs" />
-    <Compile Include="GameWorld\Effects\DamageEffect.cs" />
-    <Compile Include="GameWorld\Effects\MessageEffect.cs" />
-    <Compile Include="GameWorld\Effects\RemoveBehaviorEffect.cs" />
     <Compile Include="GameWorld\EntityModifiers\EntityModifierSet.cs" />
-    <Compile Include="GameWorld\Events\CreatureKilledEvent.cs" />
-    <Compile Include="GameWorld\Items\BehaviorReplacementItem.cs" />
-    <Compile Include="GameWorld\Items\FireballScroll.cs" />
-    <Compile Include="GameWorld\Items\HealingItem.cs" />
-    <Compile Include="GameWorld\Items\IItemUsage.cs" />
-    <Compile Include="GameWorld\Items\LightningScroll.cs" />
-    <Compile Include="GameStates\GameEndScreen.cs" />
-    <Compile Include="GameStates\InventoryScreen.cs" />
-    <Compile Include="GameStates\LoadGameScreen.cs" />
-    <Compile Include="GameStates\LookTool.cs" />
-    <Compile Include="GameStates\MainMenuScreen.cs" />
-    <Compile Include="GameStates\MyPlayingState.cs" />
-    <Compile Include="GameStates\SelectEntityTool.cs" />
-    <Compile Include="GameStates\TargetingTool.cs" />
+    <Compile Include="Facts\Events\CreatureKilledEvent.cs" />
+    <Compile Include="Views\GameEndScreen.cs" />
+    <Compile Include="Views\InventoryScreen.cs" />
+    <Compile Include="Views\LoadGameScreen.cs" />
+    <Compile Include="Views\LookTool.cs" />
+    <Compile Include="Views\MainMenuScreen.cs" />
+    <Compile Include="Views\MyPlayingScreen.cs" />
+    <Compile Include="Views\SelectEntityTool.cs" />
+    <Compile Include="Views\TargetingTool.cs" />
     <Compile Include="GameWorld\Generators\DungeonGenerator.cs" />
     <Compile Include="GameWorld\Generators\GreenskinsGenerator.cs" />
     <Compile Include="GameWorld\Generators\StandardItemGenerator.cs" />
-    <Compile Include="GameWorld\Items\PowerItemUsageTemplate.cs" />
     <Compile Include="GameWorld\LevelingPolicy.cs" />
     <Compile Include="GameWorld\Nodes\BehaviorNode.cs" />
     <Compile Include="GameWorld\Nodes\CreatureDrawNode.cs" />
     <Compile Include="GameWorld\Nodes\DrawNode.cs" />
     <Compile Include="GameWorld\Nodes\ItemDrawNode.cs" />
     <Compile Include="GameWorld\Nodes\SeeableNode.cs" />
-    <Compile Include="GameWorld\Powers\Nodes\ChooseTarget.cs" />
-    <Compile Include="GameWorld\Powers\Nodes\ConstantNodes.cs" />
-    <Compile Include="GameWorld\Powers\Nodes\GetEntitiesWithinNode.cs" />
-    <Compile Include="GameWorld\Powers\Nodes\LocationOfNode.cs" />
-    <Compile Include="GameWorld\Powers\Nodes\NodeConnection.cs" />
-    <Compile Include="GameWorld\Powers\Nodes\NodeInput.cs" />
-    <Compile Include="GameWorld\Powers\Nodes\NodeOutput.cs" />
-    <Compile Include="GameWorld\Powers\Nodes\PowerNode.cs" />
-    <Compile Include="GameWorld\Powers\Nodes\TargetSelf.cs" />
-    <Compile Include="GameWorld\Powers\Power.cs" />
-    <Compile Include="GameWorld\Powers\PowerException.cs" />
+    <Compile Include="Plans\EffectPlan.cs" />
     <Compile Include="GameWorld\Scene.cs" />
     <Compile Include="GameWorld\Systems\ActionSystem.cs" />
     <Compile Include="GameWorld\Systems\RenderSystem.cs" />
@@ -189,9 +230,7 @@
     <Compile Include="PlayerController.cs" />
     <Compile Include="GameWorld\Powers\FireballPower.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\LifeDeathMonitorService.cs" />
     <Compile Include="SimpleMessageService.cs" />
-    <Compile Include="StatTracker.cs" />
     <Compile Include="Storage\PowerLibrary.cs" />
     <Compile Include="Storage\SaveManager.cs" />
     <Compile Include="Storage\TileLibrary.cs" />
@@ -215,9 +254,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ConcurrentHashtable.License.txt" />
+    <Folder Include="GameWorld\Items\" />
+    <Folder Include="Rules\SocialRules\" />
+    <Folder Include="Services\" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

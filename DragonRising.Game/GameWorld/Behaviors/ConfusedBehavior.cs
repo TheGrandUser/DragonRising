@@ -1,17 +1,12 @@
-﻿using DraconicEngine.GameWorld.EntitySystem.Components;
-using DragonRising.GameWorld.Items;
-using DraconicEngine.GameWorld.Actions;
+﻿using DraconicEngine.RulesSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.Actions.Requirements;
+using DraconicEngine.EntitySystem;
 using DragonRising.GameWorld.Actions;
 using DraconicEngine;
-using DraconicEngine.GameWorld;
-using DraconicEngine.GameWorld.Behaviors;
 using DragonRising.GameWorld.Components;
 
 namespace DragonRising.GameWorld.Behaviors
@@ -28,26 +23,26 @@ namespace DragonRising.GameWorld.Behaviors
       {
       }
 
-      public override RogueAction PlanTurn(Entity owner)
+      public override ActionTaken PlanTurn(Entity owner)
       {
          var result = RogueGame.Current.GameRandom.Next(100);
 
          if (result < 70) // Move
          {
             var direction = (Direction)RogueGame.Current.GameRandom.Next(9);
-            var loc = owner.GetComponent<LocationComponent>().Location + Vector.FromDirection(direction);
+            var loc = owner.Location + Vector.FromDirection(direction);
             if (World.Current.Scene.IsBlocked(loc) == Blockage.None)
             {
-               return new MoveToAction(loc);
+               return new MoveToAction(owner, loc);
             }
             else
             {
-               return RogueAction.Idle;
+               return ActionTaken.Idle;
             }
          }
          else
          {
-            return RogueAction.Idle;
+            return ActionTaken.Idle;
          }
       }
 

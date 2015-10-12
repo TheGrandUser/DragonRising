@@ -1,0 +1,17 @@
+﻿{
+  "races": [
+    {
+      "name": "Dragon",
+      "strengthBonus": "6",
+      "perks": {
+        "Fire Breath": {
+          "type":  "Power",
+          "effect2": "select targets from 8x3 cone, damage for 5d6 fire",
+          "effect": {
+            "type": "Area"
+          }
+        }
+      }
+    }
+  ]
+}

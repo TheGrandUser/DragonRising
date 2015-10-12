@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem;
-using DragonRising.GameWorld.Items;
+using DraconicEngine.EntitySystem;
 using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem.Components;
 using static DragonRising.TempConstants;
 using DragonRising.Storage;
 using DraconicEngine.Utilities;
@@ -25,16 +23,16 @@ namespace DragonRising.Generators
       {
          this.itemsPerRoomByLevel = new List<Tuple<int, int>>
          {
-            tuple(1,1),
-            tuple(2,4),
+            Tuple(1,1),
+            Tuple(2,4),
          };
 
          items = new Dictionary<Entity, Either<double, IEnumerable<Tuple<double, int>>>>()
          {
             { Library.Current.Items.Get(HealingPotion), Make(0.35) },
-            { Library.Current.Items.Get(ScrollOfLightningBolt), Make(tuple(0.25, 4)) },
-            { Library.Current.Items.Get(ScrollOfFireball), Make(tuple(0.25, 6)) },
-            { Library.Current.Items.Get(ScrollOfConfusion), Make(tuple(0.10, 2)) },
+            { Library.Current.Items.Get(ScrollOfLightningBolt), Make(Tuple(0.25, 4)) },
+            { Library.Current.Items.Get(ScrollOfFireball), Make(Tuple(0.25, 6)) },
+            { Library.Current.Items.Get(ScrollOfConfusion), Make(Tuple(0.10, 2)) },
          };
       }
 

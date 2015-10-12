@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.EntitySystem.Components;
 using LanguageExt;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld.Actions.Requirements;
-using DraconicEngine.GameWorld.Actions;
+using DraconicEngine.EntitySystem;
+using DragonRising.Commands.Requirements;
+using DraconicEngine.RulesSystem;
 using DraconicEngine.Terminals.Input;
 using DraconicEngine;
 using DragonRising.GameWorld.Actions;
@@ -18,35 +17,32 @@ namespace DragonRising.Commands
 {
    public class MovementCommand : ActionCommand
    {
-      Direction? direction;
-
-      ActionRequirement requirement = new DirectionRequirement();
-      public override ActionRequirement GetRequirement(Entity user) => direction == null ? requirement : NoRequirement.None;
-      public override string Name => "Move";
-      public MovementCommand(Direction? direction = null)
+      Vector delta;
+      
+      public MovementCommand(Vector delta)
       {
-         this.direction = direction;
+         this.delta = delta.Unitize();
       }
 
-      public override Either<RogueAction, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment)
+      public override PlanRequirement GetRequirement(Entity user) => NoRequirement.None;
+      public override string Name => "Move";
+
+      public override Either<ActionTaken, AlternateCommmand> PrepareAction(Entity executer, RequirementFulfillment fulfillment)
       {
          var dirFulfillment = fulfillment as DirectionFulfillment;
-         var direction = this.direction ?? dirFulfillment?.Direction ?? Direction.None;
-         if(direction == Direction.None)
+         if(delta == Vector.Zero)
          {
-            return RogueAction.Abort;
+            return ActionTaken.Abort;
          }
-
+         
          var scene = World.Current.Scene;
-
-         var delta = Vector.FromDirection(direction);
-
+         
          var newLocation = executer.GetLocation() + delta;
 
          var blockage = scene.IsBlocked(newLocation, ignoreWhere: entity => entity == executer);
          if (blockage == Blockage.None)
          {
-            return new MoveToAction(newLocation);
+            return new MoveToAction(executer, newLocation);
          }
          else if (blockage == Blockage.Entity)
          {
@@ -62,10 +58,10 @@ namespace DragonRising.Commands
             }
             else
             {
-               return RogueAction.Abort;
+               return ActionTaken.Abort;
             }
          }
-         return RogueAction.Abort;
+         return ActionTaken.Abort;
       }
    }
 }

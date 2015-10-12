@@ -1,18 +1,15 @@
-﻿using DraconicEngine.GameWorld.EntitySystem.Components;
-using DragonRising.GameWorld.Items;
-using DraconicEngine.GameWorld.Actions;
+﻿using DraconicEngine.RulesSystem;
 using DraconicEngine.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DraconicEngine.GameWorld.Behaviors;
 using System.Diagnostics;
 using Newtonsoft.Json;
-using DraconicEngine.GameWorld.EntitySystem;
-using DraconicEngine.GameWorld;
+using DraconicEngine.EntitySystem;
 using DraconicEngine;
+using DragonRising.GameWorld.Behaviors;
 
 namespace DragonRising.GameWorld.Components
 {
@@ -30,7 +27,7 @@ namespace DragonRising.GameWorld.Components
          this.behaviors.AddLast(initialBehavior);
       }
 
-      protected BehaviorComponent(BehaviorComponent original, bool fresh)
+      BehaviorComponent(BehaviorComponent original, bool fresh)
          : base(original, fresh)
       {
          this.behaviors = new LinkedList<Behavior>(original.behaviors.Select(b => b.Clone()));
@@ -70,6 +67,15 @@ namespace DragonRising.GameWorld.Components
       public void RemoveBehavior(Behavior behavior)
       {
          this.behaviors.Remove(behavior);
+      }
+
+      public void RemoveBehavior(string name)
+      {
+         var behavior = behaviors.FirstOrDefault(b => b.Name == name);
+         if (behavior != null)
+         {
+            behaviors.Remove(behavior);
+         }
       }
    }
 }

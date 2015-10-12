@@ -12,14 +12,19 @@ namespace DraconicEngine.Input
       public RogueKey Key { get; set; }
       public char? Char { get; set; }
       public RogueModifierKeys Modifiers { get; set; }
-      public bool IsShiftDown { get { return Modifiers.HasFlag(RogueModifierKeys.Shift); } }
-      public bool IsControlDown { get { return Modifiers.HasFlag(RogueModifierKeys.Control); } }
-      public bool IsAltDown { get { return Modifiers.HasFlag(RogueModifierKeys.Alt); } }
    }
 
    public static class RogueKeyExtensions
    {
-      public static bool IsStandardMovementKey(this RogueKey key)
+      public static bool IsFourWayMovementKey(this RogueKey key)
+      {
+         return key == RogueKey.Up || key == RogueKey.NumPad8 ||
+            key == RogueKey.Down || key == RogueKey.NumPad2 ||
+            key == RogueKey.Left || key == RogueKey.NumPad4 ||
+            key == RogueKey.Right || key == RogueKey.NumPad6;
+      }
+
+      public static bool IsEightWayMovementKey(this RogueKey key)
       {
          return key == RogueKey.Up || key == RogueKey.NumPad8 ||
             key == RogueKey.Down || key == RogueKey.NumPad2 ||

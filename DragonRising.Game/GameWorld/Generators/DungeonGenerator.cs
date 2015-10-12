@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DraconicEngine.GameWorld.EntitySystem;
+using DraconicEngine.EntitySystem;
 using LanguageExt;
 using static LanguageExt.Prelude;
 using DraconicEngine.Utilities;
 using DragonRising.GameWorld.Components;
+using DragonRising.Generators;
 
-namespace DragonRising.Generators
+namespace DragonRising.GameWorld.Generators
 {
    public class DungeonGenerator : IMapGenerator
    {
@@ -31,15 +32,15 @@ namespace DragonRising.Generators
 
          this.itemsPerRoomByLevel = new List<Tuple<int, int>>
          {
-            tuple(1,1),
-            tuple(2,4),
+            Tuple(1,1),
+            Tuple(2,4),
          };
 
          this.monstersPerRoomByLevel = new List<Tuple<int, int>>
          {
-            tuple(2,1),
-            tuple(3,4),
-            tuple(5,6),
+            Tuple(2,1),
+            Tuple(3,4),
+            Tuple(5,6),
          };
       }
 
@@ -90,12 +91,15 @@ namespace DragonRising.Generators
          }
 
          var stairs = new Entity("Stairs",
-            new DrawnComponent()
-            {
-               SeenCharacter = new Character(Glyph.LessThan, RogueColors.White),
-               ExploredCharacter = new Character(Glyph.LessThan, RogueColors.LightGray)
-            },
-            new LocationComponent() { Location = rooms.Last().Center });
+            new ComponentSet(
+               new DrawnComponent()
+               {
+                  SeenCharacter = new Character(Glyph.LessThan, RogueColors.White),
+                  ExploredCharacter = new Character(Glyph.LessThan, RogueColors.LightGray)
+               }))
+         {
+            Location = rooms.Last().Center
+         };
 
          scene.EntityStore.AddEntity(stairs);
          scene.Stairs = stairs;
@@ -131,7 +135,7 @@ namespace DragonRising.Generators
          }
       }
 
-      public Loc GetRandomLocationInRoom(TerminalRect room)
+      Loc GetRandomLocationInRoom(TerminalRect room)
       {
          var x = RogueGame.Current.GameRandom.Next(room.Left + 1, room.Right);
          var y = RogueGame.Current.GameRandom.Next(room.Top + 1, room.Bottom);

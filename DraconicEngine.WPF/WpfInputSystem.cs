@@ -1,347 +1,163 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
-using System.Reactive.Subjects;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using DraconicEngine.Input;
-using KeyGesture = DraconicEngine.Input.RogueKeyGesture;
-using System.Collections.Immutable;
 using System.Threading;
 using LanguageExt;
 using static LanguageExt.Prelude;
+using System;
+using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 
 namespace DraconicEngine.WPF
 {
    public class WpfInputSystem : IInputSystem
    {
-      abstract class Request
-      {
-         public CancellationToken CancelToken { get; protected set; }
-      }
-
-      class KeyRequest : Request
-      {
-         public TaskCompletionSource<RogueKeyEvent> Tcs { get; private set; }
-
-         public KeyRequest(TaskCompletionSource<RogueKeyEvent> tcs)
-         {
-            this.Tcs = tcs;
-            this.CancelToken = CancellationToken.None;
-         }
-      }
-
-      class GestureRequest : Request
-      {
-         private TaskCompletionSource<InputResult> currentTcs;
-         public IReadOnlyList<CommandGesture> CommandGestures { get; private set; }
-
-
-         public GestureRequest(IReadOnlyList<CommandGesture> commandGestures, TaskCompletionSource<InputResult> tcs, CancellationToken cancelToken)
-         {
-            this.CommandGestures = commandGestures;
-            this.currentTcs = tcs;
-            this.CancelToken = cancelToken;
-
-            this.CancelToken.Register(OnCancelled);
-         }
-
-         private void OnCancelled()
-         {
-            currentTcs.TrySetCanceled();
-         }
-
-         public void Do(CommandGesture toDo, RogueKeyGesture keyGesture)
-         {
-            if (currentTcs == null)
-            {
-               return;
-            }
-
-            if (toDo is CommandGestureSingle)
-            {
-               var value = ((CommandGestureSingle)toDo).GetPackage(keyGesture);
-
-               var tcs = currentTcs;
-               currentTcs = null;
-               tcs.SetResult(new InputResult(value));
-            }
-            else if (toDo is CommandGesture1D)
-            {
-               var toDo1D = ((CommandGesture1D)toDo);
-               var value = toDo1D.GetPackage(keyGesture);
-               var delta = toDo1D.GetValue(keyGesture);
-               var tcs = currentTcs;
-               currentTcs = null;
-               tcs.SetResult(new InputResult1D(value, delta));
-            }
-            else if (toDo is CommandGesture2D)
-            {
-               var toDo2D = ((CommandGesture2D)toDo);
-               var delta = toDo2D.GetDirectionFromKeys(keyGesture);
-               var value = toDo2D.GetPackage(null, delta);
-               var tcs = currentTcs;
-               currentTcs = null;
-               tcs.SetResult(new InputResult2D(value, null, delta));
-            }
-         }
-
-         public void Do(CommandGestureSingle toDo, RogueMouseGesture mouseGesture)
-         {
-            if (currentTcs == null)
-            {
-               return;
-            }
-            var value = toDo.GetPackage(mouseGesture);
-
-            var tcs = currentTcs;
-            currentTcs = null;
-            tcs.SetResult(new InputResult(value));
-         }
-
-         public void Do(CommandGesture1D toDo, int wheelDelta)
-         {
-            if (currentTcs == null)
-            {
-               return;
-            }
-            var value = toDo.GetPackage(wheelDelta);
-
-            var tcs = currentTcs;
-            currentTcs = null;
-            tcs.SetResult(new InputResult1D(value, wheelDelta));
-         }
-
-         public void Do(CommandGesture2D toDo, Loc point, Vector delta)
-         {
-            if (currentTcs == null)
-            {
-               return;
-            }
-            var value = toDo.GetPackage(point, delta);
-
-            var tcs = currentTcs;
-            currentTcs = null;
-            tcs.SetResult(new InputResult2D(value, point, delta));
-         }
-      }
-
       Window window;
       TerminalControl terminalControl;
 
-      Stack<Request> requests = new Stack<Request>();
+      //Subject<KeyEventArgs> keyDownRaw = new Subject<KeyEventArgs>();
+      //Subject<KeyEventArgs> keyUpRaw = new Subject<KeyEventArgs>();
+      //Subject<MouseButtonEventArgs> mouseDownRaw = new Subject<MouseButtonEventArgs>();
+      Subject<Tuple<RogueMouseGesture, Loc>> mouseMoveRaw = new Subject<System.Tuple<RogueMouseGesture, Loc>>();
+      //Subject<MouseWheelEventArgs> mouseWheelRaw = new Subject<MouseWheelEventArgs>();
 
-      Loc lastTerminalPoint = new Loc(-1, -1);
+
+
+      Subject<RogueKeyEvent> keyDown = new Subject<RogueKeyEvent>();
+      Subject<RogueKeyEvent> keyUp = new Subject<RogueKeyEvent>();
+      Subject<Tuple<RogueMouseGesture, Loc, Vector>> mouseMove = new Subject<System.Tuple<RogueMouseGesture, Loc, Vector>>();
+      Subject<Tuple<RogueMouseGesture, Loc>> mouseDown = new Subject<System.Tuple<RogueMouseGesture, Loc>>();
+      Subject<Tuple<RogueMouseGesture, Loc, int>> mouseWheel = new Subject<System.Tuple<RogueMouseGesture, Loc, int>>();
+
+      public IObservable<RogueKeyEvent> KeyDownStream => keyDown;
+      public IObservable<RogueKeyEvent> KeyUpStream => keyUp;
+      public IObservable<Tuple<RogueMouseGesture, Loc, Vector>> MouseMove => mouseMove;
+      public IObservable<Tuple<RogueMouseGesture, Loc>> MouseDown => mouseDown;
+      public IObservable<Tuple<RogueMouseGesture, Loc, int>> MouseWheel => mouseWheel;
+
+      class testClass
+      {
+         public void M() { }
+      }
 
       public WpfInputSystem(Window window, TerminalControl terminalControl)
       {
          this.window = window;
          this.terminalControl = terminalControl;
 
-         this.window.KeyDown += window_KeyDown;
-
-         this.terminalControl.MouseDown += terminalControl_MouseDown;
-
-         this.terminalControl.MouseMove += terminalControl_MouseMove;
-
-         this.terminalControl.MouseWheel += terminalControl_MouseWheel;
-      }
-
-      public bool IsKeyPressed(RogueKey key)
-      {
-         return Keyboard.GetKeyStates(key.ToWpfKey()).HasFlag(KeyStates.Down);
-      }
-
-      void AddRequest(Request request)
-      {
-         while (this.requests.Count > 0)
-         {
-            var other = this.requests.Peek();
-            if (other.CancelToken.IsCancellationRequested)
-            {
-               this.requests.Pop();
-            }
-            else
-            {
-               break;
-            }
-         }
-
-         this.requests.Push(request);
-      }
-
-      Option<Request> GetTopRequest()
-      {
-         while (this.requests.Count > 0)
-         {
-            var request = this.requests.Peek();
-            if (request.CancelToken.IsCancellationRequested)
-            {
-               this.requests.Pop();
-            }
-            else
-            {
-               return request;
-            }
-         }
-
-         return None;
-      }
-
-      void ConfirmRequest(Request request)
-      {
-         var top = this.requests.Pop();
-         Debug.Assert(top == request, "top request was not the confirmed request");
-
-         while (this.requests.Count > 0)
-         {
-            var other = this.requests.Peek();
-            if (other.CancelToken.IsCancellationRequested)
-            {
-               this.requests.Pop();
-            }
-            else
-            {
-               break;
-            }
-         }
-      }
-
-      void terminalControl_MouseWheel(object sender, MouseWheelEventArgs e)
-      {
-         var r = GetTopRequest();
-
-         r.Match(
-            Some: request =>
-            {
-               if (request is GestureRequest)
-               {
-                  var gestureRequest = (GestureRequest)request;
-
-                  var mouseGesture = new DraconicEngine.Input.RogueMouseGesture(
-                        DraconicEngine.Input.RogueMouseAction.WheelMove,
-                        (RogueModifierKeys)Keyboard.Modifiers);
-
-                  var commandGesture = gestureRequest.CommandGestures.OfType<CommandGesture1D>().SingleOrDefault(d => mouseGesture.Matches(d.MouseGesture));
-
-                  if (commandGesture != null)
-                  {
-                     ConfirmRequest(request);
-                     gestureRequest.Do(commandGesture, e.Delta);
-                  }
-               }
-            }, None: () => { });
-      }
-
-      void terminalControl_MouseMove(object sender, MouseEventArgs e)
-      {
-         var topRequest = GetTopRequest();
-         topRequest.ForEach(request =>
-         {
-            var sceenPoint = e.GetPosition(this.terminalControl);
-            var terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint);
-
-            if (terminalPoint != lastTerminalPoint && request is GestureRequest)
-            {
-               var gestureRequest = (GestureRequest)request;
-
-               var mouseGesture = new RogueMouseGesture(
-                     RogueMouseAction.Movement,
-                     (RogueModifierKeys)Keyboard.Modifiers);
-
-               var commandGesture = gestureRequest.CommandGestures.OfType<CommandGesture2D>().SingleOrDefault(d => mouseGesture.Matches(d.MouseGesture));
-
-               if (commandGesture != null)
-               {
-                  ConfirmRequest(request);
-                  gestureRequest.Do(commandGesture, terminalPoint, terminalPoint - lastTerminalPoint);
-                  lastTerminalPoint = terminalPoint;
-               }
-            }
-         });
-      }
-
-      void terminalControl_MouseDown(object sender, MouseButtonEventArgs e)
-      {
-         var topRequest = GetTopRequest();
-
-         topRequest.ForEach(request =>
-         {
-            if (request is GestureRequest)
-            {
-               var gestureRequest = (GestureRequest)request;
-
-               var mouseGesture = new RogueMouseGesture(
-                  (RogueMouseAction)e.ChangedButton,
-                  (RogueModifierKeys)Keyboard.Modifiers);
-
-               var gesture = gestureRequest.CommandGestures.OfType<CommandGestureSingle>().SingleOrDefault(d => mouseGesture.Matches(d.MouseGesture));
-
-               if (gesture != null)
-               {
-                  ConfirmRequest(request);
-                  gestureRequest.Do(gesture, mouseGesture);
-               }
-            }
-         });
-      }
-
-      void window_KeyDown(object sender, KeyEventArgs e)
-      {
-         var topRequest = GetTopRequest();
-         topRequest.ForEach(request =>
-         {
-            if (request is GestureRequest)
-            {
-               var gestureRequest = (GestureRequest)request;
-
-               var rogueKeyEvent = e.ToRogueKeyEvent();
-
-               foreach (var gesture in gestureRequest.CommandGestures)
-               {
-                  var matchingGesture = gesture.KeyGestures.FirstOrDefault(kg => kg.Matches(rogueKeyEvent));
-                  if (matchingGesture != null)
-                  {
-                     ConfirmRequest(request);
-
-                     gestureRequest.Do(gesture, matchingGesture);
-                     return;
-                  }
-               }
-            }
-            else
-            {
-               ConfirmRequest(request);
-               var keyRequest = (KeyRequest)request;
-
-               keyRequest.Tcs.SetResult(e.ToRogueKeyEvent());
-            }
-         });
-      }
-
-      public Task<RogueKeyEvent> GetKeyPressAsync()
-      {
-         var inputRequest = new TaskCompletionSource<RogueKeyEvent>();
-
-         this.AddRequest(new KeyRequest(inputRequest));
-
-         return inputRequest.Task;
-      }
-
-      public Task<InputResult> GetCommandAsync(IEnumerable<CommandGesture> gestures, CancellationToken cancelToken)
-      {
-         var tcs = new TaskCompletionSource<InputResult>();
+         window.KeyDown += Window_KeyDown;
+         window.KeyUp += Window_KeyUp;
+         window.MouseDown += Window_MouseDown;
+         window.MouseMove += Window_MouseMove;
+         window.MouseWheel += Window_MouseWheel;
          
-         var gestureRequest = new GestureRequest(gestures.ToList(), tcs, cancelToken);
+         mouseMoveRaw.Scan(
+            Tuple(new RogueMouseGesture(RogueMouseAction.Movement, RogueModifierKeys.None), new Loc(-1, -1), Vector.Zero),
+            (last, next) => Tuple(next.Item1, next.Item2, next.Item2 - last.Item2))
+            .Skip(1).Subscribe(mouseMove);
+      }
 
-         this.AddRequest(gestureRequest);
+      private void Window_KeyDown(object sender, KeyEventArgs e) => keyDown.OnNext(e.ToRogueKeyEvent());
+      private void Window_KeyUp(object sender, KeyEventArgs e) => keyUp.OnNext(e.ToRogueKeyEvent());
+      private void Window_MouseDown(object sender, MouseButtonEventArgs args)
+      {
+         var sceenPoint = args.GetPosition(this.terminalControl);
+         var terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint);
+         mouseDown.OnNext(Tuple(new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint));
+      }
+      private void Window_MouseMove(object sender, MouseEventArgs args)
+      {
+         var sceenPoint = args.GetPosition(this.terminalControl);
+         var terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint);
+         mouseMoveRaw.OnNext(Tuple(new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint));
+      }
+      private void Window_MouseWheel(object sender, MouseWheelEventArgs args)
+      {
+         var sceenPoint = args.GetPosition(this.terminalControl);
+         var terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint);
+         mouseWheel.OnNext(Tuple(new RogueMouseGesture(RogueMouseAction.WheelMove, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint, args.Delta));
+      }
 
-         return tcs.Task;
+      public bool IsKeyPressed(RogueKey key) => Keyboard.GetKeyStates(key.ToWpfKey()).HasFlag(KeyStates.Down);
+
+      public async Task<RogueKeyEvent> GetKeyPressAsync() => await keyDown.FirstAsync();
+
+      public async Task<InputResult> GetCommandAsync(IEnumerable<CommandGesture> commandGestures, CancellationToken cancelToken)
+      {
+         var gestures = commandGestures.ToList();
+
+         var doubledUpGestures =
+            (from g1 in gestures
+             from g2 in gestures.TakeWhile(g => g != g1)
+             where g1.GestureSet.MouseGesture != null && g2.GestureSet.MouseGesture != null
+             where g1.GestureSet.MouseGesture.Matches(g2.GestureSet.MouseGesture)
+             select new { g1, g2 }).ToArray();
+
+         foreach (var gesturePair in doubledUpGestures)
+         {
+            Debug.WriteLine(gesturePair);
+         }
+
+
+         var keyInputResults =
+            from args in keyDown
+            from gesture in gestures
+            let matchingGesture = gesture.GestureSet.KeyGestures.FirstOrDefault(kg => kg.Matches(args))
+            where matchingGesture != null
+            select GetKeyGestureReady(gesture, matchingGesture);
+
+         var mouseDownInputResults =
+            from args in mouseDown
+            let gesture = gestures.OfType<CommandGestureSingle>().SingleOrDefault(d => args.Item1.Matches(d.GestureSet.MouseGesture))
+            where gesture != null
+            select new InputResult(gesture.Command);
+
+         var mouseMoveInputResults =
+            from args in mouseMove
+            let gesture = gestures.OfType<CommandGesture2D>().SingleOrDefault(d => args.Item1.Matches(d.GestureSet.MouseGesture))
+            where gesture != null
+            select new InputResult2D(gesture.GetValue(args.Item2, args.Item3), args.Item2, args.Item3);
+
+         var mouseWheelInputResults =
+            from args in mouseWheel
+            let gesture = gestures.OfType<CommandGesture1D>().SingleOrDefault(d => args.Item1.Matches(d.GestureSet.MouseGesture))
+            where gesture != null
+            select new InputResult1D(gesture.GetValue(args.Item3), args.Item3);
+
+         var obs = Observable.Merge(keyInputResults, mouseDownInputResults, mouseMoveInputResults, mouseWheelInputResults);
+         var firstObs = obs.FirstOrDefaultAsync();
+         //var commandTask = firstObs.ToTask(cancelToken);
+
+         return await firstObs;
+      }
+
+      static InputResult GetKeyGestureReady(CommandGesture toDo, RogueKeyGesture keyGesture)
+      {
+         if (toDo is CommandGestureSingle)
+         {
+            var value = ((CommandGestureSingle)toDo).Command;
+            return new InputResult(value);
+         }
+         else if (toDo is CommandGesture1D)
+         {
+            var toDo1D = ((CommandGesture1D)toDo);
+            var delta = toDo1D.KeyToDelta(keyGesture);
+            var command = toDo1D.GetValue(delta);
+            return new InputResult1D(command, delta);
+         }
+         else if (toDo is CommandGesture2D)
+         {
+            var toDo2D = ((CommandGesture2D)toDo);
+            var delta = toDo2D.KeyToDelta(keyGesture);
+            var value = toDo2D.GetValue(null, delta);
+            return new InputResult2D(value, null, delta);
+         }
+         throw new ArgumentException();
       }
    }
 }

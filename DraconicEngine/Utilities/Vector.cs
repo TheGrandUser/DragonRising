@@ -22,6 +22,8 @@ namespace DraconicEngine
       /// </summary>
       public static readonly Vector Zero = new Vector(0, 0);
 
+      public Vector Unitize() => new Vector(Sign(X), Sign(Y));
+
       /// <summary>
       /// Gets the unit Vector.
       /// </summary>
@@ -29,64 +31,31 @@ namespace DraconicEngine
 
       #region Operators
 
-      public static bool operator ==(Vector v1, Vector v2)
-      {
-         return v1.Equals(v2);
-      }
+      public static bool operator ==(Vector v1, Vector v2) => v1.Equals(v2);
 
-      public static bool operator !=(Vector v1, Vector v2)
-      {
-         return !v1.Equals(v2);
-      }
+      public static bool operator !=(Vector v1, Vector v2) => !v1.Equals(v2);
 
-      public static Vector operator +(Vector v1, Vector v2)
-      {
-         return new Vector(v1.X + v2.X, v1.Y + v2.Y);
-      }
+      public static Vector operator +(Vector v1, Vector v2) => new Vector(v1.X + v2.X, v1.Y + v2.Y);
 
-      public static Vector operator +(Vector v1, int i2)
-      {
-         return new Vector(v1.X + i2, v1.Y + i2);
-      }
+      public static Vector operator +(Vector v1, int i2) => new Vector(v1.X + i2, v1.Y + i2);
 
-      public static Vector operator +(int i1, Vector v2)
-      {
-         return new Vector(i1 + v2.X, i1 + v2.Y);
-      }
+      public static Vector operator +(int i1, Vector v2) => new Vector(i1 + v2.X, i1 + v2.Y);
 
-      public static Vector operator -(Vector v1, Vector v2)
-      {
-         return new Vector(v1.X - v2.X, v1.Y - v2.Y);
-      }
+      public static Vector operator -(Vector v1, Vector v2) => new Vector(v1.X - v2.X, v1.Y - v2.Y);
 
-      public static Vector operator -(Vector v1, int i2)
-      {
-         return new Vector(v1.X - i2, v1.Y - i2);
-      }
+      public static Vector operator -(Vector v1, int i2) => new Vector(v1.X - i2, v1.Y - i2);
 
-      public static Vector operator -(int i1, Vector v2)
-      {
-         return new Vector(i1 - v2.X, i1 - v2.Y);
-      }
+      public static Vector operator -(int i1, Vector v2) => new Vector(i1 - v2.X, i1 - v2.Y);
 
-      public static Vector operator *(Vector v1, int i2)
-      {
-         return new Vector(v1.X * i2, v1.Y * i2);
-      }
+      public static Vector operator *(Vector v1, int i2) => new Vector(v1.X * i2, v1.Y * i2);
 
-      public static Vector operator *(int i1, Vector v2)
-      {
-         return new Vector(i1 * v2.X, i1 * v2.Y);
-      }
+      public static Vector operator *(int i1, Vector v2) => new Vector(i1 * v2.X, i1 * v2.Y);
 
-      public static Vector operator /(Vector v1, int i2)
-      {
-         return new Vector(v1.X / i2, v1.Y / i2);
-      }
+      public static Vector operator /(Vector v1, int i2) => new Vector(v1.X / i2, v1.Y / i2);
 
       public Direction ToDirection()
       {
-         if(this.KingLength == 0)
+         if (this.KingLength == 0)
          {
             return Direction.None;
          }
@@ -137,15 +106,9 @@ namespace DraconicEngine
          return pathVec.ToDirection();
       }
 
-      public static explicit operator Loc(Vector v)
-      {
-         return new Loc(v.X, v.Y);
-      }
+      public static explicit operator Loc(Vector v) => new Loc(v.X, v.Y);
 
-      public static explicit operator Vector(Loc v)
-      {
-         return new Vector(v.X, v.Y);
-      }
+      public static explicit operator Vector(Loc v) => new Vector(v.X, v.Y);
 
       #endregion
 
@@ -179,11 +142,6 @@ namespace DraconicEngine
       public int X;
       [JsonProperty]
       public int Y;
-
-      /// <summary>
-      /// Gets the area of a rectangle with opposite corners at (0, 0) and this Vec.
-      /// </summary>
-      public int Area { get { return X * Y; } }
 
       /// <summary>
       /// Gets the absolute magnitude of the Vec squared.
@@ -258,16 +216,6 @@ namespace DraconicEngine
          return true;
       }
 
-      public bool IsAdjacentTo(Vector other)
-      {
-         // not adjacent to the exact same position
-         if (this == other) return false;
-
-         Vector offset = this - other;
-
-         return (Math.Abs(offset.X) <= 1) && (Math.Abs(offset.Y) <= 1);
-      }
-
       /// <summary>
       /// Returns a new Vec whose coordinates are the coordinates of this Vec
       /// with the given values added. This Vec is not modified.
@@ -302,17 +250,6 @@ namespace DraconicEngine
          return new Vector(X, Y + offset);
       }
 
-      /// <summary>
-      /// Returns a new Vec whose coordinates are the coordinates of this Vec
-      /// with the given function applied.
-      /// </summary>
-      public Vector Each(Func<int, int> function)
-      {
-         if (function == null) throw new ArgumentNullException("function");
-
-         return new Vector(function(X), function(Y));
-      }
-
       #region IEquatable<Vec> Members
 
       public bool Equals(Vector other)
@@ -321,43 +258,6 @@ namespace DraconicEngine
       }
 
       #endregion
-
-      public IEnumerable<Vector> GetLineTo(Vector Vector)
-      {
-         var x0 = this.X;
-         var y0 = this.Y;
-         var x1 = Vector.X;
-         var y1 = Vector.Y;
-
-         var dx = Math.Abs(x0 - x1);
-         var dy = Math.Abs(y0 - y1);
-         var sx = x0 < x1 ? 1 : -1;
-         var sy = y0 < y1 ? 1 : -1;
-         var err = dx - dy;
-
-         while (true)
-         {
-            yield return new Vector(x0, y0);
-
-            if (x0 == x1 && y0 == y1) break;
-            var e2 = 2 * err;
-            if (e2 > -dy)
-            {
-               err = err - dy;
-               x0 = x0 + sx;
-            }
-            if (x0 == x1 && y0 == y1)
-            {
-               yield return new Vector(x0, y0);
-               break;
-            }
-            if (e2 < dx)
-            {
-               err = err + dx;
-               y0 = y0 + sy;
-            }
-         }
-      }
 
       public static Vector FromDirection(Direction direction)
       {
@@ -412,7 +312,7 @@ namespace DraconicEngine
 
       public IEnumerable<Vector> PathFindAttempts()
       {
-         if(this == Vector.Zero)
+         if (this == Vector.Zero)
          {
             return Enumerable.Empty<Vector>();
          }

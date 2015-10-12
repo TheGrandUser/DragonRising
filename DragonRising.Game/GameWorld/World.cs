@@ -1,5 +1,5 @@
-﻿using DraconicEngine.GameStates;
-using DraconicEngine.GameWorld.EntitySystem;
+﻿using DraconicEngine.GameViews;
+using DraconicEngine.EntitySystem;
 using DragonRising.GameWorld.Alligences;
 using DragonRising.Generators;
 using System;
@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DragonRising.GameWorld.Generators;
+using System.Diagnostics;
 
 namespace DragonRising.GameWorld
 {
@@ -28,12 +30,12 @@ namespace DragonRising.GameWorld
       public World()
       {
          this.Alligences = new SimpleAlligenceManager();
-
-
       }
 
       public World(Entity player)
       {
+         if (player == null) { throw new ArgumentNullException(nameof(player)); }
+
          this.Player = player;
          this.Alligences = new SimpleAlligenceManager();
 
@@ -59,11 +61,15 @@ namespace DragonRising.GameWorld
          this.PopScene();
 
          var greenskins = new GreenskinsGenerator();
-         var generator = new DungeonGenerator(greenskins, new StandardItemGenerator());
+         //var generator = new DungeonGenerator(greenskins, new StandardItemGenerator());
+         var generator = new TwoRoomsOneOrcGenerator(greenskins);
 
          Scene newScene = new Scene(MapWidth, MapHeight, this.EntityEngine.CreateChildStore());
+         newScene.EntityStore.AddEntity(this.Player);
          newScene.FocusEntity = this.Player;
          newScene.Level = this.DungeonLevel;
+
+         Debug.Assert(newScene.EntityStore.Entities.Contains(this.Player));
 
          var startPoint = generator.MakeMap(newScene);
          this.Player.SetLocation(startPoint);

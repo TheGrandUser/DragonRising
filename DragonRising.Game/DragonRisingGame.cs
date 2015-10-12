@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DraconicEngine;
-using DragonRising.GameStates;
+using DragonRising.Views;
 using DraconicEngine.Input;
+using DragonRising.Storage;
 
 namespace DragonRising
 {
@@ -18,10 +19,10 @@ namespace DragonRising
       public override async Task Start()
       {
          var loadDataState = new LoadGeneralDataScreen();
-         await RogueGame.Current.RunGameState(loadDataState);
+         await RunGameState(loadDataState);
 
-         var mainMenu = new MainMenuScreen();
-         await RogueGame.Current.RunGameState(mainMenu);
+         var mainMenu = new MainMenuScreen(SaveManager.Current);
+         await RunGameState(mainMenu);
       }
    }
 }
