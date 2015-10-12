@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 using DraconicEngine.RulesSystem;
 using DraconicEngine;
 using LanguageExt;
+using IFromLocationTargeter = DraconicEngine.RulesSystem.IFromLocationTargeter<DragonRising.Scene>;
+using IFromLocationQuery = DraconicEngine.RulesSystem.IFromLocationQuery<DragonRising.Scene>;
+using TargetResult = DraconicEngine.RulesSystem.TargetResult<DragonRising.Scene>;
+using LocationTargetResult = DraconicEngine.RulesSystem.LocationTargetResult<DragonRising.Scene>;
+using IEntityEffect = DraconicEngine.RulesSystem.IEntityEffect<DragonRising.Scene>;
 
 namespace DragonRising.Plans
 {
@@ -21,9 +26,9 @@ namespace DragonRising.Plans
 
       public string Name { get; set; }
 
-      public virtual IEnumerable<ILocationBasedTargeter> Targeters { get; } = Enumerable.Empty<ILocationBasedTargeter>();
-      public virtual IEnumerable<ILocationBasedQuery> Queries { get; } = Enumerable.Empty<ILocationBasedQuery>();
-      public virtual IEnumerable<IEffect> Effects { get; } = Enumerable.Empty<IEffect>();
+      public virtual IEnumerable<IFromLocationTargeter> Targeters { get; } = Enumerable.Empty<IFromLocationTargeter>();
+      public virtual IEnumerable<IFromLocationQuery> Queries { get; } = Enumerable.Empty<IFromLocationQuery>();
+      public virtual IEnumerable<IEntityEffect> Effects { get; } = Enumerable.Empty<IEntityEffect>();
       
 
 

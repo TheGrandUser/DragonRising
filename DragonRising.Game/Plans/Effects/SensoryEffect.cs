@@ -12,7 +12,7 @@ using DraconicEngine;
 
 namespace DragonRising.Plans.Effects
 {
-   class SensoryEffect : ILocationEffect
+   class SensoryEffect : ILocationEffect<Scene>
    {
       private Sensed[] sensedThings;
 
@@ -23,7 +23,7 @@ namespace DragonRising.Plans.Effects
       }
 
       public string Message { get; }
-      public IEnumerable<Fact> GetFacts(Entity initiator, Loc target)
+      public IEnumerable<Fact> GetFacts(Entity initiator, Loc target, Scene scene)
       {
          yield return new SensoryEvent(target, this.sensedThings);
       }

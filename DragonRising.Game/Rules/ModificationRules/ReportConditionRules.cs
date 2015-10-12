@@ -11,7 +11,7 @@ namespace DragonRising.Rules.ModificationRules
 {
    class ReportStatusAddedRule : Rule<AddConditionEvent>
    {
-      public override RuleResult Do(AddConditionEvent gameEvent)
+      public override RuleResult Do(AddConditionEvent gameEvent, Scene scene)
       {
          var message = gameEvent.Condition.AppliedMessage(gameEvent.Entity);
          MessageService.Current.PostMessage(message, RogueColors.LightGreen);
@@ -24,7 +24,7 @@ namespace DragonRising.Rules.ModificationRules
 
    class ReportStatusRemovedRule : Rule<ConditionRemovedEvent>
    {
-      public override RuleResult Do(ConditionRemovedEvent gameEvent)
+      public override RuleResult Do(ConditionRemovedEvent gameEvent, Scene scene)
       {
          var message = gameEvent.Condition.RemovedMessage(gameEvent.Entity);
          MessageService.Current.PostMessage(message, RogueColors.LightGreen);

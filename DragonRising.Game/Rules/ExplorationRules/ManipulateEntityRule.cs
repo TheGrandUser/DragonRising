@@ -12,7 +12,7 @@ namespace DragonRising.Rules.ExplorationRules
 {
    class ManipulateEntityRule : Rule<ManipulateEntityAction>
    {
-      public override RuleResult Do(ManipulateEntityAction action)
+      public override RuleResult Do(ManipulateEntityAction action, Scene scene)
       {
          var m = action.Target.Value.GetComponent<ManipulatableComponent>();
          if (m.Use(action.ItemToUse))

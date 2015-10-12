@@ -25,6 +25,7 @@ using DragonRising.Rules.CombatRules;
 using DragonRising.Rules.ModificationRules;
 using DragonRising.Rules.InventoryRules;
 using DragonRising.Rules.ExplorationRules;
+using DragonRising.Rules.MagicRules;
 
 namespace DragonRising.Views
 {
@@ -124,6 +125,7 @@ namespace DragonRising.Views
       {
          rulesManager.AddRule(new AddConditionRule());
          rulesManager.AddRule(new AttackRule());
+         rulesManager.AddRule(new UseASpellRule());
          rulesManager.AddRule(new ConditionExpiredRule());
          rulesManager.AddRule(new DamageRule());
          rulesManager.AddRule(new DropItemRule());

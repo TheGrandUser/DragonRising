@@ -9,22 +9,16 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.RulesSystem
 {
-   public interface IQuery
-   {
-      IEnumerable<IQuery> Queries { get; }
-      IEnumerable<IEffect> Effects { get; }
-   }
-
-   public interface IDirectionBasedAreaSelector : IQuery
+   public interface IAreaFromDirectionQuery<TContext>
    {
       Option<Area> GetArea();
-      IEnumerable<Fact> GetFacts(Entity user, Direction dir, Loc loc);
+      IEnumerable<Fact> GetFacts(Entity user, Vector dir, Loc loc, TContext context);
    }
 
-   public interface ILocationBasedQuery : IQuery
+   public interface IFromLocationQuery<TContext>
    {
       Option<Area> GetArea();
-      IEnumerable<Fact> GetFacts(Entity user, Loc loc);
+      IEnumerable<Fact> GetFacts(Entity user, Loc loc, TContext context);
    }
 
    public interface IEntityFilter

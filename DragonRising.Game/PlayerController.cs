@@ -443,7 +443,7 @@ namespace DragonRising
          SceneView sceneView,
          Option<Area> areaOfEffect)
       {
-         var targetTool = new LocationTargetingTool(startLocation, sceneView, message, range);
+         var targetTool = new LocationTargetingTool(startLocation, sceneView, message, range, areaOfEffect);
 
          return RogueGame.Current.RunGameState(targetTool);
       }
@@ -500,7 +500,7 @@ namespace DragonRising
          }
       }
 
-      private async Task<Option<FinalizedPlan>> GetPowerTargets(EffectPlan power)
+      private async Task<Option<FinalizedPlan<Scene>>> GetPowerTargets(EffectPlan power)
       {
          var origin = PlayerCreature.Location;
 
@@ -508,9 +508,7 @@ namespace DragonRising
             power.Targeters,
             t => t.GetPlayerTargetingAsync(sceneView, origin, ImmutableStack<Either<Loc, Vector>>.Empty));
 
-         return results.Match(
-            Some: r => Some(new FinalizedPlan(r, power.Queries, power.Effects)),
-            None: () => None);
+         return results.Map(r => new FinalizedPlan<Scene>(r, power.Queries, power.Effects));
       }
    }
 }

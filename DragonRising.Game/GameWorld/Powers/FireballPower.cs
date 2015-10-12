@@ -18,6 +18,10 @@ using DragonRising.Plans.Queries;
 using DragonRising.Plans.Targeters;
 using DragonRising.Plans.EntityFilters;
 using DragonRising.Plans;
+using IFromLocationTargeter = DraconicEngine.RulesSystem.IFromLocationTargeter<DragonRising.Scene>;
+using ILocationBasedQuery = DraconicEngine.RulesSystem.IFromLocationQuery<DragonRising.Scene>;
+using TargetResult = DraconicEngine.RulesSystem.TargetResult<DragonRising.Scene>;
+using LocationTargetResult = DraconicEngine.RulesSystem.LocationTargetResult<DragonRising.Scene>;
 
 namespace DragonRising.GameWorld.Powers
 {
@@ -25,7 +29,7 @@ namespace DragonRising.GameWorld.Powers
    {
       private readonly LocationInRangeTargeter targeter;
 
-      public override IEnumerable<ILocationBasedTargeter> Targeters => EnumerableEx.Return(targeter);
+      public override IEnumerable<IFromLocationTargeter> Targeters => EnumerableEx.Return(targeter);
       
       public FireballPower(int radius = 3, int damage = 12, int senseIntensity = 12)
          : base("Fireball")

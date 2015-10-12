@@ -15,7 +15,7 @@ namespace DragonRising.Rules.GameFlowRules
 {
    class GameEndsOnPlayerDeathRule : Rule<CreatureKilledEvent>
    {
-      public override RuleResult Do(CreatureKilledEvent args)
+      public override RuleResult Do(CreatureKilledEvent args, Scene scene)
       {
          MessageService.Current.PostMessage("You have died!", RogueColors.Red);
 

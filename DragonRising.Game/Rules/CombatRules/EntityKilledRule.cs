@@ -29,7 +29,7 @@ namespace DragonRising.Rules.CombatRules
 
       public int MonstersKilled { get; private set; }
 
-      public override RuleResult Do(CreatureKilledEvent gameEvent)
+      public override RuleResult Do(CreatureKilledEvent gameEvent, Scene scene)
       {
          gameEvent.CreatureKilled.As<DrawnComponent>(dc => dc.SeenCharacter = new Character(Glyph.Percent, RogueColors.DarkRed));
          gameEvent.CreatureKilled.Blocks = false;

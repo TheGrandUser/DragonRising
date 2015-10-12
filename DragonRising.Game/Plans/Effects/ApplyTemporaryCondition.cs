@@ -17,7 +17,7 @@ using DragonRising.GameWorld.Conditions;
 
 namespace DragonRising.GameWorld.Effects
 {
-   class ApplyTemporaryCondition : IEntityEffect
+   class ApplyTemporaryCondition : IEntityEffect<Scene>
    {
       ICondition condition;
       int duration;
@@ -28,7 +28,7 @@ namespace DragonRising.GameWorld.Effects
          this.duration = duration;
       }
 
-      public IEnumerable<Fact> GetFacts(Entity initiator, Entity target)
+      public IEnumerable<Fact> GetFacts(Entity initiator, Entity target, Scene scene)
       {
          yield return new AddConditionEvent(target, condition, duration);
       }

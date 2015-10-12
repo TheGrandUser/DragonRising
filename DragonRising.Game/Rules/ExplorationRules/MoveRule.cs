@@ -31,7 +31,7 @@ namespace DragonRising.Rules.ExplorationRules
 
    public class MoveToRule : Rule<MoveToAction>
    {
-      public override RuleResult Do(MoveToAction action)
+      public override RuleResult Do(MoveToAction action, Scene scene)
       {
          if (World.Current.Scene.IsBlocked(action.NewLocation) == Blockage.None)
          {

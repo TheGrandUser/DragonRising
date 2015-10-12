@@ -13,7 +13,7 @@ namespace DraconicEngine
    {
       public abstract bool IsPointInArea(Loc point);
       public abstract IEnumerable<Loc> GetPointsInArea();
-      public abstract IEnumerable<Tuple<Loc, Edges>> GetPerimeter();
+      public abstract IEnumerable<Loc> GetPerimeter();
 
       public static Option<Area> Combine(IEnumerable<Area> areas)
       {
@@ -42,29 +42,31 @@ namespace DraconicEngine
 
    public class CombinedArea : Area
    {
+      List<Area> areas;
+
       public CombinedArea(Area a1, Area a2)
       {
-
+         areas = new List<Area>() { a1, a2 };
       }
 
       public void Add(Area area)
       {
-
+         areas.Add(area);
       }
 
-      public override IEnumerable<Tuple<Loc, Edges>> GetPerimeter()
+      public override IEnumerable<Loc> GetPerimeter()
       {
-         throw new NotImplementedException();
+         return areas.SelectMany(a => a.GetPerimeter()).Distinct();
       }
 
       public override IEnumerable<Loc> GetPointsInArea()
       {
-         throw new NotImplementedException();
+         return areas.SelectMany(a => a.GetPointsInArea()).Distinct();
       }
 
       public override bool IsPointInArea(Loc point)
       {
-         throw new NotImplementedException();
+         return areas.Any(a => a.IsPointInArea(point));
       }
    }
 
@@ -89,9 +91,30 @@ namespace DraconicEngine
 
       public override IEnumerable<Loc> GetPointsInArea() => Rect;
 
-      public override IEnumerable<Tuple<Loc, Edges>> GetPerimeter()
+      public override IEnumerable<Loc> GetPerimeter()
       {
-         throw new NotImplementedException();
+         int x1 = Rect.X;
+         int y1 = Rect.Y;
+         int x2 = x1 + Rect.Width;
+         int y2 = y1 + Rect.Height;
+
+         for (int x = x1; x < x2; x++)
+         {
+            yield return new Loc(x, y1);
+         }
+         for (int y = y1; y < y2; y++)
+         {
+            yield return new Loc(x2, y);
+         }
+
+         for (int x = x2; x > x1; x--)
+         {
+            yield return new Loc(x, y2);
+         }
+         for (int y = y2; y > y1; y--)
+         {
+            yield return new Loc(x1, y);
+         }
       }
    }
    public class CirlceArea : Area
@@ -106,17 +129,52 @@ namespace DraconicEngine
 
       public override bool IsPointInArea(Loc point)
       {
-         throw new NotImplementedException();
+         return (point - Center).LengthSquared <= (Radius + 1) * (Radius + 1);
       }
 
       public override IEnumerable<Loc> GetPointsInArea()
       {
-         throw new NotImplementedException();
+         var rs = (Radius + 1) * (Radius + 1);
+
+         var rect = new TerminalRect(-Radius - 1, -Radius - 1, Radius * 2 + 1, Radius * 2 + 1);
+         foreach (var point in rect)
+         {
+            if ((point - Loc.Zero).LengthSquared <= rs)
+            {
+               yield return point + Center;
+            }
+         }
       }
 
-      public override IEnumerable<Tuple<Loc, Edges>> GetPerimeter()
+      public override IEnumerable<Loc> GetPerimeter()
       {
-         throw new NotImplementedException();
+         int x0 = Center.X;
+         int y0 = Center.Y;
+         int x = Radius;
+         int y = 0;
+         int decisionOver2 = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
+
+         while (y <= x)
+         {
+            yield return new Loc(x + x0, y + y0); // Octant 1
+            yield return new Loc(y + x0, x + y0); // Octant 2
+            yield return new Loc(-x + x0, y + y0); // Octant 4
+            yield return new Loc(-y + x0, x + y0); // Octant 3
+            yield return new Loc(-x + x0, -y + y0); // Octant 5
+            yield return new Loc(-y + x0, -x + y0); // Octant 6
+            yield return new Loc(x + x0, -y + y0); // Octant 8
+            yield return new Loc(y + x0, -x + y0); // Octant 7
+            y++;
+            if (decisionOver2 <= 0)
+            {
+               decisionOver2 += 2 * y + 1;   // Change in decision criterion for y -> y+1
+            }
+            else
+            {
+               x--;
+               decisionOver2 += 2 * (y - x) + 1;   // Change for y -> y+1, x -> x-1
+            }
+         }
       }
    }
    public class LineArea : Area
@@ -132,37 +190,28 @@ namespace DraconicEngine
 
       public override bool IsPointInArea(Loc point)
       {
-         throw new NotImplementedException();
+         return Start.GetLineTo(End).Contains(point);
       }
 
       public override IEnumerable<Loc> GetPointsInArea()
       {
-         throw new NotImplementedException();
+         return Start.GetLineTo(End);
       }
 
-      public override IEnumerable<Tuple<Loc, Edges>> GetPerimeter()
+      public override IEnumerable<Loc> GetPerimeter()
       {
-         throw new NotImplementedException();
+         return Start.GetLineTo(End);
       }
    }
    public class PointsListArea : Area
    {
       public List<Loc> Points { get; set; }
 
-      public override IEnumerable<Tuple<Loc, Edges>> GetPerimeter()
-      {
-         throw new NotImplementedException();
-      }
+      public override IEnumerable<Loc> GetPerimeter() => Points;
 
-      public override IEnumerable<Loc> GetPointsInArea()
-      {
-         throw new NotImplementedException();
-      }
+      public override IEnumerable<Loc> GetPointsInArea() => Points;
 
-      public override bool IsPointInArea(Loc point)
-      {
-         throw new NotImplementedException();
-      }
+      public override bool IsPointInArea(Loc point) => Points.Contains(point);
    }
    public class ConeArea : Area
    {
@@ -173,17 +222,17 @@ namespace DraconicEngine
 
       public override bool IsPointInArea(Loc point)
       {
-         throw new NotImplementedException();
+         return false;
       }
 
       public override IEnumerable<Loc> GetPointsInArea()
       {
-         throw new NotImplementedException();
+         yield return Origin;
       }
 
-      public override IEnumerable<Tuple<Loc, Edges>> GetPerimeter()
+      public override IEnumerable<Loc> GetPerimeter()
       {
-         throw new NotImplementedException();
+         yield return Origin;
       }
    }
 }

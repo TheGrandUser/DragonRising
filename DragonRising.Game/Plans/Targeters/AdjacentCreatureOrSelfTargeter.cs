@@ -15,31 +15,27 @@ using DraconicEngine;
 
 namespace DragonRising.Plans.Targeters
 {
-   class AdjacentCreatureOrSelfTargeter : ILocationBasedTargeter
+   class AdjacentLocationTargeter : IFromLocationTargeter<Scene>, IToLocationTargeter<Scene>
    {
-      ImmutableList<IEffect> effects;
-      ImmutableList<ILocationBasedTargeter> targeters;
-      ImmutableList<ILocationBasedQuery> queries;
+      public ImmutableList<IFromLocationTargeter<Scene>> Targeters { get; }
+      public ImmutableList<IFromLocationQuery<Scene>> Queries { get; }
+      public ImmutableList<ILocationEffect<Scene>> Effects { get; }
 
-      public AdjacentCreatureOrSelfTargeter(
-         ImmutableList<IEffect> effects,
-         ImmutableList<ILocationBasedTargeter> targeters,
-         ImmutableList<ILocationBasedQuery> queries)
+      public AdjacentLocationTargeter(
+         ImmutableList<ILocationEffect<Scene>> effects,
+         ImmutableList<IFromLocationTargeter<Scene>> targeters,
+         ImmutableList<IFromLocationQuery<Scene>> queries)
       {
-         this.effects = effects;
-         this.targeters = targeters;
-         this.queries = queries;
+         this.Targeters = targeters;
+         this.Queries = queries;
+         this.Effects = effects;
       }
 
-      public IEnumerable<IQuery> Queries => queries;
-      public IEnumerable<IEffect> Effects => effects;
-      public IEnumerable<ITargeter> Targeters => targeters;
-
-      public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
+      public async Task<Option<TargetResult<Scene>>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
          var range = new SelectionRange(1, RangeLimits.None);
-         
-         var area = Area.Combine(this.queries.SelectMany(q => q.GetArea().AsEnumerable()));
+
+         var area = Area.Combine(this.Queries.SelectMany(q => q.GetArea().AsEnumerable()));
 
          var location = await PlayerController.SelectTargetLocation(origin, "Select an adjacent creature", range, sceneView, area);
 
@@ -48,12 +44,10 @@ namespace DragonRising.Plans.Targeters
             var newPath = path.Push(origin);
 
             var childResults = await Targeter.HandleChildTargetersAsync(
-               this.targeters,
+               this.Targeters,
                t => t.GetPlayerTargetingAsync(sceneView, location.Value, newPath));
 
-            var result = childResults.Match(
-               Some: rs => Some<TargetResult>(new LocationTargetResult(location.Value, this, rs)),
-               None: () => None);
+            var result = childResults.Map(rs => (TargetResult<Scene>)new LocationTargetResult<Scene>(location.Value, this, rs));
 
             return result;
          }

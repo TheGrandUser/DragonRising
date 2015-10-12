@@ -15,7 +15,7 @@ namespace DragonRising.Rules.CombatRules
 {
    class AttackRule : Rule<AttackEntityAction>
    {
-      public override RuleResult Do(AttackEntityAction action)
+      public override RuleResult Do(AttackEntityAction action, Scene scene)
       {
          var me = action.Attacker.GetComponent<CombatantComponent>();
          var them = action.Target.GetComponent<CombatantComponent>();

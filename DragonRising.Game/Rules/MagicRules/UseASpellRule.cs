@@ -10,10 +10,10 @@ namespace DragonRising.Rules.MagicRules
 {
    class UseASpellRule : Rule<CastSpellFact>
    {
-      public override RuleResult Do(CastSpellFact gameEvent)
+      public override RuleResult Do(CastSpellFact gameEvent, Scene scene)
       {
          // any special rules about spells, here
-         return gameEvent.Plan.GetFacts(gameEvent.User);
+         return gameEvent.Plan.GetFacts(gameEvent.User, scene);
       }
    }
 }

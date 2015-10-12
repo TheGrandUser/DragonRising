@@ -19,7 +19,7 @@ namespace DragonRising.Rules.ExplorationRules
 {
    class ReportSensoryEffectRule : Rule<SensoryEvent>
    {
-      public override RuleResult Do(SensoryEvent gameEvent)
+      public override RuleResult Do(SensoryEvent gameEvent, Scene scene)
       {
          throw new NotImplementedException();
       }

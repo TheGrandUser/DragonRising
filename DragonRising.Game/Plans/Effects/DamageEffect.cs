@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace DragonRising.Plans.Effects
 {
-   class DamageEffect : IEntityEffect
+   class DamageEffect : IEntityEffect<Scene>
    {
       public DamageEffect(Damage damage)
       {
@@ -23,7 +23,7 @@ namespace DragonRising.Plans.Effects
 
       public Damage Damage { get; }
       
-      public IEnumerable<Fact> GetFacts(Entity initiator, Entity target)
+      public IEnumerable<Fact> GetFacts(Entity initiator, Entity target, Scene scene)
       {
          yield return new InflictDamageEvent(target, Damage, initiator);
       }

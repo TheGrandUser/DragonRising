@@ -18,7 +18,7 @@ namespace DragonRising.Rules.ModificationRules
       public override bool UseFilter => true;
       protected override bool Filter(AddConditionEvent gameEvent) => gameEvent.Condition is ConfusedCondition;
 
-      public override RuleResult Do(AddConditionEvent gameEvent)
+      public override RuleResult Do(AddConditionEvent gameEvent, Scene scene)
       {
          var target = gameEvent.Entity;
 
@@ -36,7 +36,7 @@ namespace DragonRising.Rules.ModificationRules
       public override bool UseFilter => true;
       protected override bool Filter(ConditionRemovedEvent gameEvent) => gameEvent.Condition is ConfusedCondition;
 
-      public override RuleResult Do(ConditionRemovedEvent gameEvent)
+      public override RuleResult Do(ConditionRemovedEvent gameEvent, Scene scene)
       {
          var target = gameEvent.Entity;
          var behaviors = target.GetComponent<BehaviorComponent>();
