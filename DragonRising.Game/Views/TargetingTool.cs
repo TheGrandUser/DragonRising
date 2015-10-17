@@ -82,7 +82,7 @@ namespace DragonRising.Views
 
       bool IsWithinRange(Loc loc)
       {
-         return
+         return (!this.selectionRange.Range.HasValue || (loc - startLocation).LengthSquared <= (this.selectionRange.Range.Value * this.selectionRange.Range.Value)) &&
             (!selectionRange.Limits.HasFlag(RangeLimits.LineOfEffect) || World.Current.Scene.IsUnblockedBetween(startLocation, location)) &&
             (!selectionRange.Limits.HasFlag(RangeLimits.LineOfSight) || World.Current.Scene.IsVisible(location));
       }
@@ -91,7 +91,7 @@ namespace DragonRising.Views
       {
          if (area != null)
          {
-            foreach(var scenePoint in area.GetPerimeter())
+            foreach (var scenePoint in area.GetPointsInArea())
             {
                Loc displayPoint = scenePoint - this.sceneView.ViewOffset + this.location;
                if (sceneTerminal.Size.Contains(displayPoint))
