@@ -43,5 +43,4 @@ namespace DragonRising.GameWorld.Powers
                   new Sensed(Sense.Sight, "Flame", "Bright", senseIntensity))).Finish();
       }
    }
-
 }

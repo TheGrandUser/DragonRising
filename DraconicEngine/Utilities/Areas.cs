@@ -129,19 +129,110 @@ namespace DraconicEngine
 
       public override bool IsPointInArea(Loc point)
       {
-         return (point - Center).LengthSquared <= (Radius + 1) * (Radius + 1);
+         return (point - Center).LengthSquared <= Radius * Radius;
       }
 
       public override IEnumerable<Loc> GetPointsInArea()
       {
-         var rs = (Radius + 1) * (Radius + 1);
-
-         var rect = new TerminalRect(-Radius - 1, -Radius - 1, Radius * 2 + 1, Radius * 2 + 1);
-         foreach (var point in rect)
+         if (Radius == 0)
          {
-            if ((point - Loc.Zero).LengthSquared <= rs)
+            yield return Center;
+
+         }
+         else if (Radius == 1)
+         {
+            for (int y = Center.Y - 1; y <= Center.Y + 1; y++)
             {
-               yield return point + Center;
+               for (int x = Center.X - 1; x <= Center.X + 1; x++)
+               {
+                  yield return new Loc(x, y);
+               }
+            }
+         }
+         else
+         {
+            var xys = GetXYPairs(Radius).ToList();
+
+            // for radius 5
+            // xy : (5, 0) . (5, 1) . (5, 2) . (3, 4)
+
+            int lastX = 0;
+            foreach (var xy in xys)
+            {
+               {
+                  var x1 = -xy.X;
+                  var x2 = xy.X;
+                  var y = xy.Y;
+
+                  for (int x = x1; x <= x2; x++)
+                  {
+                     yield return new Loc(x, y);
+                     if (y > 0)
+                     {
+                        yield return new Loc(x, -y);
+                     }
+                  }
+               }
+               if (xy.X != xy.Y)
+               {
+                  if (lastX != xy.X)
+                  {
+                     var x1 = -xy.Y;
+                     var x2 = xy.Y;
+                     var y = xy.X;
+                     for (int x = x1; x <= x2; x++)
+                     {
+                        yield return new Loc(x, y);
+                        if (y > 0)
+                        {
+                           yield return new Loc(x, -y);
+                        }
+                     }
+                  }
+                  else
+                  {
+                     yield return new Loc(xy.Y, xy.X);
+                     yield return new Loc(-xy.Y, xy.X);
+                     if (xy.X > 0)
+                     {
+                        yield return new Loc(xy.Y, -xy.X);
+                        yield return new Loc(-xy.Y, -xy.X);
+                     }
+                  }
+               }
+               lastX = xy.X;
+            }
+         }
+      }
+
+      static IEnumerable<Loc> GetXYPairs(int radius)
+      {
+         int x = radius;
+         int y = 0;
+         int decisionOver2 = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
+
+         while (y <= x) // 0 <= 5 . 
+         {
+            yield return new Loc(x, y); // Octant 1
+            //yield return new Loc(x, -y); // Octant 8
+
+            //yield return new Loc(-x, y); // Octant 4
+            //yield return new Loc(-x, -y); // Octant 5
+
+            //yield return new Loc(y, x); // Octant 2
+            //yield return new Loc(y, -x); // Octant 7
+
+            //yield return new Loc(-y, x); // Octant 3
+            //yield return new Loc(-y, -x); // Octant 6
+            y++;
+            if (decisionOver2 <= 0)
+            {
+               decisionOver2 += 2 * y + 1;   // Change in decision criterion for y -> y+1
+            }
+            else
+            {
+               x--;
+               decisionOver2 += 2 * (y - x) + 1;   // Change for y -> y+1, x -> x-1
             }
          }
       }
@@ -154,16 +245,45 @@ namespace DraconicEngine
          int y = 0;
          int decisionOver2 = 1 - x;   // Decision criterion divided by 2 evaluated at x=r, y=0
 
-         while (y <= x)
+         // for radius 5
+
+         // y    0 .  1 .  2 .  3 X  4 .  X
+         // x    5 .  5 .  5 .  4 .  3
+         // do2 -4 . -1 .  4 .  3 .  6
+         // (x, y): (5, 0) . (5, 1) . (5, 2) . (3, 4)
+
+         // for radius 6
+         // y    0 .  1 .  2 .  3 .  4 X  5
+         // x    6 .  6 .  6 .  5 .  5 .  4
+         // do2 -5 . -2 .  3 .  0 .  9 .
+
+         // for radius 3
+
+         // y    0 .  1 .  2 .  3 X  4 .  X
+         // x    3 .  3 .  2
+         // do2 -2 .  3 .  4 .  3 .  6
+
+         while (y <= x) // 0 <= 5 . 
          {
-            yield return new Loc(x + x0, y + y0); // Octant 1
-            yield return new Loc(y + x0, x + y0); // Octant 2
-            yield return new Loc(-x + x0, y + y0); // Octant 4
-            yield return new Loc(-y + x0, x + y0); // Octant 3
-            yield return new Loc(-x + x0, -y + y0); // Octant 5
-            yield return new Loc(-y + x0, -x + y0); // Octant 6
-            yield return new Loc(x + x0, -y + y0); // Octant 8
-            yield return new Loc(y + x0, -x + y0); // Octant 7
+            if (x != y)
+            {
+               yield return new Loc(x + x0, y + y0); // Octant 1
+               yield return new Loc(y + x0, x + y0); // Octant 2
+               yield return new Loc(-y + x0, x + y0); // Octant 3
+               yield return new Loc(-x + x0, y + y0); // Octant 4
+               yield return new Loc(-x + x0, -y + y0); // Octant 5
+               yield return new Loc(-y + x0, -x + y0); // Octant 6
+               yield return new Loc(y + x0, -x + y0); // Octant 7
+               yield return new Loc(x + x0, -y + y0); // Octant 8
+            }
+            else
+            {
+               yield return new Loc(x + x0, y + y0); // Octant 1
+               yield return new Loc(-y + x0, x + y0); // Octant 3
+               yield return new Loc(-x + x0, -y + y0); // Octant 5
+               yield return new Loc(y + x0, -x + y0); // Octant 7
+            }
+
             y++;
             if (decisionOver2 <= 0)
             {
