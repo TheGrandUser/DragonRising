@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DragonRising.GameWorld.Conditions
 {
-   class ConfusedCondition : ICondition
+   public class ConfusedCondition : ICondition
    {
       public string Name => "Confused";
 

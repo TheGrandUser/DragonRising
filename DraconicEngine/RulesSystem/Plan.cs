@@ -9,23 +9,23 @@ using DraconicEngine.EntitySystem;
 
 namespace DraconicEngine.RulesSystem
 {
-   public class FinalizedPlan<TContext>
+   public class FinalizedPlan
    {
-      private ImmutableList<TargetResult<TContext>> targetResults;
-      private ImmutableList<IEntityEffect<TContext>> effects;
-      private ImmutableList<IFromLocationQuery<TContext>> queries;
+      private ImmutableList<TargetResult> targetResults;
+      private ImmutableList<IEntityEffect> effects;
+      private ImmutableList<IFromLocationQuery> queries;
 
       public FinalizedPlan(
-         IEnumerable<TargetResult<TContext>> targetResults,
-         IEnumerable<IFromLocationQuery<TContext>> queries,
-         IEnumerable<IEntityEffect<TContext>> effects)
+         IEnumerable<TargetResult> targetResults,
+         IEnumerable<IFromLocationQuery> queries,
+         IEnumerable<IEntityEffect> effects)
       {
          this.queries = queries.ToImmutableList();
          this.effects = effects.ToImmutableList();
          this.targetResults = targetResults.ToImmutableList();
       }
 
-      public ImmutableList<Fact> GetFacts(Entity user, TContext context)
+      public ImmutableList<Fact> GetFacts(Entity user, Scene context)
       {
          var targetFacts = targetResults.SelectMany(tr => tr.GetFacts(user, context));
          var queryFacts = queries.SelectMany(query => query.GetFacts(user, user.Location, context));

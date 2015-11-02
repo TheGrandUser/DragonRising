@@ -14,10 +14,11 @@ using DragonRising.GameWorld.Alligences;
 using DragonRising.GameWorld.Events;
 using DraconicEngine.Services;
 using DragonRising.GameWorld.Conditions;
+using DraconicEngine;
 
 namespace DragonRising.GameWorld.Effects
 {
-   class ApplyTemporaryCondition : IEntityEffect<Scene>
+   public class ApplyTemporaryCondition : IEntityEffect
    {
       ICondition condition;
       int duration;

@@ -9,10 +9,11 @@ using DragonRising.Commands.Requirements;
 using System.Collections.Immutable;
 using DragonRising.GameWorld.Components;
 using DragonRising.Facts.Events;
+using DraconicEngine;
 
 namespace DragonRising.Plans.Effects
 {
-   class HealEffect : IEntityEffect<Scene>
+   public class HealEffect : IEntityEffect
    {
       int amount;
 

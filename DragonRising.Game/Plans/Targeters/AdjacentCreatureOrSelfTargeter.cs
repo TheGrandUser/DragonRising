@@ -15,23 +15,23 @@ using DraconicEngine;
 
 namespace DragonRising.Plans.Targeters
 {
-   class AdjacentLocationTargeter : IFromLocationTargeter<Scene>, IToLocationTargeter<Scene>
+   public class AdjacentLocationTargeter : IFromLocationTargeter, IToLocationTargeter
    {
-      public ImmutableList<IFromLocationTargeter<Scene>> Targeters { get; }
-      public ImmutableList<IFromLocationQuery<Scene>> Queries { get; }
-      public ImmutableList<ILocationEffect<Scene>> Effects { get; }
+      public ImmutableList<IFromLocationTargeter> Targeters { get; }
+      public ImmutableList<IFromLocationQuery> Queries { get; }
+      public ImmutableList<ILocationEffect> Effects { get; }
 
       public AdjacentLocationTargeter(
-         ImmutableList<ILocationEffect<Scene>> effects,
-         ImmutableList<IFromLocationTargeter<Scene>> targeters,
-         ImmutableList<IFromLocationQuery<Scene>> queries)
+         ImmutableList<ILocationEffect> effects,
+         ImmutableList<IFromLocationTargeter> targeters,
+         ImmutableList<IFromLocationQuery> queries)
       {
          this.Targeters = targeters;
          this.Queries = queries;
          this.Effects = effects;
       }
 
-      public async Task<Option<TargetResult<Scene>>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
+      public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
          var range = new SelectionRange(1, RangeLimits.None);
 
@@ -47,7 +47,7 @@ namespace DragonRising.Plans.Targeters
                this.Targeters,
                t => t.GetPlayerTargetingAsync(sceneView, location.Value, newPath));
 
-            var result = childResults.Map(rs => (TargetResult<Scene>)new LocationTargetResult<Scene>(location.Value, this, rs));
+            var result = childResults.Map(rs => (TargetResult)new LocationTargetResult(location.Value, this, rs));
 
             return result;
          }

@@ -1,4 +1,5 @@
-﻿using DraconicEngine.EntitySystem;
+﻿using DraconicEngine;
+using DraconicEngine.EntitySystem;
 using DraconicEngine.RulesSystem;
 using DragonRising.Commands.Requirements;
 using DragonRising.GameWorld.Alligences;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace DragonRising.Plans.Effects
 {
-   class DamageEffect : IEntityEffect<Scene>
+   public class DamageEffect : IEntityEffect
    {
       public DamageEffect(Damage damage)
       {

@@ -26,6 +26,7 @@ using DragonRising.Rules.ModificationRules;
 using DragonRising.Rules.InventoryRules;
 using DragonRising.Rules.ExplorationRules;
 using DragonRising.Rules.MagicRules;
+using DragonRising.Generators;
 
 namespace DragonRising.Views
 {
@@ -51,6 +52,8 @@ namespace DragonRising.Views
       MessagesWidget infoWidget;
       SceneWidget sceneWidget;
       SceneView sceneView;
+
+      FieldOfView fieldOfView;
       
       Queue<IAsyncInterruption> interruptions = new Queue<IAsyncInterruption>();
 
@@ -82,8 +85,12 @@ namespace DragonRising.Views
          var scenePanel = rootTerminal[1, 1, DragonRisingGame.ScreenWidth - 2, SceneHeight];
          this.sceneView = new SceneView(scenePanel);
 
+         this.fieldOfView = new FieldOfView(world);
+
+         this.PlayerController = new PlayerController(this, messageService, fieldOfView, new SceneGenerator(), sceneView) { PlayerCreature = player };
+
          this.statsPanel = rootTerminal[0, PanelY, DragonRisingGame.ScreenWidth, PanelHeight];
-         this.sceneWidget = new SceneWidget(world, this.sceneView, scenePanel);
+         this.sceneWidget = new SceneWidget(world, this.sceneView, fieldOfView, scenePanel);
 
          this.hpBarWidget = new BarWidget(this.statsPanel[1, 1, BarWidth, 1], "HP",
             () => player.GetComponent<CombatantComponent>().HP,
@@ -113,7 +120,6 @@ namespace DragonRising.Views
          this.Widgets.Add(highlightWidget);
          this.Widgets.Add(infoWidget);
          
-         this.PlayerController = new PlayerController(this, messageService, sceneView) { PlayerCreature = player };
          
          SetupRules(rulesManager);
 

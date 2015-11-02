@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DragonRising.GameWorld.Events
 {
-   sealed class InflictDamageEvent : Fact
+   public sealed class InflictDamageEvent : Fact
    {
       public InflictDamageEvent(Entity target, Damage damage, Entity initiator)
       {
@@ -26,7 +26,7 @@ namespace DragonRising.GameWorld.Events
 
    }
 
-   sealed class AttackMissedEvent : Fact
+   public sealed class AttackMissedEvent : Fact
    {
       public AttackEntityAction Attack { get; }
 
@@ -36,7 +36,7 @@ namespace DragonRising.GameWorld.Events
       }
    }
 
-   sealed class Damage
+   public sealed class Damage
    {
       public Damage(int amount, string type = "Normal")
       {

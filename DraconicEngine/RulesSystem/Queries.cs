@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.RulesSystem
 {
-   public interface IAreaFromDirectionQuery<TContext>
+   public interface IAreaFromDirectionQuery
    {
       Option<Area> GetArea();
-      IEnumerable<Fact> GetFacts(Entity user, Vector dir, Loc loc, TContext context);
+      IEnumerable<Fact> GetFacts(Entity user, Vector dir, Loc loc, Scene context);
    }
 
-   public interface IFromLocationQuery<TContext>
+   public interface IFromLocationQuery
    {
       Option<Area> GetArea();
-      IEnumerable<Fact> GetFacts(Entity user, Loc loc, TContext context);
+      IEnumerable<Fact> GetFacts(Entity user, Loc loc, Scene context);
    }
 
    public interface IEntityFilter

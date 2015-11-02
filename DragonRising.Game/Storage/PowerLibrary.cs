@@ -9,13 +9,6 @@ using System.Threading.Tasks;
 
 namespace DragonRising.Storage
 {
-   public interface IPowerLibrary
-   {
-      EffectPlan Get(string name);
-      bool Contains(string name);
-      void Add(EffectPlan power);
-   }
-
    public interface ISpellLibrary
    {
       Spell Get(string name);

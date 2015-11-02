@@ -11,23 +11,23 @@ using static LanguageExt.Prelude;
 
 namespace DragonRising.Plans.Targeters
 {
-   public class DirectionTargeter : IFromLocationTargeter<Scene>, IToDirectionTargeter<Scene>
+   public class DirectionTargeter : IFromLocationTargeter, IToDirectionTargeter
    {
       DirectionLimit limits;
-      public ImmutableList<IAreaFromDirectionQuery<Scene>> Queries { get; }
-      public ImmutableList<IFromDirectionTargetter<Scene>> Targeters { get; }
+      public ImmutableList<IAreaFromDirectionQuery> Queries { get; }
+      public ImmutableList<IFromDirectionTargetter> Targeters { get; }
 
       public DirectionTargeter(
          DirectionLimit limits,
-         IEnumerable<IAreaFromDirectionQuery<Scene>> areaSelectors,
-         IEnumerable<IFromDirectionTargetter<Scene>> targeters)
+         IEnumerable<IAreaFromDirectionQuery> areaSelectors,
+         IEnumerable<IFromDirectionTargetter> targeters)
       {
          this.limits = limits;
          this.Queries = areaSelectors.ToImmutableList();
          this.Targeters = targeters.ToImmutableList();
       }
       
-      public async Task<Option<TargetResult<Scene>>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
+      public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
          var area = Area.Combine(this.Queries.SelectMany(q => q.GetArea().AsEnumerable()).ToImmutableList());
 
@@ -39,7 +39,7 @@ namespace DragonRising.Plans.Targeters
                this.Targeters,
                t => t.GetPlayerTargetingAsync(direction.Value, origin, path));
 
-            var result = childResults.Map(rs => (TargetResult<Scene>)new DirectionTargetResult<Scene>(direction.Value, origin, this, rs));
+            var result = childResults.Map(rs => (TargetResult)new DirectionTargetResult(direction.Value, origin, this, rs));
 
             return result;
          }

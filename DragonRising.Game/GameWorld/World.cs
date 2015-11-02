@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DragonRising.GameWorld.Generators;
 using System.Diagnostics;
+using DraconicEngine;
 
 namespace DragonRising.GameWorld
 {
@@ -46,41 +47,8 @@ namespace DragonRising.GameWorld
          player.AsCreature(cc => cc.Alligence = dragons);
 
          this.EntityEngine.AddEntity(player);
-
-         GenerateNewScene();
       }
-
-      public void NextLevel()
-      {
-         this.DungeonLevel++;
-         GenerateNewScene();
-      }
-
-      public void GenerateNewScene()
-      {
-         this.PopScene();
-
-         var greenskins = new GreenskinsGenerator();
-         //var generator = new DungeonGenerator(greenskins, new StandardItemGenerator());
-         var generator = new TwoRoomsOneOrcGenerator(greenskins);
-
-         Scene newScene = new Scene(MapWidth, MapHeight, this.EntityEngine.CreateChildStore());
-         newScene.EntityStore.AddEntity(this.Player);
-         newScene.FocusEntity = this.Player;
-         newScene.Level = this.DungeonLevel;
-
-         Debug.Assert(newScene.EntityStore.Entities.Contains(this.Player));
-
-         var startPoint = generator.MakeMap(newScene);
-         this.Player.SetLocation(startPoint);
-
-         this.PushScene(newScene);
-
-         this.Scene.ClearFoV();
-         this.Scene.UpdateFoV();
-      }
-
-
+      
       Scene scene;
       //Stack<Scene> scenes = new Stack<Scene>();
 

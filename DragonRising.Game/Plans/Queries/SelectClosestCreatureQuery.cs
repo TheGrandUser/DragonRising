@@ -12,15 +12,10 @@ using System.Diagnostics;
 using DraconicEngine;
 using static LanguageExt.Prelude;
 using DragonRising.GameWorld;
-using IEntityEffect = DraconicEngine.RulesSystem.IEntityEffect<DragonRising.Scene>;
-using ILocationBasedTargeter = DraconicEngine.RulesSystem.IFromLocationTargeter<DragonRising.Scene>;
-using IFromLocationQuery = DraconicEngine.RulesSystem.IFromLocationQuery<DragonRising.Scene>;
-using TargetResult = DraconicEngine.RulesSystem.TargetResult<DragonRising.Scene>;
-using LocationTargetResult = DraconicEngine.RulesSystem.LocationTargetResult<DragonRising.Scene>;
 
 namespace DragonRising.Plans.Queries
 {
-   class SelectClosestCreatureQuery : IFromLocationQuery
+   public class SelectClosestCreatureQuery : IFromLocationQuery
    {
       int? maxRange;
       ImmutableList<IFromLocationQuery> queries;

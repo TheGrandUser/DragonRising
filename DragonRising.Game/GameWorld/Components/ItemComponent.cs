@@ -71,7 +71,7 @@ namespace DragonRising.GameWorld.Components
 
       protected abstract Usable CloneCore(bool fresh);
 
-      public abstract Fact GetFact(Entity user, FinalizedPlan<Scene> plan);
+      public abstract Fact GetFact(Entity user, FinalizedPlan plan);
    }
 
    public class SpellUsable : Usable
@@ -90,7 +90,7 @@ namespace DragonRising.GameWorld.Components
          this.spell = original.spell;
       }
 
-      public override Fact GetFact(Entity user, FinalizedPlan<Scene> plan)
+      public override Fact GetFact(Entity user, FinalizedPlan plan)
       {
          return new CastSpellFact(user, spell, plan);
       }

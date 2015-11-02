@@ -10,16 +10,10 @@ using DraconicEngine;
 using DragonRising.Views;
 using static LanguageExt.Prelude;
 using DragonRising.GameWorld;
-using IFromLocationTargeter = DraconicEngine.RulesSystem.IFromLocationTargeter<DragonRising.Scene>;
-using IFromLocationQuery = DraconicEngine.RulesSystem.IFromLocationQuery<DragonRising.Scene>;
-using TargetResult = DraconicEngine.RulesSystem.TargetResult<DragonRising.Scene>;
-using LocationTargetResult = DraconicEngine.RulesSystem.LocationTargetResult<DragonRising.Scene>;
-using ILocationEffect = DraconicEngine.RulesSystem.ILocationEffect<DragonRising.Scene>;
-using IEntityEffect = DraconicEngine.RulesSystem.IEntityEffect<DragonRising.Scene>;
 
 namespace DragonRising.Plans.Targeters
 {
-   public class EntityInRangeTargeter : IFromLocationTargeter<Scene>, IToEntityTargeter<Scene>
+   public class EntityInRangeTargeter : IFromLocationTargeter, IToEntityTargeter
    {
       public ImmutableList<IFromLocationTargeter> Targeters { get; }
       public ImmutableList<IFromLocationQuery> Queries { get; }
@@ -28,8 +22,8 @@ namespace DragonRising.Plans.Targeters
       public EntityInRangeTargeter(
         SelectionRange range,
         string messagePattern, RogueColor messageColor,
-        IEnumerable<IFromLocationTargeter<Scene>> targeters,
-        IEnumerable<IFromLocationQuery<Scene>> queries,
+        IEnumerable<IFromLocationTargeter> targeters,
+        IEnumerable<IFromLocationQuery> queries,
         IEnumerable<IEntityEffect> effects)
       {
          Range = range;
@@ -44,7 +38,7 @@ namespace DragonRising.Plans.Targeters
       public string MessagePattern { get; }
       public RogueColor MessageColor { get; }
 
-      public async Task<Option<TargetResult<Scene>>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
+      public async Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path)
       {
          var area = Area.Combine(this.Queries.SelectMany(q => q.GetArea().AsEnumerable()));
 
@@ -58,11 +52,11 @@ namespace DragonRising.Plans.Targeters
                this.Targeters,
                t => t.GetPlayerTargetingAsync(sceneView, creature.Location, newPath));
 
-            var result = childResults.Map(rs => (TargetResult<Scene>)new EntityTargetResult<Scene>(creature, this, rs));
+            var result = childResults.Map(rs => (TargetResult)new EntityTargetResult(creature, this, rs));
             
             return result;
          },
-         None: () => Task.FromResult<Option<TargetResult<Scene>>>(None));
+         None: () => Task.FromResult<Option<TargetResult>>(None));
       }
    }
 

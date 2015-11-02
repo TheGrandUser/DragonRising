@@ -79,7 +79,7 @@ namespace DragonRising.Views
 
       async Task<TickResult> NewGame()
       {
-         var newGameScreen = new NewGameScreen();
+         var newGameScreen = new NewGameScreen(new SceneGenerator());
 
          var world = await RogueGame.Current.RunGameState(newGameScreen);
 
@@ -111,7 +111,6 @@ namespace DragonRising.Views
       async Task PlayLoadedGame(string gameName)
       {
          var world = await saveManager.LoadGame(gameName);
-         world.Scene.ClearFoV();
 
          var playingState = new MyPlayingScreen(world, saveManager);
 

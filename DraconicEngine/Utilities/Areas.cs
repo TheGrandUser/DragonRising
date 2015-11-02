@@ -151,7 +151,7 @@ namespace DraconicEngine
          }
          else
          {
-            var xys = GetXYPairs(Radius).ToList();
+            var xys = GetOctantXYPairs(Radius).ToList();
 
             // for radius 5
             // xy : (5, 0) . (5, 1) . (5, 2) . (3, 4)
@@ -205,7 +205,7 @@ namespace DraconicEngine
          }
       }
 
-      static IEnumerable<Loc> GetXYPairs(int radius)
+      static IEnumerable<Loc> GetOctantXYPairs(int radius)
       {
          int x = radius;
          int y = 0;
@@ -213,17 +213,7 @@ namespace DraconicEngine
 
          while (y <= x) // 0 <= 5 . 
          {
-            yield return new Loc(x, y); // Octant 1
-            //yield return new Loc(x, -y); // Octant 8
-
-            //yield return new Loc(-x, y); // Octant 4
-            //yield return new Loc(-x, -y); // Octant 5
-
-            //yield return new Loc(y, x); // Octant 2
-            //yield return new Loc(y, -x); // Octant 7
-
-            //yield return new Loc(-y, x); // Octant 3
-            //yield return new Loc(-y, -x); // Octant 6
+            yield return new Loc(x, y);
             y++;
             if (decisionOver2 <= 0)
             {

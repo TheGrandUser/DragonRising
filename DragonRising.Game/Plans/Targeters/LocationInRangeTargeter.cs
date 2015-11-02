@@ -9,12 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static LanguageExt.Prelude;
-using IFromLocationTargeter = DraconicEngine.RulesSystem.IFromLocationTargeter<DragonRising.Scene>;
-using IFromLocationQuery = DraconicEngine.RulesSystem.IFromLocationQuery<DragonRising.Scene>;
-using TargetResult = DraconicEngine.RulesSystem.TargetResult<DragonRising.Scene>;
-using LocationTargetResult = DraconicEngine.RulesSystem.LocationTargetResult<DragonRising.Scene>;
-using ILocationEffect = DraconicEngine.RulesSystem.ILocationEffect<DragonRising.Scene>;
-using IToLocationTargeter = DraconicEngine.RulesSystem.IToLocationTargeter<DragonRising.Scene>;
 
 namespace DragonRising.Plans.Targeters
 {

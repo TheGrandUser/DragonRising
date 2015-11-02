@@ -1,4 +1,5 @@
-﻿using DraconicEngine.RulesSystem;
+﻿using DraconicEngine;
+using DraconicEngine.RulesSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace DragonRising.Rules
 {
    public class RulesManager : IRulesManager
    {
-      MultiValueDictionary<Type, IRule<Scene>> rules = MultiValueDictionary<Type, IRule<Scene>>.Create(
-         () => new SortedSet<IRule<Scene>>(Comparer<IRule<Scene>>.Create((x, y) => x.Priority - y.Priority)));
+      MultiValueDictionary<Type, IRule> rules = MultiValueDictionary<Type, IRule>.Create(
+         () => new SortedSet<IRule>(Comparer<IRule>.Create((x, y) => x.Priority - y.Priority)));
 
       public void ProcessFacts(IEnumerable<Fact> actions, Scene scene)
       {
@@ -40,7 +41,7 @@ namespace DragonRising.Rules
          }
       }
 
-      public void AddRule<TFact>(IRule<TFact, Scene> rule)
+      public void AddRule<TFact>(IRule<TFact> rule)
          where TFact : Fact
       {
          rules.Add(typeof(TFact), rule);
@@ -49,7 +50,7 @@ namespace DragonRising.Rules
 
    public interface IRulesManager
    {
-      void AddRule<TFact>(IRule<TFact, Scene> rule) where TFact : Fact;
+      void AddRule<TFact>(IRule<TFact> rule) where TFact : Fact;
 
       void ProcessFacts(IEnumerable<Fact> gameEvent, Scene scene);
    }

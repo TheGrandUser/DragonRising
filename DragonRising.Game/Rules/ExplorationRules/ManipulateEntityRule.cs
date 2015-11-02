@@ -7,6 +7,7 @@ using DraconicEngine.RulesSystem;
 using DragonRising.GameWorld.Actions;
 using DragonRising.GameWorld.Components;
 using DraconicEngine.EntitySystem;
+using DraconicEngine;
 
 namespace DragonRising.Rules.ExplorationRules
 {

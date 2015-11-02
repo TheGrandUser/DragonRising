@@ -100,6 +100,12 @@ namespace DraconicEngine.Utilities
          return items;
       }
 
+
+      public static T Draw<T>(this IReadOnlyList<T> self, Random r)
+      {
+         var index = r.Next(self.Count);
+         return self[index];
+      }
    }
 
    //public struct Entry<T>

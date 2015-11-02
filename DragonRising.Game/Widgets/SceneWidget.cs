@@ -9,6 +9,7 @@ using DragonRising;
 using DraconicEngine;
 using DraconicEngine.Widgets;
 using DragonRising.GameWorld;
+using DragonRising.Storage;
 
 namespace DragonRising.Widgets
 {
@@ -21,12 +22,14 @@ namespace DragonRising.Widgets
 
       World world;
       SceneView sceneView;
+      FieldOfView fieldOfView;
 
-      public SceneWidget(World world, SceneView sceneView, ITerminal sceneTerminal)
+      public SceneWidget(World world, SceneView sceneView, FieldOfView fieldOfView, ITerminal sceneTerminal)
          : base(sceneTerminal)
       {
          this.world = world;
          this.sceneView = sceneView;
+         this.fieldOfView = fieldOfView;
       }
 
       private Loc lastLocation;
@@ -37,8 +40,8 @@ namespace DragonRising.Widgets
          var scene = world.Scene;
          if (this.lastLocation != world.Player.Location)
          {
-            scene.ClearFoV();
-            scene.UpdateFoV();
+            fieldOfView.ClearFoV();
+            fieldOfView.UpdateFoV();
             this.lastLocation = world.Player.Location;
          }
 
@@ -53,7 +56,7 @@ namespace DragonRising.Widgets
             foreach (var col in Enumerable.Range(colStart, colCount))
             {
                var tile = scene.Map[col + stride];
-               var tileType = tile.GetTileType();
+               var tileType = TileLibrary.Current.GetById(tile.TileTypeId);
                if (tile.Visibility == TileVisibility.Explored)
                {
                   var display = tileType.Explored;

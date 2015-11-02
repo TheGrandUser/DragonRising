@@ -12,7 +12,7 @@ using DraconicEngine;
 
 namespace DragonRising.Plans.Effects
 {
-   class SensoryEffect : ILocationEffect<Scene>
+   public class SensoryEffect : ILocationEffect
    {
       private Sensed[] sensedThings;
 

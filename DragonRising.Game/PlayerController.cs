@@ -11,8 +11,10 @@ using DragonRising.Commands.Requirements;
 using DragonRising.GameWorld;
 using DragonRising.GameWorld.Behaviors;
 using DragonRising.GameWorld.Components;
+using DragonRising.GameWorld.Generators;
 using DragonRising.GameWorld.Nodes;
 using DragonRising.GameWorld.Powers;
+using DragonRising.Generators;
 using DragonRising.Plans;
 using DragonRising.Plans.Targeters;
 using DragonRising.Storage;
@@ -68,8 +70,10 @@ namespace DragonRising
       }
 
       MyPlayingScreen screen;
+      FieldOfView fieldOfView;
       SceneView sceneView;
       IMessageService messageService;
+      ISceneGenerator sceneGenerator;
 
       static IEnumerable<CommandGesture> ActionCommandGestures
       {
@@ -107,11 +111,13 @@ namespace DragonRising
 
       static readonly CommandGesture quitCommandGesture = Create(RogueCommands.Quit, RogueKey.Escape);
 
-      public PlayerController(MyPlayingScreen screen, IMessageService messageService, SceneView sceneView)
+      public PlayerController(MyPlayingScreen screen, IMessageService messageService, FieldOfView fieldOfView, ISceneGenerator sceneGenerator, SceneView sceneView)
       {
          this.screen = screen;
          this.messageService = messageService;
+         this.sceneGenerator = sceneGenerator;
          this.sceneView = sceneView;
+         this.fieldOfView = fieldOfView;
       }
 
       public async Task<PlayerTurnResult> GetInputAsync(TimeSpan timeout)
@@ -171,7 +177,7 @@ namespace DragonRising
                   MessageService.Current.PostMessage("You take a moment to rest, and recover your strength.", RogueColors.LightViolet);
                   World.Current.Player.As<CombatantComponent>(cc => cc.Heal(cc.MaxHP / 2));
                   MessageService.Current.PostMessage("After a rare moment of peace, you descend deeper into the heart of the dungeon...", RogueColors.Red);
-                  World.Current.NextLevel();
+                  NextLevel(World.Current);
                }
 
                return PlayerTurnResult.TurnAdvancing;
@@ -235,7 +241,7 @@ namespace DragonRising
                if (itemRequirement.NeedsItemsFulfillment)
                {
                   var finalizedPlan = await GetPowerTargets(itemComponent.Usable.Plan);
-                  
+
                   return finalizedPlan.Match(
                      Some: plan => ItemFulfillment.Create(item, itemComponent.Usable.GetFact(PlayerCreature, plan)),
                      None: () => NoFulfillment.None);
@@ -428,7 +434,7 @@ namespace DragonRising
          var inventory = player.GetComponent<InventoryComponent>();
          var inventoryScreen = new InventoryScreen(inventory, message, terminal);
          var index = await RogueGame.Current.RunGameState(inventoryScreen);
-         
+
          if (index != null)
          {
             return inventory.Items[index.Value];
@@ -468,7 +474,7 @@ namespace DragonRising
 
          var selectEntityTool = new SelectEntityTool(entitiesInRange, sceneView);
 
-         var result =  await RogueGame.Current.RunGameState(selectEntityTool);
+         var result = await RogueGame.Current.RunGameState(selectEntityTool);
 
          return result;
       }
@@ -500,7 +506,7 @@ namespace DragonRising
          }
       }
 
-      private async Task<Option<FinalizedPlan<Scene>>> GetPowerTargets(EffectPlan power)
+      private async Task<Option<FinalizedPlan>> GetPowerTargets(EffectPlan power)
       {
          var origin = PlayerCreature.Location;
 
@@ -508,7 +514,18 @@ namespace DragonRising
             power.Targeters,
             t => t.GetPlayerTargetingAsync(sceneView, origin, ImmutableStack<Either<Loc, Vector>>.Empty));
 
-         return results.Map(r => new FinalizedPlan<Scene>(r, power.Queries, power.Effects));
+         return results.Map(r => new FinalizedPlan(r, power.Queries, power.Effects));
+      }
+
+
+
+      public void NextLevel(World world)
+      {
+         world.DungeonLevel++;
+         var newScene = sceneGenerator.GenerateNewScene(world);
+         
+         fieldOfView.ClearFoV();
+         fieldOfView.UpdateFoV();
       }
    }
 }

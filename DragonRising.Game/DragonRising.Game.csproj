@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AvsAn, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvsAn.2.2.0.0\lib\net20\AvsAn.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="LanguageExt.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LanguageExt.1.6.2\lib\LanguageExt.Core.dll</HintPath>
       <Private>True</Private>
@@ -127,11 +131,14 @@
     <Compile Include="GameWorld\Behaviors\JustPassBehavior.cs" />
     <Compile Include="GameWorld\Components\ConditionComponent.cs" />
     <Compile Include="GameWorld\CoreStats.cs" />
+    <Compile Include="GameWorld\FieldOfView.cs" />
     <Compile Include="GameWorld\Generators\TwoRoomsOneOrcGenerator.cs" />
     <Compile Include="GameWorld\Powers\ConfuseNearestPower.cs" />
     <Compile Include="GameWorld\Powers\HealPower.cs" />
     <Compile Include="GameWorld\Powers\LightningPower.cs" />
     <Compile Include="GameWorld\Powers\Spells\Spell.cs" />
+    <Compile Include="Generators\ISceneGenerator.cs" />
+    <Compile Include="Generators\SpeciesGenerator.cs" />
     <Compile Include="Plans\Effects\ApplyTemporaryCondition.cs" />
     <Compile Include="Facts\Events\SensoryEvents\NoiseEvents.cs" />
     <Compile Include="GameWorld\Conditions\ConfusedCondition.cs" />
@@ -149,7 +156,6 @@
     <Compile Include="Plans\Targeters\DirectionTargeter.cs" />
     <Compile Include="Plans\Targeters\EntityInRangeTargeter.cs" />
     <Compile Include="Plans\Targeters\LocationInRangeTargeter.cs" />
-    <Compile Include="Plans\Targeters\TargeterExtensions.cs" />
     <Compile Include="Rules\ExplorationRules\ManipulateEntityRule.cs" />
     <Compile Include="Rules\ExplorationRules\ReportSensoryEffectRule.cs" />
     <Compile Include="Rules\ExplorationRules\UsePortalRule.cs" />

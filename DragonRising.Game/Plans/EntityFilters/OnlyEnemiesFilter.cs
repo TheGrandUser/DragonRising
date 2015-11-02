@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DragonRising.Plans.EntityFilters
 {
-   class OnlyEnemiesFilter : IEntityFilter
+   public class OnlyEnemiesFilter : IEntityFilter
    {
       private OnlyEnemiesFilter()
       {

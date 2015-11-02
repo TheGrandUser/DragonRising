@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.RulesSystem
 {
-   public interface IRule<TContext>
+   public interface IRule
    {
       Type FactType { get; }
       bool Filter(Fact gameEvent);
       bool UseFilter { get; }
       int Priority { get; }
-      RuleResult Do(Fact gameEvent, TContext context);
+      RuleResult Do(Fact gameEvent, Scene context);
    }
    
-   public interface IRule<TFact, TContext> : IRule<TContext>
+   public interface IRule<TFact> : IRule
       where TFact : Fact
    {
-      RuleResult Do(TFact gameEvent, TContext context);
+      RuleResult Do(TFact gameEvent, Scene context);
    }
 
    public class RuleResult

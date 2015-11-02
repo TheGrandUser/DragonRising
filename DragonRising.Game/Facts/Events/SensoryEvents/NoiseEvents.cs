@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DragonRising.GameWorld.Events.SensoryEvents
 {
-   class SensoryEvent : Fact
+   public class SensoryEvent : Fact
    {
       public SensoryEvent(Loc location, params Sensed[] effects)
       {
@@ -20,8 +20,8 @@ namespace DragonRising.GameWorld.Events.SensoryEvents
       public ImmutableList<Sensed> Senses { get; }
       public Loc Location { get; private set; }
    }
-   
-   class Sensed
+
+   public class Sensed
    {
       public Sense Sense { get; }
       public string Type { get; }
@@ -37,7 +37,7 @@ namespace DragonRising.GameWorld.Events.SensoryEvents
       }
    }
 
-   enum Sense
+   public enum Sense
    {
       Sight,
       Sound,

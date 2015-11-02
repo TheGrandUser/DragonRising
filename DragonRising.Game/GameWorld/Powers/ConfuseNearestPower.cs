@@ -9,26 +9,16 @@ using DragonRising.GameWorld.Effects;
 using DragonRising.GameWorld.Conditions;
 using DragonRising.Plans.EntityFilters;
 using DragonRising.Plans;
-using ILocationBasedTargeter = DraconicEngine.RulesSystem.IFromLocationTargeter<DragonRising.Scene>;
-using IFromLocationQuery = DraconicEngine.RulesSystem.IFromLocationQuery<DragonRising.Scene>;
-using TargetResult = DraconicEngine.RulesSystem.TargetResult<DragonRising.Scene>;
-using LocationTargetResult = DraconicEngine.RulesSystem.LocationTargetResult<DragonRising.Scene>;
 
 namespace DragonRising.GameWorld.Powers
 {
-   public class ConfuseNearestPower : EffectPlan
+   public static class ConfuseNearestPower
    {
-      IFromLocationQuery query;
-
-      public ConfuseNearestPower(int range = 8, int duration = 10)
-         : base("Confuse nearest")
+      public static EffectPlan CreateConfusionPlan(int range = 8, int duration = 10)
       {
-         this.query = new SelectClosestCreatureQuery(
-            range, new ApplyTemporaryCondition(ConfusedCondition.Instance, duration),
-            OnlyEnemiesFilter.Instance);
-            
+         return EffectPlan.CreatePower("Confuse nearest")
+            .Add(new SelectClosestCreatureQuery(8, new ApplyTemporaryCondition(ConfusedCondition.Instance, 10), OnlyEnemiesFilter.Instance))
+            .Finish();
       }
-      
-      public override IEnumerable<IFromLocationQuery> Queries => EnumerableEx.Return(query);
    }
 }

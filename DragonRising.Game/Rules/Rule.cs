@@ -8,6 +8,7 @@ using LanguageExt;
 using static LanguageExt.Prelude;
 using Microsoft.Practices.Prism.PubSubEvents;
 using DraconicEngine.RulesSystem;
+using DraconicEngine;
 
 namespace DragonRising.Rules
 {
@@ -15,7 +16,7 @@ namespace DragonRising.Rules
    {
    }
 
-   public abstract class Rule<TFact> : IRule<TFact, Scene>
+   public abstract class Rule<TFact> : IRule<TFact>
       where TFact : Fact
    {
       protected virtual bool Filter(TFact fact) => true;

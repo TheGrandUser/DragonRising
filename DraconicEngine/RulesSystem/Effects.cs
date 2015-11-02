@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace DraconicEngine.RulesSystem
 {
-   public interface IEntityEffect<TContext>
+   public interface IEntityEffect
    {
-      IEnumerable<Fact> GetFacts(Entity initiator, Entity target, TContext context);
+      IEnumerable<Fact> GetFacts(Entity initiator, Entity target, Scene context);
    }
 
-   public interface ILocationEffect<TContext>
+   public interface ILocationEffect
    {
-      IEnumerable<Fact> GetFacts(Entity initiator, Loc target, TContext context);
+      IEnumerable<Fact> GetFacts(Entity initiator, Loc target, Scene context);
    }
 
-   public interface IAreaEffect<TContext>
+   public interface IAreaEffect
    {
-      IEnumerable<Fact> GetFacts(Entity initiator, Area target, TContext context);
+      IEnumerable<Fact> GetFacts(Entity initiator, Area target, Scene context);
    }
    
 }

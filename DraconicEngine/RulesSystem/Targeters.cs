@@ -17,12 +17,12 @@ namespace DraconicEngine.RulesSystem
    
    public static class Targeter
    {
-      public static async Task<Option<ImmutableList<TargetResult<TContext>>>> HandleChildTargetersAsync<T, TContext>(
+      public static async Task<Option<ImmutableList<TargetResult>>> HandleChildTargetersAsync<T>(
          IEnumerable<T> targeters,
-         Func<T, Task<Option<TargetResult<TContext>>>> getResult)
+         Func<T, Task<Option<TargetResult>>> getResult)
       {
          Stack<T> targetStack = new Stack<T>(targeters.Reverse());
-         Stack<Tuple<T, TargetResult<TContext>>> results = new Stack<Tuple<T, TargetResult<TContext>>>(targetStack.Count);
+         Stack<Tuple<T, TargetResult>> results = new Stack<Tuple<T, TargetResult>>(targetStack.Count);
 
          while (targetStack.Count > 0)
          {
@@ -59,33 +59,33 @@ namespace DraconicEngine.RulesSystem
       }
    }
 
-   public interface IFromLocationTargeter<TContext>
+   public interface IFromLocationTargeter
    {
-      Task<Option<TargetResult<TContext>>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path);
+      Task<Option<TargetResult>> GetPlayerTargetingAsync(SceneView sceneView, Loc origin, ImmutableStack<Either<Loc, Vector>> path);
    }
 
-   public interface IToLocationTargeter<TContext>
+   public interface IToLocationTargeter
    {
-      ImmutableList<IFromLocationTargeter<TContext>> Targeters { get; }
-      ImmutableList<IFromLocationQuery<TContext>> Queries { get; }
-      ImmutableList<ILocationEffect<TContext>> Effects { get; }
+      ImmutableList<IFromLocationTargeter> Targeters { get; }
+      ImmutableList<IFromLocationQuery> Queries { get; }
+      ImmutableList<ILocationEffect> Effects { get; }
    }
 
-   public interface IFromDirectionTargetter<TContext>
+   public interface IFromDirectionTargetter
    {
-      Task<Option<TargetResult<TContext>>> GetPlayerTargetingAsync(Vector direciton, Loc origin, ImmutableStack<Either<Loc, Vector>> path);
+      Task<Option<TargetResult>> GetPlayerTargetingAsync(Vector direciton, Loc origin, ImmutableStack<Either<Loc, Vector>> path);
    }
 
-   public interface IToDirectionTargeter<TContext>
+   public interface IToDirectionTargeter
    {
-      ImmutableList<IFromDirectionTargetter<TContext>> Targeters { get; }
-      ImmutableList<IAreaFromDirectionQuery<TContext>> Queries { get; }
+      ImmutableList<IFromDirectionTargetter> Targeters { get; }
+      ImmutableList<IAreaFromDirectionQuery> Queries { get; }
    }
-   public interface IToEntityTargeter<TContext>
+   public interface IToEntityTargeter
    {
-      ImmutableList<IFromLocationTargeter<TContext>> Targeters { get; }
-      ImmutableList<IFromLocationQuery<TContext>> Queries { get; }
-      ImmutableList<IEntityEffect<TContext>> Effects { get; }
+      ImmutableList<IFromLocationTargeter> Targeters { get; }
+      ImmutableList<IFromLocationQuery> Queries { get; }
+      ImmutableList<IEntityEffect> Effects { get; }
    }
 
    /// <summary>
@@ -138,34 +138,34 @@ namespace DraconicEngine.RulesSystem
       LineOfSight
    }
 
-   public abstract class TargetResult<TContext>
+   public abstract class TargetResult
    {
-      public ImmutableList<TargetResult<TContext>> ChildResults { get; }
+      public ImmutableList<TargetResult> ChildResults { get; }
 
-      protected TargetResult(IEnumerable<TargetResult<TContext>> childResults)
+      protected TargetResult(IEnumerable<TargetResult> childResults)
       {
          ChildResults = childResults.ToImmutableList();
       }
 
-      public abstract IEnumerable<Fact> GetFacts(Entity initiatior, TContext context);
+      public abstract IEnumerable<Fact> GetFacts(Entity initiatior, Scene context);
    }
    
-   public class LocationTargetResult<TContext> : TargetResult<TContext>
+   public class LocationTargetResult : TargetResult
    {
       private Loc location;
-      IToLocationTargeter<TContext> targeter;
+      IToLocationTargeter targeter;
 
       public LocationTargetResult(
          Loc location,
-         IToLocationTargeter<TContext> targeter,
-         IEnumerable<TargetResult<TContext>> childResults)
+         IToLocationTargeter targeter,
+         IEnumerable<TargetResult> childResults)
          : base(childResults)
       {
          this.targeter = targeter;
          this.location = location;
       }
       
-      public override IEnumerable<Fact> GetFacts(Entity initiatior, TContext context)
+      public override IEnumerable<Fact> GetFacts(Entity initiatior, Scene context)
       {
          var targeterFacts = ChildResults.SelectMany(r => r.GetFacts(initiatior, context));
          var queryFacts = targeter.Queries.SelectMany(q => q.GetFacts(initiatior, location, context));
@@ -175,22 +175,22 @@ namespace DraconicEngine.RulesSystem
       }
    }
 
-   public class EntityTargetResult<TContext> : TargetResult<TContext>
+   public class EntityTargetResult : TargetResult
    {
       private Entity entity;
-      private IToEntityTargeter<TContext> targeter;
+      private IToEntityTargeter targeter;
 
       public EntityTargetResult(
          Entity entity,
-         IToEntityTargeter<TContext> targeter,
-         IEnumerable<TargetResult<TContext>> childResults)
+         IToEntityTargeter targeter,
+         IEnumerable<TargetResult> childResults)
          : base(childResults)
       {
          this.targeter = targeter;
          this.entity = entity;
       }
       
-      public override IEnumerable<Fact> GetFacts(Entity initiatior, TContext context)
+      public override IEnumerable<Fact> GetFacts(Entity initiatior, Scene context)
       {
          var targeterFacts = ChildResults.SelectMany(r => r.GetFacts(initiatior, context));
          var queryFacts = targeter.Queries.SelectMany(q => q.GetFacts(initiatior, entity.Location, context));
@@ -200,15 +200,15 @@ namespace DraconicEngine.RulesSystem
       }
    }
 
-   public class DirectionTargetResult<TContext> : TargetResult<TContext>
+   public class DirectionTargetResult : TargetResult
    {
       private Vector direction;
       private Loc location;
-      private IToDirectionTargeter<TContext> targeter;
+      private IToDirectionTargeter targeter;
 
       public DirectionTargetResult(Vector direction, Loc location, 
-         IToDirectionTargeter<TContext> targeter,
-         IEnumerable<TargetResult<TContext>> childResults)
+         IToDirectionTargeter targeter,
+         IEnumerable<TargetResult> childResults)
          : base(childResults)
       {
          this.targeter = targeter;
@@ -216,7 +216,7 @@ namespace DraconicEngine.RulesSystem
          this.location = location;
       }
       
-      public override IEnumerable<Fact> GetFacts(Entity initiatior, TContext context)
+      public override IEnumerable<Fact> GetFacts(Entity initiatior, Scene context)
       {
          var targeterFacts = ChildResults.SelectMany(r => r.GetFacts(initiatior, context));
          var queryFacts = targeter.Queries.SelectMany(q => q.GetFacts(initiatior, direction, location, context));

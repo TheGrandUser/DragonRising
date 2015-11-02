@@ -8,6 +8,7 @@ using DragonRising.GameWorld.Actions;
 using DraconicEngine.EntitySystem;
 using DragonRising.GameWorld;
 using DragonRising.GameWorld.Components;
+using DraconicEngine;
 
 namespace DragonRising.Rules.InventoryRules
 {

@@ -17,16 +17,11 @@ using DragonRising.Plans;
 
 namespace DragonRising.GameWorld.Powers
 {
-   public class CureMinorWoundsPower : EffectPlan
+   public static class CureMinorWoundsPower
    {
-      IEntityEffect<Scene> effect;
-
-      public CureMinorWoundsPower(int amount = 4)
-         : base("Cure Minor Wounds")
+      public static EffectPlan CreateHealEffect(int amount = 4)
       {
-         effect = new HealEffect(amount);
+         return EffectPlan.CreatePower("Cure Minor Wounds").Add(new HealEffect(4)).Finish();
       }
-
-      public override IEnumerable<IEntityEffect<Scene>> Effects => EnumerableEx.Return(effect);
    }
 }

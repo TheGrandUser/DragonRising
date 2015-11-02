@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AvsAn, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvsAn.2.2.0.0\lib\net20\AvsAn.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="LanguageExt.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LanguageExt.1.6.2\lib\LanguageExt.Core.dll</HintPath>
       <Private>True</Private>
@@ -97,6 +101,8 @@
   <ItemGroup>
     <Compile Include="CharacterEventArgs.cs" />
     <Compile Include="RulesSystem\Plan.cs" />
+    <Compile Include="Scene.cs" />
+    <Compile Include="Tile.cs" />
     <Compile Include="Utilities\Areas.cs" />
     <Compile Include="RulesSystem\Facts.cs" />
     <Compile Include="RulesSystem\Effects.cs" />
@@ -165,6 +171,7 @@
     <Compile Include="RogueMessage.cs" />
     <Compile Include="Services\ShadowCaster.cs" />
     <Compile Include="Utilities\SceneView.cs" />
+    <Compile Include="Utilities\StringFormatter.cs" />
     <Compile Include="Utilities\TerminalRect.cs" />
     <Compile Include="Terminals\IReadableTerminal.cs" />
     <Compile Include="Terminals\ITerminal.cs" />

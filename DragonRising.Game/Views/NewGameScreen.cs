@@ -21,20 +21,22 @@ namespace DragonRising.Views
 {
    class NewGameScreen : IGameView<Option<World>>
    {
-      public GameViewType Type => GameViewType.WholeScreen;
+      ISceneGenerator sceneGenerator;
+      
+      int tick = 0;
+      bool showCursor = false;
 
       string nameInProgress;
 
       ITerminal namePromptTerminal;
 
-      public NewGameScreen()
+      public NewGameScreen(ISceneGenerator sceneGenerator)
       {
+         this.sceneGenerator = sceneGenerator;
          this.namePromptTerminal = RogueGame.Current.RootTerminal[7, 10][RogueColors.White];
       }
 
-      int tick = 0;
-      bool showCursor = false;
-
+      public GameViewType Type => GameViewType.WholeScreen;
       public void Draw()
       {
          if (tick % 15 == 0)
@@ -104,6 +106,8 @@ namespace DragonRising.Views
          inventory.Items.Add(Library.Current.Items.Get(TempConstants.ScrollOfConfusion).Clone());
 
          var world = new World(player);
+
+         sceneGenerator.GenerateNewScene(world);
 
          return world;
       }

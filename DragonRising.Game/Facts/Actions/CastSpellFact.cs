@@ -11,11 +11,11 @@ namespace DragonRising.Facts.Actions
 {
    class CastSpellFact : Fact
    {
-      public FinalizedPlan<Scene> Plan { get; }
+      public FinalizedPlan Plan { get; }
       public Spell Spell { get; }
       public Entity User { get; }
 
-      public CastSpellFact(Entity user, Spell spell, FinalizedPlan<Scene> plan)
+      public CastSpellFact(Entity user, Spell spell, FinalizedPlan plan)
       {
          this.User = user;
          this.Spell = spell;

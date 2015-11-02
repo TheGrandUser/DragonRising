@@ -12,15 +12,9 @@ using System.Diagnostics;
 using DragonRising.GameWorld.Components;
 using DraconicEngine;
 using DragonRising.GameWorld;
-using ILocationBasedTargeter = DraconicEngine.RulesSystem.IFromLocationTargeter<DragonRising.Scene>;
-using IFromLocationQuery = DraconicEngine.RulesSystem.IFromLocationQuery<DragonRising.Scene>;
-using TargetResult = DraconicEngine.RulesSystem.TargetResult<DragonRising.Scene>;
-using LocationTargetResult = DraconicEngine.RulesSystem.LocationTargetResult<DragonRising.Scene>;
-using IEntityEffect = DraconicEngine.RulesSystem.IEntityEffect<DragonRising.Scene>;
-
 namespace DragonRising.Plans.Queries
 {
-   class AffectAllInRangeQuery : IFromLocationQuery
+   public class AffectAllInRangeQuery : IFromLocationQuery
    {
       int range;
       ImmutableList<IEntityEffect> effects;
