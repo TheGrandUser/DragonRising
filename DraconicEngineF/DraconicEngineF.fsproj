@@ -72,7 +72,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Control.AsyncSeq">
-      <HintPath>..\packages\FSharp.Control.AsyncSeq.2.0.1\lib\net45\FSharp.Control.AsyncSeq.dll</HintPath>
+      <HintPath>..\packages\FSharp.Control.AsyncSeq.2.0.2\lib\net45\FSharp.Control.AsyncSeq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Control.Reactive">
@@ -92,15 +92,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharpx.Extras">
-      <HintPath>..\packages\FSharpx.Extras.1.10.2\lib\40\FSharpx.Extras.dll</HintPath>
+      <HintPath>..\packages\FSharpx.Extras.1.10.3\lib\40\FSharpx.Extras.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FsPickler">
-      <HintPath>..\packages\FsPickler.1.4.0\lib\net45\FsPickler.dll</HintPath>
+      <HintPath>..\packages\FsPickler.1.5.2\lib\net45\FsPickler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FsPickler.Json">
-      <HintPath>..\packages\FsPickler.Json.1.4.0\lib\net45\FsPickler.Json.dll</HintPath>
+      <HintPath>..\packages\FsPickler.Json.1.5.2\lib\net45\FsPickler.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />

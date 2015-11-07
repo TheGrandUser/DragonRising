@@ -257,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Data\DragonSpecies.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
