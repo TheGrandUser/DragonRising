@@ -1,96 +1,266 @@
 ﻿{
-  "breathWeaponMaterial": [ "acid", "fire", "frost", "ice", "light", "lightning" ],
-  "breathWeaponShapes": [
+  "BreathWeaponMaterial": [ "acid", "fire", "frost", "ice", "light", "lightning", "sound", "poison", "wind" ],
+  "BreathWeaponShapes": [
     {
-      "shape": "line",
-      "range": {
-        "min": 4,
-        "max": 8
+      "Shape": "line",
+      "Range": {
+        "Min": 4,
+        "Max": 8
       },
-      "power": {
-        "min": 14,
-        "max": 27
+      "Power": {
+        "Min": 14,
+        "Max": 27
       }
     },
     {
-      "shape": "cone",
-      "range": {
-        "min": 2,
-        "max": 5
+      "Shape": "cone",
+      "Range": {
+        "Min": 2,
+        "Max": 5
       },
-      "power": {
-        "min": 14,
-        "max": 27
+      "Power": {
+        "Min": 14,
+        "Max": 27
       }
     },
     {
-      "shape": "ball",
-      "range": {
-        "min": 3,
-        "max": 6
+      "Shape": "ball",
+      "Range": {
+        "Min": 3,
+        "Max": 6
       },
       "radius": {
-        "min": 1,
-        "max": 3
+        "Min": 1,
+        "Max": 3
       },
-      "power": {
-        "min": 14,
-        "max": 27
-      }
-    }
-  ],
-  "claws": [
-    {
-      "type": "standard",
-      "power": {
-        "min": 12,
-        "max": 25
-      }
-    },
-    {
-      "type": "piercing",
-      "power": {
-        "min": 12,
-        "max": 20
-      }
-    },
-    {
-      "type": "long",
-      "power": {
-        "min": 16,
-        "max": 24
-      }
-    },
-    {
-      "type": "cruel",
-      "power": {
-        "min": 10,
-        "max": 18
+      "Power": {
+        "Min": 14,
+        "Max": 27
       }
     }
   ],
 
-  "teeth": [
+  "Claws": [
     {
-      "type": "standard",
-      "power": {
-        "min": 12,
-        "max": 25
+      "Type": "simple",
+      "Weight": 10,
+      "Note": "",
+      "Power": {
+        "Min": 12,
+        "Max": 25
       }
     },
     {
-      "type": "serated",
-      "power": {
-        "min": 13,
-        "max": 22
+      "Type": "piercing",
+      "Weight": 6,
+      "Note": "ignores X armor",
+      "Power": {
+        "Min": 12,
+        "Max": 20
       }
     },
     {
-      "type": "fangs",
-      "power": {
-        "min": 14,
-        "max": 18
+      "Type": "long",
+      "Weight": 5,
+      "Note": "",
+      "Power": {
+        "Min": 16,
+        "Max": 24
       }
+    },
+    {
+      "Type": "barbed",
+      "Weight": 4,
+      "Note": "does extra damage after armor",
+      "Power": {
+        "Min": 10,
+        "Max": 18
+      }
+    }
+  ],
+
+  "Teeth": [
+    {
+      "Type": "simple",
+      "Weight": 10,
+      "Note":  "",
+      "Power": {
+        "Min": 12,
+        "Max": 25
+      }
+    },
+    {
+      "Type": "many",
+      "Weight": 6,
+      "Note": "",
+      "Power": {
+        "Min": 12,
+        "Max": 25
+      }
+    },
+    {
+      "Type": "tusks",
+      "Weight": 3,
+      "Note": "",
+      "Power": {
+        "Min": 12,
+        "Max": 25
+      }
+    },
+    {
+      "Type": "grinding",
+      "Weight": 1,
+      "Note": "",
+      "Power": {
+        "Min": 12,
+        "Max": 25
+      }
+    },
+    {
+      "Type": "razor",
+      "Weight": 7,
+      "Note": "",
+      "Power": {
+        "Min": 13,
+        "Max": 22
+      }
+    },
+    {
+      "Type": "serrated",
+      "Weight": 6,
+      "Note": "",
+      "Power": {
+        "Min": 13,
+        "Max": 22
+      }
+    },
+    {
+      "Type": "fangs",
+      "Weight": 7,
+      "Note": "",
+      "Power": {
+        "Min": 14,
+        "Max": 18
+      }
+    }
+  ],
+
+  "Wings": [
+    {
+      "Type": "simple",
+      "Weight": 10
+    },
+    {
+      "Type": "large",
+      "Weight": 5
+    },
+    {
+      "Type": "small",
+      "Weight": 5
+    },
+    {
+      "Type": "scaled",
+      "Weight": 3
+    },
+    {
+      "Type": "multiple",
+      "Weight": 1
+    },
+    {
+      "Type": "feathered",
+      "Weight": 2
+    }
+  ],
+
+  "Tail": [
+    {
+      "Type": "tapered",
+      "Weight": 10
+    },
+    {
+      "Type": "barbed",
+      "Weight": 3
+    },
+    {
+      "Type": "spiky",
+      "Weight": 6
+    },
+    {
+      "Type": "prehensile",
+      "Weight": 3
+    }
+  ],
+
+  "Sight": [
+    {
+      "Type": "normal sight",
+      "Weight": 10
+    },
+    {
+      "Type": "superior sight",
+      "Weight": 3
+    },
+    {
+      "Type": "heat sense",
+      "Weight": 5
+    },
+    {
+      "Type": "magical sight",
+      "Weight": 1
+    }
+  ],
+
+  "Hearing": [
+    {
+      "Type": "normal hearing",
+      "Weight": 10
+    },
+    {
+      "Type": "superior hearing",
+      "Weight": 3
+    },
+    {
+      "Type": "echo location",
+      "Weight": 2
+    }
+  ],
+
+  "Scent": [
+    {
+      "Type": "normal scent",
+      "Weight": 10
+    },
+    {
+      "Type": "superior scent",
+      "Weight": 3
+    }
+  ],
+
+  "Size": [
+    {
+      "Label": "large",
+      "Value":  1,
+      "Weight": 10
+    },
+    {
+      "Label": "huge",
+      "Value": 2,
+      "Weight": 3
+    },
+    {
+      "Label": "gargantuan",
+      "Value": 3,
+      "Weight": 1
+    },
+    {
+      "Label": "medium",
+      "Value": 0,
+      "Weight": 3
+    },
+    {
+      "Label": "small",
+      "Value": -1,
+      "Weight": 1
     }
   ]
 }

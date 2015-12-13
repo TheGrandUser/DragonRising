@@ -106,6 +106,19 @@ namespace DraconicEngine.Utilities
          var index = r.Next(self.Count);
          return self[index];
       }
+
+
+      public static T Draw<T>(this IReadOnlyList<T> self, Random r, Func<T, int> weight)
+      {
+         if(self.Count == 0)
+         {
+            throw new ArgumentException("No items");
+         }
+         var withWeights = self.Scan(Tuple(0, default(T)), (acc, i) => Tuple(acc.Item1 + weight(i), i)).Skip(1).ToList();
+         var totalWeight = withWeights.Last().Item1;
+         var index = r.Next(totalWeight) + 1;
+         return withWeights.First(acc => index <= acc.Item1).Item2;
+      }
    }
 
    //public struct Entry<T>

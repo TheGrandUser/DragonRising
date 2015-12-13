@@ -9,12 +9,61 @@ using DraconicEngine.EntitySystem;
 using DragonRising.GameWorld.Components;
 using DragonRising.GameWorld.Alligences;
 using DraconicEngine;
+using DragonRising.Generators;
+using System.IO;
+using static System.Console;
+using static DraconicEngine.Utilities.StringPresentationFormatter;
+using static LanguageExt.Prelude;
+using LanguageExt;
 
 namespace Tinkering
 {
    class Program
    {
       static void Main(string[] args)
+      {
+         Experiment2();
+         WriteLine("Press any key to continue");
+         ReadKey();
+      }
+
+      private static void Experiment2()
+      {
+         var speciesPath = Path.GetFullPath(@"..\..\..\DragonRising.Game\Data\DragonSpecies.json");
+         var r = new Random();
+         var dragons = SpeciesGenerator.GenerateDragons(r, 10, speciesPath).ToList();
+
+         foreach (var dragon in dragons)
+         {
+            PrintDragon(dragon);
+            WriteLine();
+         }
+      }
+
+      private static void PrintDragon(DragonSpecies d)
+      {
+         WriteLine(MakePresentable($"This {d.Size.Desc} species of dragon has {d.ScalePattern.Desc}, {d.HeadDecorations.Desc} upon their heads, and /a {d.Tail.Desc} tail"));
+         WriteLine($"They tend to live in {d.Environment.Desc} and find {d.FavoredPrey.Desc} to be most delicious and healthy for them");
+         WriteLine($"They have {d.Hearing.Desc}, {d.Sight.Desc}, and {d.Scent.Desc}");
+         WriteLine($"For mobility, they have {d.Limbs.Desc} and {d.Wings.Desc} wings");
+         WriteLine(MakePresentable($"They have a natural armament of {d.Claws.Desc}, {d.Teeth.Desc}, and /a {d.BreathWeapon.Name} breath weapon"));
+         
+         //d.Tail
+
+         //d.Hearing
+         //d.Scent
+         //d.Sight
+
+         //d.Limbs
+         //d.Speed
+         //d.Wings
+
+         //magic
+
+         WriteLine($"Their stat bonus are AWR {d.AwarenessBonus}, DTR {d.DeterminationBonus}, FIT {d.FitnessBonus}, GRC {d.GraceBonus}, GLE {d.GuileBonus}, PRC {d.PrecisionBonus}");
+      }
+
+      static void Expierment1()
       {
          Entity character = new Entity("Test character",
             new ComponentSet(

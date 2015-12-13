@@ -10,18 +10,18 @@ namespace DraconicEngine.Utilities
 {
    public static class StringPresentationFormatter
    {
-      static readonly string aAnPattern = @"(\\[aA])\s(\w+?)\b";
+      static readonly string aAnPattern = @"(/[aA])\s(\w+?)\b";
 
       public static string MakePresentable(string input)
       {
-         if (input.Contains(@"\\"))
+         if (input.Contains(@"//"))
          {
-            var parts = input.Split(new[] { @"\\" }, StringSplitOptions.None);
+            var parts = input.Split(new[] { @"//" }, StringSplitOptions.None);
 
-            return string.Join(@"\", parts.Select(p => MakePresentable(p)));
+            return string.Join(@"/", parts.Select(p => MakePresentable(p)));
          }
 
-         var result = Regex.Replace(input, @"\\([aA])\s(\w+?)\b",
+         var result = Regex.Replace(input, aAnPattern,
               match =>
               {
                  var article = match.Groups[1].Value;

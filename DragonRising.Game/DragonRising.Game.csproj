@@ -258,6 +258,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Data\DragonSpecies.json" />
+    <None Include="Experiments.csx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
