@@ -122,11 +122,16 @@ namespace DragonRising.Generators
 
    public static class SpeciesGenerator
    {
-      public static IEnumerable<DragonSpecies> GenerateDragons(Random r, int count, string path)
+      public static SpeciesData LoadSpeciesData(string path)
       {
          var speciesDataJson = JObject.Parse(File.ReadAllText(path));
          var speciesData = speciesDataJson.ToObject<SpeciesData>();
 
+         return speciesData;
+      }
+
+      public static IEnumerable<DragonSpecies> GenerateDragons(Random r, int count, SpeciesData speciesData)
+      {
          for (int i = 0; i < count; i++)
          {
             var bonuses = GenerateStatBonuses(r);

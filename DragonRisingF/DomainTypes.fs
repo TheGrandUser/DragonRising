@@ -8,22 +8,9 @@ open DraconicEngineF
 open DisplayCore
 open Entities
 open FSharpx.Stm
+open DragonRisingF.WorldState
 
-type Alligence = 
-   | Alligence of string
-
-let neutral = Alligence "Neutral"
-
-type IFF = 
-   | Neutral
-   | Enemy
-   | Ally
-
-type Condition = 
-   | Confused
-   | Slowed
-
-type Damage = { amount : int; kind : string }
+let neutral = Alligence "neutral"
 
 type Sense = 
    | Sight
@@ -37,6 +24,11 @@ type Sensed =
      kind : string
      quality : string
      strength : int }
+
+
+
+
+
 type SensoryEvent = { location : Loc; effects : Sensed list }
      
 type AddConditionEvent = 
@@ -85,8 +77,6 @@ type IntExpression =
    | MultiplyExpr of IntExpression * IntExpression
    | DivideExpr of IntExpression * IntExpression
    | NegateExpr of IntExpression
-   //| Func1 of string * IntExpression
-   //| Func2 of string * IntExpression * IntExpression
 
 type EntityFilter =
    | Any
@@ -150,68 +140,16 @@ and FromDirectionTargeter =
    | TargetEntity of (FromDirection -> Async<Entity>) * FromLocationTargeter list * FromLocationQuery list * EntityEffect list
 
 type Plan = 
-   { targeters : FromLocationTargeter list
+   { id: PlanId
+     targeters : FromLocationTargeter list
      queries : FromLocationQuery list
      effects : EntityEffect list }
 
 type FinalizedPlan = | FinalizedPlan of Plan * Fact list
 
-type Spell = { name : string; plan : Plan }
-
-type UseInfo = 
-   | NormalUse of Plan
-   | SpellUse of Spell
-
-type Charge = { maxCharges : int; charges : int }
-
-type Usable = { info : UseInfo; charge : Charge option }
-type EquipableSlot = 
-   | EquipmentSlot of string
-   | OneHanded
-   | TwoHanded
-type WeaponInfo = { isTwoHanded : bool; damage : Damage; range : int option }
-
-type ItemUseResult = 
-   | Used
-   | Destroyed
-   | NotUsed
-
-type Manipulation = string
-
-type TileId = | TileId of int
-
-type TileType = 
-   { id : TileId
-     name : string
-     description : string option
-     inView : Character
-     explored : Character
-     blocksMovement : bool
-     blocksSight : bool }
-
-type TileVisibility = 
-   | NotSeen
-   | Explored
-   | Seen
-
-type Tile = 
-   { tileId : TileId
-     visibility : TileVisibility }
-
-type Blockage = 
-   | NoBlock
-   | BlockingTile of TileType
-   | BlockingEntity of Entity
-   | OffMap
-
-type GameMap = { width : int; height : int; tiles : Tile array; tileTypes : TileId -> TileType }
-
 type EntityStore = | EntityStore of TVar<Entity list>
 
 type TimedEventsStore = TimedEventsStore of TVar<(Map<int, Fact list>)>
-
-type Scene = { focusEntity : Entity; stairs : Entity; map : GameMap; level : int; entityStore : EntityStore }
-type World = { scene : Scene; entities : EntityStore; timedEvents: TimedEventsStore } // alligences, factions, world map, big overarching stuff
 
 type MoveDetails = { initiator: Entity; direction : Direction }
 type DropItemDetails = { initiator: Entity; itemToDrop : Entity }
@@ -243,45 +181,6 @@ type BehaviorMaker = Entity -> Behavior
 
 type BehaviorComponent = | BehaviorComponent of (string * Behavior) list
    
-type CombatantComponent = 
-   { power : int
-     defense : int }
-
-type ConditionComponent = 
-   { conditions : Condition list }
-   
-type CreatureComponent = 
-   { hp : int
-     maxHP : int
-     isAlive : bool
-     visionRadius : int
-     alligence : Alligence
-     xp: int }
-     
-type DrawnComponent = 
-   { seen : Character
-     explored : Character option }
-
-type EquipmentComponent = 
-   { weapon1 : EntityId
-     weapon2 : EntityId
-     equipped : Map<EquipableSlot, EntityId> }
-   
-type InventoryComponent = 
-   | EmptyInventory of int
-   | Inventory of int * Entity list
-   | FullInventory of int * Entity list
-     
-type ItemComponent = 
-   | Flavor
-   | Usable of UseInfo * Charge option
-   | Equipable of EquipableSlot
-   | Weapon of EquipableSlot * WeaponInfo
-
-type ManipulatableComponent = 
-   | SelfOnly of Manipulation
-   | RequiresItem of Manipulation
-
 type CreatureLibrary = | CreatureLibrary of Map<string, Loc -> Entity> TVar
 type ItemLibrary = | ItemLibrary of Map<string, unit -> Entity> TVar
 type BehaviorLibrary = | BehaviorLibrary of Map<string, BehaviorMaker> TVar

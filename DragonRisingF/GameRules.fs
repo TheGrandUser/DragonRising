@@ -12,7 +12,7 @@ open DomainFunctions
 open FSharpx.Stm
 open System
 open FSharpx.Option
-
+open WorldState
 
 let gameRandom = new Random()
 
@@ -163,8 +163,9 @@ let gameEndsOnPlayerDeathRule postMessage (e: CreatureKilledEvent) =
    
 
 let awardXPForKillRuleFilter (world : World) { killingEntity = ke } = ke = Some world.scene.focusEntity
-let awardXPForKillRule postMessage (world : World) { killedCreature = killed; killingEntity = k } : Fact list =
+let awardXPForKillRule getXP postMessage (world : World) { killedCreature = killed; killingEntity = k } : Fact list =
    let killer = k.Value
+   let xp: int = getXP killed
    let creature = (getComponent<CreatureComponent> killed).Value
-   postMessage (killed.name + " is dead! You gain " + creature.xp.ToString() + " experience points") RogueColors.orange
+   postMessage (killed.name + " is dead! You gain " + xp.ToString() + " experience points") RogueColors.orange
    []

@@ -14,6 +14,7 @@ open System
 open FSharpx.Option
 open GameRules
 open FSharpx.Collections
+open WorldState
 
 type Rule = | Rule of (World -> Fact -> bool) * (World -> Fact -> (bool * Fact list)) * int
 

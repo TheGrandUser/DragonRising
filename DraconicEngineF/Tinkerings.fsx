@@ -78,11 +78,11 @@ FsPickler.RegisterPicklerFactory entityFactory
 
 let entityPickler = makeEntityPickler Pickler.auto<obj>
 
-let binary = FsPickler.CreateBinary()
+let binary = FsPickler.CreateBinarySerializer()
 let binaryResult = binary.Pickle (player)
 let entityFromBinary: Entity = binary.UnPickle (binaryResult)
 
-let json = FsPickler.CreateJson(indent = false)
+let json = FsPickler.CreateJsonSerializer(indent = false)
 let jsonResult = json.PickleToString(player)
 let loadedEntity: Entity = json.UnPickleOfString(jsonResult)
 

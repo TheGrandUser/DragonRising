@@ -4,6 +4,7 @@ open DraconicEngineF
 open DraconicEngineF.Terminal
 open DraconicEngineF.Entities
 open DraconicEngineF.InputTypes
+open DragonRisingF.WorldState
 open DragonRisingF.DomainTypes
 open DragonRisingF.DomainFunctions
 open DragonRisingF.UITypes

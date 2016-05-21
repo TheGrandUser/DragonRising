@@ -10,6 +10,7 @@ open Entities
 open DomainTypes
 open FSharpx.Stm
 open System
+open WorldState
 
 //let creatureRepo = makeEntityPropMap<CreatureComponent>()
 
@@ -82,7 +83,7 @@ let isTileBlocked scene location =
    match t with
    | None -> OffMap
    | Some tile ->
-      let tileType = scene.map.tileTypes tile.tileId
+      let tileType = Map.find tile.tileId scene.map.tileTypes
       if tileType.blocksMovement then BlockingTile tileType
       else
          match (getEntities scene.entityStore) |> List.tryFind (fun e -> getLocation e = location && getBlocks e) with

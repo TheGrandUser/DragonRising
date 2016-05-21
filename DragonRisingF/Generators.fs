@@ -5,6 +5,7 @@ open DraconicEngineF.DisplayCore
 open DraconicEngineF.Entities
 open DraconicEngineF.ItemSelection
 open DragonRisingF.DomainTypes
+open DragonRisingF.WorldState
 
 //open DragonRisingF.DomainFunctions
 let createRoom makeClearTile { width = w; tiles = t } (room : TerminalRect) = 

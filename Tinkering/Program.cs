@@ -31,7 +31,8 @@ namespace Tinkering
       {
          var speciesPath = Path.GetFullPath(@"..\..\..\DragonRising.Game\Data\DragonSpecies.json");
          var r = new Random();
-         var dragons = SpeciesGenerator.GenerateDragons(r, 10, speciesPath).ToList();
+         var speciesData = SpeciesGenerator.LoadSpeciesData(speciesPath);
+         var dragons = SpeciesGenerator.GenerateDragons(r, 10, speciesData).ToList();
 
          foreach (var dragon in dragons)
          {

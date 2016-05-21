@@ -96,16 +96,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FsPickler">
-      <HintPath>..\packages\FsPickler.1.5.2\lib\net45\FsPickler.dll</HintPath>
+      <HintPath>..\packages\FsPickler.1.7.2\lib\net45\FsPickler.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FsPickler.Json">
-      <HintPath>..\packages\FsPickler.Json.1.5.2\lib\net45\FsPickler.Json.dll</HintPath>
+      <HintPath>..\packages\FsPickler.Json.1.7.2\lib\net45\FsPickler.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
