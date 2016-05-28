@@ -26,26 +26,18 @@ namespace DraconicEngine
       }
 
       ActionBlock<DrawMessage> drawAgent;
-      class DrawMessageHandler
+      Action<DrawMessage> DrawMessageHandler(IObserver<Unit> drawStarted, IObserver<Unit> drawFinished)
       {
          Stack<DrawInfo> gameStates = new Stack<DrawInfo>();
-         IObserver<Unit> drawStarted;
-         IObserver<Unit> drawFinished;
 
-         public DrawMessageHandler(IObserver<Unit> drawStarted, IObserver<Unit> drawFinished)
-         {
-            this.drawStarted = drawStarted;
-            this.drawFinished = drawFinished;
-         }
-
-         public void HandleMessage(DrawMessage msg)
+         return msg =>
          {
             if (msg.Message == "Draw")
             {
                drawStarted.OnNext(unit);
 
                RogueGame.Current.RootTerminal.Clear();
-               
+
                var screen = gameStates.FirstOrDefault(state => state.Type == GameViewType.WholeScreen);
                if (screen != null)
                {
@@ -55,7 +47,7 @@ namespace DraconicEngine
                {
                   gameState.Draw();
                }
-               
+
                msg.DrawFinished.SetResult(unit);
                drawFinished.OnNext(unit);
             }
@@ -67,7 +59,7 @@ namespace DraconicEngine
             {
                gameStates.Pop();
             }
-         }
+         };
       }
 
       public static readonly int ScreenWidth = 80;
@@ -75,15 +67,11 @@ namespace DraconicEngine
 
       public abstract Task Start();
 
-      public Action Present { get; set; }
+      Action present;
 
       Terminal rootTerminal = new Terminal(ScreenWidth, ScreenHeight);
 
-      public Terminal RootTerminal
-      {
-         get { return rootTerminal; }
-         protected set { rootTerminal = value; }
-      }
+      public Terminal RootTerminal => rootTerminal;
 
       Stack<DrawInfo> gameStates = new Stack<DrawInfo>();
       
@@ -92,13 +80,12 @@ namespace DraconicEngine
 
       CancellationTokenSource cts = new CancellationTokenSource();
 
-      public RogueGame()
+      public RogueGame(Action present)
       {
-         var messageHandler = new DrawMessageHandler(drawStarted, drawFinished);
+         this.present = present;
+         var messageHandler = DrawMessageHandler(drawStarted, drawFinished);
          
-         this.drawAgent = new ActionBlock<DrawMessage>(new Action<DrawMessage>(messageHandler.HandleMessage));
-
-
+         this.drawAgent = new ActionBlock<DrawMessage>(messageHandler);
       }
 
       public async Task<T> RunGameState<T>(IGameView<T> gameState)
@@ -143,7 +130,7 @@ namespace DraconicEngine
                await drawAgent.SendAsync(new DrawMessage() { Message = "Draw", DrawFinished = drawFinish });
                await drawFinish.Task;
 
-               Present();
+               present();
 
                watch.Stop();
 

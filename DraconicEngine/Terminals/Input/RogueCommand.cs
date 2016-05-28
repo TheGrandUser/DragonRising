@@ -10,10 +10,7 @@ using System.Diagnostics.Contracts;
 
 namespace DraconicEngine.Terminals.Input
 {
-   public abstract class RogueCommand
-   {
-
-   }
+   public abstract class RogueCommand { }
 
    public static class RogueCommands
    {
@@ -32,17 +29,10 @@ namespace DraconicEngine.Terminals.Input
    public class ValueCommand<T> : RogueCommand
    {
       public T Value { get; }
-
-      public ValueCommand(T value)
-      {
-         this.Value = value;
-      }
+      public ValueCommand(T value) { this.Value = value; }
    }
 
-   public abstract class AsyncCommand : RogueCommand
-   {
-      public abstract Task Do();
-   }
+   public abstract class AsyncCommand : RogueCommand { public abstract Task Do(); }
 
    public class DelegateCommand : RogueCommand
    {

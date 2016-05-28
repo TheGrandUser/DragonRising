@@ -11,6 +11,8 @@ open DomainTypes
 open FSharpx.Stm
 open System
 open WorldState
+open Akka.FSharp
+open Akka.Actor
 
 //let creatureRepo = makeEntityPropMap<CreatureComponent>()
 
@@ -124,21 +126,23 @@ let tryManyMoves decider self targetLocation =
          | a -> a
    targetLocation - getLocation self |> pathFindAttempts |> getAction
 
-let makeBehavior (behavior: BehaviorLogic) self = Behavior.Start (fun inbox ->
-   let selfedBehavior = behavior self
-   let rec loop () = async {
-      let! msg = inbox.Receive ()
+let makeBehavior (behavior: BehaviorLogic) (self: Entity) =
+   let (EntityId id) = self.id
+   let name = sprintf "Behavior-%i" id
+   spawn actorSystem name (fun inbox ->
+      let selfedBehavior = behavior self
+      let rec loop () = actor {
+         let! msg = inbox.Receive ()
 
-      match msg with 
-      | PlanTurnMessage (world, response) ->
-         let action = selfedBehavior world
-         response.Reply action
-         return! loop ()
-      | StopBehavior -> return ()
-      }
-   loop ()
-   )
-let stopBehavior (b: Behavior) = b.Post StopBehavior
+         match msg with 
+         | PlanTurnMessage (world, response) ->
+            let action = selfedBehavior world
+            response.Reply action
+            return! loop ()
+         | StopBehavior -> return ()
+         }
+      loop ())
+let stopBehavior (b: Behavior) = b <! StopBehavior
 
 let clearAnyBehaviors e =
    match getComponent<BehaviorComponent> e with

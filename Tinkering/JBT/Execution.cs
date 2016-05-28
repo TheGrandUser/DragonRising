@@ -548,7 +548,7 @@ namespace Tinkering.JBT
    static class BTExecuterFactory
    {
       public static IBTExecuter CreateBTExecuter(Some<ModelTask> treeToRun, IContext context) => new BTExecuter(treeToRun, context);
-      public static IBTExecuter CreateBTExecuter(Some<ModelTask> treeToRun) => new BTExecuter(treeToRun);
+      //public static IBTExecuter CreateBTExecuter(Some<ModelTask> treeToRun) => new BTExecuter(treeToRun);
    }
 
    class TaskState : ITaskState
@@ -577,12 +577,22 @@ namespace Tinkering.JBT
          : base(modelParallel, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
 
    class ExecutionModelRandomSelector : ExecutionTask
    {
       public ExecutionModelRandomSelector(ModelRandomSelector modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 
@@ -591,12 +601,22 @@ namespace Tinkering.JBT
       public ExecutionModelRandomSequence(ModelRandomSequence modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
 
    class ExecutionDynamicPriorityList : ExecutionTask
    {
       public ExecutionDynamicPriorityList(ModelDynamicPriorityList modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 
@@ -605,12 +625,22 @@ namespace Tinkering.JBT
       public ExecutionModelSelector(ModelSelector modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
 
    class ExecutionModelSequence : ExecutionTask
    {
       public ExecutionModelSequence(ModelSequence modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 
@@ -619,12 +649,22 @@ namespace Tinkering.JBT
       public ExecutionModelStaticPriorityList(ModelStaticPriorityList modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
 
    class ExecutionModelHierarchicalContextManager : ExecutionTask
    {
       public ExecutionModelHierarchicalContextManager(ModelHierarchicalContextManager modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 
@@ -635,12 +675,22 @@ namespace Tinkering.JBT
       }
 
       public new ModelInterrupter ModelTask => (ModelInterrupter)base.ModelTask;
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
 
    class ExecutionInverter : ExecutionTask
    {
       public ExecutionInverter(ModelInverter modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 
@@ -649,12 +699,22 @@ namespace Tinkering.JBT
       public ExecutionLimit(ModelLimit modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
 
    class ExecutionRepeat : ExecutionTask
    {
       public ExecutionRepeat(ModelRepeat modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 
@@ -663,12 +723,22 @@ namespace Tinkering.JBT
       public ExecutionSafeContextManager(ModelSafeContextManager modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
 
    class ExecutionSafeOutputContextManager : ExecutionTask
    {
       public ExecutionSafeOutputContextManager(ModelSafeOutputContextManager modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 
@@ -679,17 +749,32 @@ namespace Tinkering.JBT
       public ExecutionSucceeder(ModelSucceeder modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
    class ExecutionUntilFail : ExecutionTask
    {
       public ExecutionUntilFail(ModelUntilFail modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
    class ExecutionFailure : ExecutionTask
    {
       public ExecutionFailure(ModelFailure modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 
@@ -698,11 +783,21 @@ namespace Tinkering.JBT
       public ExecutionPerformInterruption(ModelPerformInterruption modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
    class ExecutionSubtreeLookup : ExecutionTask
    {
       public ExecutionSubtreeLookup(ModelSubtreeLookup modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
    class ExecutionSuccess : ExecutionTask
@@ -710,17 +805,32 @@ namespace Tinkering.JBT
       public ExecutionSuccess(ModelSuccess modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
    class ExecutionVariableRenamer : ExecutionTask
    {
       public ExecutionVariableRenamer(ModelVariableRenamer modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
       }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
+      }
    }
    class ExecutionWait : ExecutionTask
    {
       public ExecutionWait(ModelWait modelTask, BTExecuter executor, ExecutionTask parent) : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 
@@ -729,6 +839,11 @@ namespace Tinkering.JBT
       public ExecutionToFill(ModelToFill modelTask, BTExecuter executor, ExecutionTask parent)
          : base(modelTask, executor, parent)
       {
+      }
+
+      protected override void Spawn()
+      {
+         throw new NotImplementedException();
       }
    }
 }

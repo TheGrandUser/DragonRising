@@ -131,8 +131,8 @@ type Loc(x : int, y : int) =
    static member (/) (l : Loc, i) = Loc(l.X / i, l.Y / i)
 
 type Vector with
-   member this.Zero = Vector(0, 0)
-   member this.Add(a : Vector, b : Vector) = a + b
+   static member Zero = Vector(0, 0)
+   static member Add(a : Vector, b : Vector) = a + b
 
 let toLoc (v:Vector) = Loc(v.X, v.Y)
 let toVector (l:Loc) = Vector(l.X, l.Y)
@@ -175,10 +175,10 @@ type Area =
    | Cone of Loc * Vector * int * int
    | Combined of Area * Area
 
-
+type RogueMessage = RogueMessage of string * RogueColor
 type MessageOp =
-   | PostMessage of string * RogueColor
-   | GetMessages of AgentResponse<(string * RogueColor) list>
+   | PostMessage of RogueMessage
+   | GetMessages of AgentResponse<RogueMessage list>
 
 
 #nowarn "0342"

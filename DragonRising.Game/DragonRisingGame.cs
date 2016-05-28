@@ -12,7 +12,8 @@ namespace DragonRising
 {
    public class DragonRisingGame : RogueGame
    {
-      public DragonRisingGame()
+      public DragonRisingGame(Action present)
+         : base(present)
       {
       }
 

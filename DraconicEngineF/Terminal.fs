@@ -11,9 +11,12 @@ type DrawBoxOptions = { doubleLines: bool; continueLines: bool }
 let doubleLines = { doubleLines = true; continueLines = false }
 
 type Terminal =
-| WindowTerminal of Terminal * TileColor * TerminalRect
-| MainTerminal of Character array * Vector
-      
+   | WindowTerminal of Terminal * TileColor * TerminalRect
+   | MainTerminal of Character array * Vector
+
+type TerminalBounds = { offset: Vector; width: int; height: int }
+type TerminalContent = { bounds: TerminalBounds; characters: Character array }
+
 let makeTerminal width height =
    let blank = character ' '
    let term = MainTerminal ((Array.init (width * height) (fun i -> blank)), Vector(width, height))
@@ -185,3 +188,4 @@ let drawBox t options =
       for l in TerminalRect.Column(1, 0, sy) |> getPositionsInRect do
          writeLineChar t l verical |> ignore
       ()
+

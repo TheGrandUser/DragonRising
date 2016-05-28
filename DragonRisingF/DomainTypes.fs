@@ -9,6 +9,8 @@ open DisplayCore
 open Entities
 open FSharpx.Stm
 open DragonRisingF.WorldState
+open Akka.Actor
+//open Akka.FSharp
 
 let neutral = Alligence "neutral"
 
@@ -147,8 +149,6 @@ type Plan =
 
 type FinalizedPlan = | FinalizedPlan of Plan * Fact list
 
-type EntityStore = | EntityStore of TVar<Entity list>
-
 type TimedEventsStore = TimedEventsStore of TVar<(Map<int, Fact list>)>
 
 type MoveDetails = { initiator: Entity; direction : Direction }
@@ -173,7 +173,7 @@ type BehaviorMessage =
    | PlanTurnMessage of World * AgentResponse<ActionTaken>
    | StopBehavior
 
-type Behavior = Agent<BehaviorMessage>
+type Behavior = IActorRef //Agent<BehaviorMessage>
 
 type BehaviorLogic = Entity -> World -> ActionTaken
 

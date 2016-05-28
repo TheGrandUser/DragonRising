@@ -112,6 +112,8 @@ type ItemComponent =
 type ManipulatableComponent = 
    | SelfOnly of Manipulation
    | RequiresItem of Manipulation
+   
+type EntityStore = | EntityStore of TVar<Entity list>
 
 type Scene = { focusEntity : Entity; stairs : Entity; map : GameMap; level : int; entityStore : EntityStore }
 type World = { scene : Scene; entities : EntityStore } // alligences, factions, world map, big overarching stuff

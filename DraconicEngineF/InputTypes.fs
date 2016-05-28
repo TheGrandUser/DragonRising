@@ -236,6 +236,7 @@ type RogueModifierKeys =
 
 type RogueKeyGesture = RogueKey * RogueModifierKeys
 type RogueMouseGesture = RogueMouseAction * RogueModifierKeys
+type RogueKeyEvent = { key: RogueKey; modifiers: RogueModifierKeys; character: char option }
 
 type KeyToDelta1D = RogueKeyGesture -> int
 type KeyToDelta2D = RogueKeyGesture -> Vector
@@ -244,6 +245,8 @@ type DeltaToValue1D<'T> = int -> 'T
 type DeltaToValue2D<'T> = Vector -> 'T
 type LocDeltaToValue2D<'T> = (Loc * Vector) -> 'T
 type LocToValue2D<'T> = Loc -> 'T
+
+let keyEventMatchesGesture {key = eKey; modifiers= eMod} (gKey, gMod) = eKey = gKey && eMod = gMod
 
 type KeyCommandGesture<'T> =
    | CommandGesture of RogueKeyGesture list * 'T
@@ -264,7 +267,7 @@ type InputResult<'T> =
 
 type obs<'T> = IObservable<'T>
 type InputStreams = 
-   { keyDown : RogueKeyGesture obs
+   { keyDown : RogueKeyEvent obs
      mouseMove : (RogueMouseGesture * Loc * Vector) obs
      mouseClick : (RogueMouseGesture * Loc) obs
      mouseWheel : (RogueMouseGesture * Loc * int) obs }
@@ -313,11 +316,12 @@ let obsToAsync<'T> ct (obs: IObservable<'T>) =
 let getKeyCommandObs (streams: InputStreams) (keyGestures: KeyCommandGesture<'a> list) =
    streams.keyDown 
    |> Observable.map (fun args -> 
+      let currentGesture = (args.key, args.modifiers)
       keyGestures 
          |> List.toSeq
          |> Seq.map (fun cg -> 
             let keyGestures = getGestures cg
-            let matchingGesture = keyGestures |> List.tryFind ((=) args)
+            let matchingGesture = keyGestures |> List.tryFind ((=) currentGesture)
             (cg, matchingGesture))
          |> Seq.filter (fun (_, mg) -> mg.IsSome)
          |> Seq.map (fun (cg, mg) -> getKeyGestureReady cg mg.Value )

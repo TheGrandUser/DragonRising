@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DragonRising"
         xmlns:DraconicEngine="clr-namespace:DraconicEngine.WPF;assembly=DraconicEngine.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" MinHeight="100" MinWidth="100" SizeToContent="WidthAndHeight">
+        Title="Dragon Rising" MinHeight="100" MinWidth="100" SizeToContent="WidthAndHeight">
     <Grid>
         <DraconicEngine:TerminalControl Margin="5" Name="terminalView"/>
     </Grid>

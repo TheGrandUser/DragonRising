@@ -16,6 +16,7 @@ namespace DragonRising
 
       public SimpleMessageService(int maxEventMessages)
       {
+         
          this.maxEventMessages = maxEventMessages;
       }
 
@@ -28,16 +29,10 @@ namespace DragonRising
          }
       }
 
-      public void ClearInfoMessages()
-      {
-         infoMessages.Clear();
-      }
+      public void ClearInfoMessages() => infoMessages.Clear();
 
-      public void AddInfoMessage(RogueMessage message)
-      {
-         infoMessages.Add(message);
-      }
-      
+      public void AddInfoMessage(RogueMessage message) => infoMessages.Add(message);
+
       public IEnumerable<RogueMessage> EventMessages => eventMessages.AsEnumerable();
 
       public IEnumerable<RogueMessage> InfoMessages => infoMessages.AsEnumerable();

@@ -1,6 +1,7 @@
 ﻿module DataAccess
 
 open DragonRisingF.DomainTypes
+open DragonRisingF.WorldState
 
 type ISaveManager =
    abstract member SaveGame: string -> World -> Async<unit>

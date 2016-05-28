@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DraconicEngine.Terminals;
+using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using DraconicEngine.Terminals;
 
 namespace DraconicEngine.WPF
 {
@@ -180,7 +169,7 @@ namespace DraconicEngine.WPF
 
                   var glyphGeometry = glyphSheet.GetGeometry(character);
 
-                  drawingContext.PushTransform(new TranslateTransform((x * glyphSheet.Width) + TilePadding, (y * glyphSheet.Height) + TilePadding));
+                  drawingContext.PushTransform(new TranslateTransform(drawPoint.X, drawPoint.Y));
                   drawingContext.DrawGeometry(new SolidColorBrush(character.ForeColor.ToSystemColor()), null, glyphGeometry);
                   drawingContext.Pop();
                }

@@ -10,14 +10,16 @@ open Terminal
 open InputTypes
 open System.Threading
 open System.Reactive.Subjects
+open Akka.FSharp
 
+let actorSystem = System.create "DraconicEngine" (Configuration.load())
 
 let messengingService = Agent<MessageOp>.Start(fun inbox ->
    let rec loop messages = async{
       let! command = inbox.Receive ()
       let newMessages = 
          match command with
-         | PostMessage (msg, color) -> ((msg, color) :: messages) |> List.truncate 10
+         | PostMessage rmsg -> (rmsg :: messages) |> List.truncate 10
          | GetMessages r ->
             r.Reply(messages)
             messages
@@ -104,7 +106,7 @@ let CreateConfirmDialog (inputStreams: InputStreams) (hostPanel: Terminal) msg =
 
    let (resultFuture, result) = future<bool>() 
    let rec inputLoop () = async {
-      let! (key, modifiers) = inputStreams.keyDown |> obsToAsync CancellationToken.None
+      let! {key= key; modifiers=modifiers} = inputStreams.keyDown |> obsToAsync CancellationToken.None
       let input = 
          match key with
          | RogueKey.Y -> Some true

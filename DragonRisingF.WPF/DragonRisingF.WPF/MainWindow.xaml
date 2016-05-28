@@ -1,0 +1,10 @@
+﻿<Window
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   xmlns:local="clr-namespace:ViewModels;assembly=DragonRisingF.WPF"
+   xmlns:fsxaml="http://github.com/fsprojects/FsXaml"
+   Title="Dragon Rising" MinHeight="100" MinWidth="100" SizeToContent="WidthAndHeight">
+   <Grid>
+      <local:TerminalControl Margin="5" x:Name="terminalControl"/>
+   </Grid>
+</Window>

@@ -1,26 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using DraconicEngine.Input;
+﻿using DraconicEngine.Input;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Input;
 
 namespace DraconicEngine.WPF
 {
    public static class RogueToWpfExtensions
    {
-      public static Key ToWpfKey(this RogueKey key)
-      {
-         return (Key)key;
-      }
+      public static Key ToWpfKey(this RogueKey key) => (Key)key;
 
-      public static RogueKey ToRogueKey(this Key key)
-      {
-         return (RogueKey)key;
-      }
+      public static RogueKey ToRogueKey(this Key key) => (RogueKey)key;
 
       public static RogueKeyEvent ToRogueKeyEvent(this KeyEventArgs args)
       {
@@ -32,10 +21,7 @@ namespace DraconicEngine.WPF
          };
       }
 
-      public static Loc ToVec(this Loc point)
-      {
-         return new Loc((int)point.X, (int)point.Y);
-      }
+      public static Loc ToVec(this Loc point) => new Loc((int)point.X, (int)point.Y);
 
       public enum MapType : uint
       {

@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using DraconicEngine.Input;
+using LanguageExt;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using DraconicEngine.Input;
-using System.Threading;
-using LanguageExt;
 using static LanguageExt.Prelude;
-using System;
-using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
 
 namespace DraconicEngine.WPF
 {
@@ -39,12 +38,7 @@ namespace DraconicEngine.WPF
       public IObservable<Tuple<RogueMouseGesture, Loc, Vector>> MouseMove => mouseMove;
       public IObservable<Tuple<RogueMouseGesture, Loc>> MouseDown => mouseDown;
       public IObservable<Tuple<RogueMouseGesture, Loc, int>> MouseWheel => mouseWheel;
-
-      class testClass
-      {
-         public void M() { }
-      }
-
+      
       public WpfInputSystem(Window window, TerminalControl terminalControl)
       {
          this.window = window;
@@ -68,13 +62,17 @@ namespace DraconicEngine.WPF
       {
          var sceenPoint = args.GetPosition(this.terminalControl);
          var terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint);
-         mouseDown.OnNext(Tuple(new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint));
+         mouseDown.OnNext(Tuple(
+            new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers),
+            terminalPoint));
       }
       private void Window_MouseMove(object sender, MouseEventArgs args)
       {
          var sceenPoint = args.GetPosition(this.terminalControl);
          var terminalPoint = this.terminalControl.ScreenToTerminal(sceenPoint);
-         mouseMoveRaw.OnNext(Tuple(new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers), terminalPoint));
+         mouseMoveRaw.OnNext(Tuple(
+            new RogueMouseGesture(RogueMouseAction.Movement, (RogueModifierKeys)Keyboard.Modifiers),
+            terminalPoint));
       }
       private void Window_MouseWheel(object sender, MouseWheelEventArgs args)
       {
@@ -91,6 +89,7 @@ namespace DraconicEngine.WPF
       {
          var gestures = commandGestures.ToList();
 
+#if DEBUG
          var doubledUpGestures =
             (from g1 in gestures
              from g2 in gestures.TakeWhile(g => g != g1)
@@ -102,6 +101,7 @@ namespace DraconicEngine.WPF
          {
             Debug.WriteLine(gesturePair);
          }
+#endif
 
 
          var keyInputResults =
