@@ -15,11 +15,9 @@ open Akka.FSharp
 open Akka.Actor
 
 //let creatureRepo = makeEntityPropMap<CreatureComponent>()
-
 //let setCreatureComp = setComponent creatureRepo
 //let getCreatureComp = getComponent creatureRepo
 //let removeCreatureComp = removeComponent creatureRepo
-
 //let inventoryRepo = makeEntityPropMap<InventoryComponent>()
 
 let sendToBack scene entity = ()

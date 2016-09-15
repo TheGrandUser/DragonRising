@@ -5,13 +5,17 @@ System.IO.Directory.SetCurrentDirectory(__SOURCE_DIRECTORY__)
 #r "bin/debug/DraconicEngineF.dll"
 #r "bin/debug/FSharpx.Collections.dll"
 #r "bin/debug/FSharpx.Extras.dll"
-
-#load "DomainTypes.fs"
-#load "DomainFunctions.fs"
+#r "bin/debug/Akka.dll"
+#r "bin/debug/Akka.FSharp.dll"
 
 open DraconicEngineF
 open DraconicEngineF.Entities
 
+#load "WorldState.fs"
+#load "DomainTypes.fs"
+#load "DomainFunctions.fs"
+
+open WorldState
 open DomainTypes
 open DomainFunctions
 // Define your library scripting code here
@@ -26,7 +30,6 @@ let useIntStat statName (statToValue: int -> int) (effect: int -> Entity -> Effe
    match getIntStat statName user with
    | Some s -> effect (statToValue s) user
    | None -> goesWrong ("No stat" + statName, user, IntToEffect effect)
-   
 
 let confusedFor6Id = 1
 let confusedFor6: (Entity -> Effect) = applyTemporaryCondition confusedFor6Id Confused 6

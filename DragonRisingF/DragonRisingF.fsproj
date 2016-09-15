@@ -64,6 +64,7 @@
     <Compile Include="UseCases.fs" />
     <Compile Include="Actors.fs" />
     <None Include="Script.fsx" />
+    <None Include="AbiltiesSketch.fsx" />
     <Content Include="app.config" />
     <Content Include="packages.config" />
   </ItemGroup>

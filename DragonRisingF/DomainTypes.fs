@@ -8,7 +8,7 @@ open DraconicEngineF
 open DisplayCore
 open Entities
 open FSharpx.Stm
-open DragonRisingF.WorldState
+open WorldState
 open Akka.Actor
 //open Akka.FSharp
 

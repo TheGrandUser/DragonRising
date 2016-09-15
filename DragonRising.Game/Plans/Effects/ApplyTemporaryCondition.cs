@@ -20,8 +20,8 @@ namespace DragonRising.GameWorld.Effects
 {
    public class ApplyTemporaryCondition : IEntityEffect
    {
-      ICondition condition;
-      int duration;
+      readonly ICondition condition;
+      readonly int duration;
 
       public ApplyTemporaryCondition(ICondition condition, int duration)
       {
