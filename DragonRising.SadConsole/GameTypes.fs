@@ -30,18 +30,21 @@ type WorldDescription = {
    }
 
 type Locations = {
-   locById: Map<EntityId, Loc>
-   idByLoc: Map<Loc, EntityId>
+   locById: Map<EntityId, Loc3>
+   idByLoc: Map<Loc3, EntityId>
    }
 
 type DisplayDetails = { id: EntityId; chixel: int; fColor: Color }
 
 type TileType =
-   | Wall
+   | OpenSpace
+   | DownSlope
    | Floor
+   | UpSlope
+   | Wall
 
 type Tile = { t: TileType; seen: bool }
-type TileMap = { tiles: Tile[,]; width: int; height: int }
+type TileMap = { tiles: Tile[,] list; width: int; height: int }
 
 type AdventureGameState = {
    playerId: EntityId

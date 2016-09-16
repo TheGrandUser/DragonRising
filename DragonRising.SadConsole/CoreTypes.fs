@@ -127,7 +127,11 @@ type Loc(x : int, y : int) =
    static member (-) (l : Loc, v : Vector) = Loc(l.X - v.X, l.Y - v.Y)
    static member (-) (l1 : Loc, l2 : Loc) = Vector(l1.X - l2.X, l1.Y - l2.Y)
    static member (/) (l : Loc, i) = Loc(l.X / i, l.Y / i)
-
+type Loc3 = { xy: Loc; layer: int } with
+   static member (+) (l: Loc3, v: Vector) = { l with xy = l.xy + v }
+   static member (+) (v : Vector, l : Loc3) = { l with xy = l.xy + v }
+   static member (-) (l : Loc3, v : Vector) = { l with xy = l.xy - v }
+   static member (-) (l1 : Loc3, l2 : Loc3) = l1.xy - l2.xy
 type Vector with
    static member Zero = Vector(0, 0)
    static member Add(a : Vector, b : Vector) = a + b

@@ -4,7 +4,7 @@ open GameTypes
 open Microsoft.Xna.Framework
 open SadConsole
 
-type ConfirmedMove = ConfirmedMove of Loc
+type ConfirmedMove = ConfirmedMove of Loc3
 type ConfirmedAttack = ConfirmedAttack of EntityId
 type DirectionInteraction =
    | Blocked

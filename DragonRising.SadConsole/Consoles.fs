@@ -54,7 +54,7 @@ let arrangeButtons sWidth sHeight (offset: Point) (buttons) =
 
 
 let raceToGlyph (r: Race) =
-   if r = dragonRace then int 'D', Color.ForestGreen
+   if r = dragonRace then int 'D', Color.IndianRed
    elif r = elfRace then int 'e', Color.LavenderBlush
    else int '?', Color.Magenta
 
@@ -72,7 +72,7 @@ let createGameObject state id creature =
    let glyph, color = raceToGlyph creature.race
    let go = new GameObject()
    let loc = getLocation id state.locations
-   go.Position <- new Point(loc.X, loc.Y)
+   go.Position <- new Point(loc.xy.X, loc.xy.Y)
    let x,y = match creature.race.size with | Small | Medium -> 1,1 | Large -> 2,2 | Huge -> 3,3
    let animation = createTextSurfaceBySize x y glyph color
    go.Animation <- animation
@@ -83,36 +83,43 @@ let floorGlyph () = if mainRandom.Next 4 = 0 then int ',' else int '.'
 let getGlyphForTile tileType =
    match tileType with
    | TileType.Wall -> int '#', Color.DarkGray
-   | TileType.Floor -> floorGlyph (), Color.LightGray
+   | TileType.Floor -> floorGlyph (), Color.LawnGreen
+   | TileType.UpSlope -> 30, Color.LightGreen
+   | TileType.DownSlope -> 31, Color.DarkGreen
+   | TileType.OpenSpace -> 32, new Color(0,0,0, 127)
 
 let setTileGlyph (console: Console) x y tile =
    let glyph, color = getGlyphForTile tile.t
    console.SetGlyph(x, y, glyph, color)
 
-type MapConsole (screenWidth, screenHeight, state) as this =
+type MapConsole (screenWidth, screenHeight, state, layer) as this =
    inherit Console(state.map.width, state.map.height)
    let mutable state = state
-   do this.TextSurface.RenderArea <- new Rectangle(0,0,screenWidth, screenHeight)
 
-   let mutable gameObjects = state.creatures |> Map.map (createGameObject state)
-   
-   do state.map.tiles |> Array2D.iteri (setTileGlyph this)
-   
    let screenOffset = Vector(screenWidth/2, screenHeight/2)
-   member this.UpdateState newState =
-      state <- newState
+   let mutable gameObjects = state.creatures |> Map.map (createGameObject state)
+
+   let setRenderArea () =
       let playerLoc = getLocation state.playerId state.locations
-      let viewPos = playerLoc - screenOffset
+      let viewPos = playerLoc.xy - screenOffset
       this.TextSurface.RenderArea <- 
          new Rectangle(
             max viewPos.X 0,
             max viewPos.Y 0,
-            this.TextSurface.RenderArea.Width,
-            this.TextSurface.RenderArea.Height)
-      gameObjects.[state.playerId].Position <- new Point(playerLoc.X, playerLoc.Y)
+            screenWidth,
+            screenHeight)
+      gameObjects.[state.playerId].Position <- new Point(playerLoc.xy.X, playerLoc.xy.Y)
       gameObjects |> Map.iter (fun _ go -> 
          go.IsVisible <- this.TextSurface.RenderArea.Contains go.Position
          go.RenderOffset <- this.Position - this.TextSurface.RenderArea.Location)
+
+   do setRenderArea ()
+
+   do state.map.tiles.[layer] |> Array2D.iteri (setTileGlyph this)
+   
+   member this.UpdateState newState =
+      state <- newState
+      setRenderArea()
       ()
 
    override this.Render() =
@@ -146,7 +153,9 @@ let messageConsole width height =
 type GameConsole(screenWidth, screenHeight, state) as this =
    inherit ConsoleList()//state.map.width, state.map.height)
 
-   let mapConsole = MapConsole(screenWidth, screenHeight - 10, state)
+   let playerLoc = state.locations.locById.[state.playerId]
+
+   let mapConsole = MapConsole(screenWidth, screenHeight - 10, state, playerLoc.layer)
    let messageConsole = messageConsole screenWidth 8
    let messageHeaderConsole = headerConsole screenWidth "Messages"
 

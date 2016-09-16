@@ -14,14 +14,14 @@ let getLocation id locations =
 let doesTileBlockMovement tt =
    match tt with
    | Wall -> true
-   | Floor -> false
-let isInWorld world (location: Loc) =
+   | _ -> false
+let isInWorld map (location: Loc) =
    let (x,y) = location.X, location.Y
-   x >= 0 && x < world.map.width && y >= 0 && y < world.map.height
-let isMovementBlocked world (location: Loc) = 
-   if isInWorld world location then
-      let (x,y) = location.X, location.Y
-      doesTileBlockMovement world.map.tiles.[x,y].t
+   x >= 0 && x < map.width && y >= 0 && y < map.height
+let isMovementBlocked world location = 
+   if isInWorld world.map location.xy then
+      let (x,y) = location.xy.X, location.xy.Y
+      doesTileBlockMovement world.map.tiles.[location.layer].[x,y].t
    else true
 let otherCreatureAtPoint meId world loc =
    let found = Map.tryFind loc world.locations.idByLoc
@@ -30,9 +30,9 @@ let otherCreatureAtPoint meId world loc =
          eId <> meId && world.creatures.ContainsKey eId)
 
 let canMoveInto id world location =
-   if isInWorld world location then
-      let (x,y) = location.X, location.Y
-      let tileBlocks = doesTileBlockMovement world.map.tiles.[x,y].t
+   if isInWorld world.map location.xy then
+      let (x,y) = location.xy.X, location.xy.Y
+      let tileBlocks = doesTileBlockMovement world.map.tiles.[location.layer].[x,y].t
       if tileBlocks then false
       else
          let entityBlocks = 
@@ -56,7 +56,7 @@ let updateLocation locations id l =
    { locById = newById; idByLoc = newByLoc }
 
 
-let getLocs size (loc: Loc) dir =
+let getLocs size loc dir =
    let unitX = Vector(1,0)
    let unitY = Vector(0,1)
    let unitXY = Vector(1,1)
@@ -79,7 +79,7 @@ let tryMove world id loc (dir: Vector) =
       Map.tryFind id world.creatures 
       |> Option.map (fun c -> c.race.size)
       |> Option.getOrElse Medium
-   let newLoc = loc + dir
+   let newLoc = { loc with xy = loc.xy + dir }
 
    let locsToCheck = getLocs size newLoc dir 
 
@@ -118,16 +118,31 @@ let moveEntity world id dir =
 let dragonRace = { name = "Dragon"; size = Huge }
 let elfRace = { name = "Elf"; size = Medium }
 
-let makeElf id x y =
-   id, Loc(x,y), {id = id; name = "Carnie"; race = elfRace}
+let findRandomStartingSpot map size =
+   let checkSpot loc =
+      let tiles = map.tiles.[loc.layer]
+      let toCheck = getLocs size loc Vector.Zero
+      toCheck |> List.forall (fun c ->
+         if not (isInWorld map c.xy) then false
+         else
+            let tile = tiles.[c.xy.X, c.xy.Y]
+            tile.t <> Wall && tile.t <> OpenSpace)
+   let rec iter () =
+      let layer = mainRandom.Next(map.tiles.Length-1)
+      let x = mainRandom.Next(map.width)
+      let y = mainRandom.Next(map.height)
+      let loc = { xy = Loc(x,y); layer = layer }
+      if checkSpot loc then loc
+      else iter ()
+   iter ()
+   
+let makeElf id loc =
+   id, loc, {id = id; name = "Carnie"; race = elfRace}
 
 let createMap width height =
-   let chooseTile x y = if x = 0 || x = width - 1 || y = 0 || y = height - 1 then Wall else Floor
-   let tiles = 
-      Array2D.init width height 
-         (fun x y -> { t = chooseTile x y; seen = true })
-   let map = { tiles = tiles; width = width; height = height }
-   map, Loc(10,10), [makeElf (EntityId 2) 15 20]
+   let world = WorldGeneration.createRegions 10 10
+   let region = WorldGeneration.createLocalTerrain world 6 4 width height
+   region, findRandomStartingSpot region Huge , List.init 20 (fun i -> makeElf (EntityId (i+2)) (findRandomStartingSpot region Medium))
 
 let createLocations idLocs =
    let locById = Map.ofList idLocs
