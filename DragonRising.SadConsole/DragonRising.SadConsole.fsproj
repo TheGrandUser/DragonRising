@@ -60,6 +60,7 @@
     <Compile Include="ShadowCaster.fs" />
     <Compile Include="GameTypes.fs" />
     <Compile Include="ActionTypes.fs" />
+    <Compile Include="WorldGeneration.fs" />
     <Compile Include="GameLogic.fs" />
     <Compile Include="Consoles.fs" />
     <Compile Include="Program.fs" />

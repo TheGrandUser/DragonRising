@@ -11,6 +11,20 @@ type CreatureDetails = { id: EntityId; name: string; race: Race }
 
 type Inventory = { id: EntityId; items: EntityId list }
 
+module RegionTypes =
+   type WorldCoord = WorldCoord of Loc // single cell on the world gen which has the primary biome type
+   type TerrainPoint = { location: Loc; height: float }
+   type Edge = { point1: WorldCoord * int; point2: WorldCoord * int }
+   type Plant = string * Loc
+
+   type PointStep = { points: TerrainPoint list; worldCoord: WorldCoord } // generate a bunch of points
+   type PointsStep = Map<WorldCoord, PointStep>
+   type EdgesStep = { edges: Edge list; worldCoord: WorldCoord } // connect the points
+   type MajorRiversStep = { rivers: (TerrainPoint * int) list list } // 
+   type CellHeightStep = { heightMap: float [,]; worldCoord: WorldCoord } // given the edges, and thus polygons, fill out the cells with gradient heights, possibly also noise heights
+   type StreamsAndPlantsStep = { streams: TerrainPoint list list; plants: Plant list } // 
+
+
 type WorldDescription = {
    races: Race list
    }
